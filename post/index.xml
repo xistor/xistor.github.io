@@ -12,12 +12,12 @@
     
     
     <item>
-      <title>K2路由器Pandavan配置frpc实现内网穿透</title>
-      <link>https://xistor.github.io/post/k2-frpc-setting/</link>
+      <title>K2路由器Pandavan配置frp实现内网穿透</title>
+      <link>https://xistor.github.io/post/k2-frp-setting/</link>
       <pubDate>Thu, 23 Aug 2018 21:42:00 +0800</pubDate>
       
-      <guid>https://xistor.github.io/post/k2-frpc-setting/</guid>
-      <description>家里的树梅派想从外网访问，但是没有固定ip,想要访问的话必须内网穿透，有好多方法可以实现。手中刚好有闲鱼淘的k2路由器，就用它来搞定了。k2</description>
+      <guid>https://xistor.github.io/post/k2-frp-setting/</guid>
+      <description>树梅派跑起来后，肯定是能够随时随地访问才够方便，但是家中的宽带没有固定ip,而且pi又躲在路由器后面，因此想要访问的话必须曲线一下，有好多方</description>
     </item>
     
   </channel>
