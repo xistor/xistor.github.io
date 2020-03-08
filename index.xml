@@ -6,10 +6,19 @@
     <description>Recent content on xistor&#39;blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 23 Aug 2018 21:42:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 08 Mar 2020 22:03:16 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>树莓派4B USB硬盘启动</title>
+      <link>https://xistor.github.io/post/rpi4-boot-from-usb/</link>
+      <pubDate>Sun, 08 Mar 2020 22:03:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/rpi4-boot-from-usb/</guid>
+      <description>树莓派4B 官方还没有提供从USB启动的方案，不过可以使用之前更改cmdline.txt的方法实现。 我的树莓派已经使用SD卡跑了挺长时间了，不</description>
+    </item>
     
     <item>
       <title>K2路由器Pandavan配置frp实现内网穿透</title>

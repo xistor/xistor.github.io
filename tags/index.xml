@@ -6,10 +6,19 @@
     <description>Recent content in Tags on xistor&#39;blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 23 Aug 2018 21:42:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 08 Mar 2020 22:03:16 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>raspberrypi</title>
+      <link>https://xistor.github.io/tags/raspberrypi/</link>
+      <pubDate>Sun, 08 Mar 2020 22:03:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/tags/raspberrypi/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>frp</title>
@@ -17,15 +26,6 @@
       <pubDate>Thu, 23 Aug 2018 21:42:00 +0800</pubDate>
       
       <guid>https://xistor.github.io/tags/frp/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>raspberrypi</title>
-      <link>https://xistor.github.io/tags/raspberrypi/</link>
-      <pubDate>Thu, 23 Aug 2018 21:42:00 +0800</pubDate>
-      
-      <guid>https://xistor.github.io/tags/raspberrypi/</guid>
       <description></description>
     </item>
     
