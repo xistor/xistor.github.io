@@ -34,7 +34,7 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 
-<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link href="/dist/even.a8191bf8.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -48,7 +48,7 @@
 <meta itemprop="description" content="树莓派4B 官方还没有提供从USB启动的方案，不过可以使用之前更改cmdline.txt的方法实现。 我的树莓派已经使用SD卡跑了挺长时间了，不">
 <meta itemprop="datePublished" content="2020-03-08T22:03:16&#43;08:00" />
 <meta itemprop="dateModified" content="2020-03-08T22:03:16&#43;08:00" />
-<meta itemprop="wordCount" content="896">
+<meta itemprop="wordCount" content="899">
 
 
 
@@ -146,11 +146,11 @@
 </div>
     <div class="post-content">
       <p>树莓派4B 官方还没有提供从USB启动的方案，不过可以使用之前更改cmdline.txt的方法实现。<br>
-我的树莓派已经使用SD卡跑了挺长时间了，不想重新配置，这种下面这种方式可以无痛将系统从SD卡迁移到硬盘（迁移之后SD卡依然需要）。
+我的树莓派已经使用SD卡跑了挺长时间了，不想重新配置，下面这种方式可以无痛将系统从SD卡迁移到硬盘（迁移之后SD卡依然需要）。
 系统运行速度上会有提升，感觉不错，当然据说可能会有莫名其妙的问题，用全新系统更稳一些，这个看个人选择了。</p>
 <h3 id="1硬盘分区格式化">1.硬盘分区格式化</h3>
-<p>将硬盘查插到树莓派USB3.0口上，我的是一枚4T WD硬盘。<br>
-MBR不支持超过2T的硬盘，使用GPT进行分区</p>
+<p>将有系统的SD卡和要用到的硬盘都插到树莓派上。我的是一枚4T WD紫盘。<br>
+由于MBR不支持超过2T的硬盘，使用GPT分区</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
