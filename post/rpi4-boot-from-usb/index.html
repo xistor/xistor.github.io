@@ -151,46 +151,46 @@
 <h3 id="1硬盘分区格式化">1.硬盘分区格式化</h3>
 <p>将有系统的SD卡和要用到的硬盘都插到树莓派上。我的是一枚4T WD紫盘。<br>
 由于MBR不支持超过2T的硬盘，使用GPT分区, /dev/sda为此硬盘</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo parted
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$sudo</span> parted
 
-    Using /dev/sda
-    Welcome to GNU Parted! Type <span class="s1">&#39;help&#39;</span> to view a list of commands.、
+Using /dev/sda
+Welcome to GNU Parted! Type <span class="s1">&#39;help&#39;</span> to view a list of commands.、
 
-    <span class="o">(</span>parted<span class="o">)</span> print
+<span class="o">(</span>parted<span class="o">)</span> print
 
-    Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
-    Disk /dev/sda: 4001GB
-    Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
-    Partition Table: gpt
-    Disk Flags: 
+Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
+Disk /dev/sda: 4001GB
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
+Partition Table: gpt
+Disk Flags: 
 
-    Number  Start   End     Size    File system  Name  Flags
-    
-    <span class="o">(</span>parted<span class="o">)</span> rm <span class="m">1</span> <span class="c1"># 若之前存在分区，且可以删掉，则使用rm [Number] 命令删除</span>
+Number  Start   End     Size    File system  Name  Flags
 
-    <span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 0% 10% <span class="c1"># 作为树莓派系统分区</span>
+<span class="o">(</span>parted<span class="o">)</span> rm <span class="m">1</span> <span class="c1"># 若之前存在分区，且可以删掉，则使用rm [Number] 命令删除</span>
 
-    <span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 10% 100%  <span class="c1"># 留作其他</span>
+<span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 0% 10% <span class="c1"># 作为树莓派系统分区</span>
 
-    <span class="o">(</span>parted<span class="o">)</span> print
+<span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 10% 100%  <span class="c1"># 留作其他</span>
 
-    Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
-    Disk /dev/sda: 4001GB
-    Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
-    Partition Table: gpt
-    Disk Flags
+<span class="o">(</span>parted<span class="o">)</span> print
 
-    <span class="m">1</span>      1049kB  400GB   400GB   ext4         LVM
-    <span class="m">2</span>      400GB   4001GB  3601GB  ext4         LVM
+Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
+Disk /dev/sda: 4001GB
+Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
+Partition Table: gpt
+Disk Flags
 
-    <span class="o">(</span>parted<span class="o">)</span> quit
+<span class="m">1</span>      1049kB  400GB   400GB   ext4         LVM
+<span class="m">2</span>      400GB   4001GB  3601GB  ext4         LVM
+
+<span class="o">(</span>parted<span class="o">)</span> quit
 </code></pre></div><p>分给树莓派10%的空间作为系统分区，大概360G。parted 使用quit命令退出后分区即生效。</p>
 <p>还需要格式化分区：</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">sudo mkfs.ext4 /dev/sda1
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$sudo</span> mkfs.ext4 /dev/sda1
 
-sudo mkfs.ext4 /dev/sda2
+<span class="nv">$sudo</span> mkfs.ext4 /dev/sda2
 
-sudo fdisk -l
+<span class="nv">$sudo</span> fdisk -l
 
 Disk /dev/sda: 3.7 TiB, <span class="m">4000787030016</span> bytes, <span class="m">7814037168</span> sectors
 Disk model: USB 3.0         
@@ -205,41 +205,41 @@ Device         Start        End    Sectors   Size Type
 /dev/sda2  <span class="m">781404160</span> <span class="m">7814035455</span> <span class="m">7032631296</span>   3.3T Linux filesystem
 </code></pre></div><h3 id="2系统迁移">2.系统迁移</h3>
 <p>挂载硬盘：</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo mkdir /media/sys
-    sudo mount /dev/sda1 /media/sys
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$sudo</span> mkdir /media/sys
+<span class="nv">$sudo</span> mount /dev/sda1 /media/sys
 </code></pre></div><p>拷贝系统文件：</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo rsync -avx / /media/sys
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$sudo</span> rsync -avx / /media/sys
 </code></pre></div><p>查看sda1分区PARTUUID:</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    blkid
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$blkid</span>
 
-    /dev/sda1: <span class="nv">UUID</span><span class="o">=</span><span class="s2">&#34;ec074432-b020-44a7-8cb2-ce84d45296ab&#34;</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">&#34;ext4&#34;</span> <span class="nv">PARTLABEL</span><span class="o">=</span><span class="s2">&#34;LVM&#34;</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">&#34;18deaf7e-9704-44d2-9e63-a2c60358b26b&#34;</span>
+/dev/sda1: <span class="nv">UUID</span><span class="o">=</span><span class="s2">&#34;ec074432-b020-44a7-8cb2-ce84d45296ab&#34;</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">&#34;ext4&#34;</span> <span class="nv">PARTLABEL</span><span class="o">=</span><span class="s2">&#34;LVM&#34;</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">&#34;18deaf7e-9704-44d2-9e63-a2c60358b26b&#34;</span>
 </code></pre></div><p>记下PARTUUID。</p>
 <p>修改cmdline.txt文件</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo nano /boot/cmdline.txt
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$sudo</span> nano /boot/cmdline.txt
 
-    <span class="nv">root</span><span class="o">=</span><span class="nv">PARTUUID</span><span class="o">=</span>18deaf7e-9704-44d2-9e63-a2c60358b26b <span class="c1"># 此处修改为sda1的PARTUUID</span>
+<span class="nv">root</span><span class="o">=</span><span class="nv">PARTUUID</span><span class="o">=</span>18deaf7e-9704-44d2-9e63-a2c60358b26b <span class="c1"># 此处修改为sda1的PARTUUID</span>
 </code></pre></div><p>保存退出。重启。</p>
 <p>挂载sda2分区，4T硬盘还有另外一个分区需要开机挂载。</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo mkdir /media/disk
-    sudo nano /etc/fstab
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$sudo</span> mkdir /media/disk
+<span class="nv">$sudo</span> nano /etc/fstab
 </code></pre></div><p>最后新加一行<br>
 UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导致启动不起来。</p>
 <div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">UUID</span><span class="o">=</span>fdddd773-1ce7-430f-b4ff-3df3ac26494a /media/disk ext4 defaults,auto,users,rw,nofail <span class="m">0</span> <span class="m">0</span>
 </code></pre></div><p>保存退出，重启。</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    df -h
-    Filesystem      Size  Used Avail Use% Mounted on
-    /dev/root       366G  7.9G  340G   3% /
-    devtmpfs        1.6G     <span class="m">0</span>  1.6G   0% /dev
-    tmpfs           1.7G     <span class="m">0</span>  1.7G   0% /dev/shm
-    tmpfs           1.7G  9.5M  1.7G   1% /run
-    tmpfs           5.0M  4.0K  5.0M   1% /run/lock
-    tmpfs           1.7G     <span class="m">0</span>  1.7G   0% /sys/fs/cgroup
-    /dev/mmcblk0p1  253M   53M  200M  21% /boot
-    /dev/sda2       3.3T   89M  3.1T   1% /media/disk
-    tmpfs           348M     <span class="m">0</span>  348M   0% /run/user/1000
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$df</span> -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       366G  7.9G  340G   3% /
+devtmpfs        1.6G     <span class="m">0</span>  1.6G   0% /dev
+tmpfs           1.7G     <span class="m">0</span>  1.7G   0% /dev/shm
+tmpfs           1.7G  9.5M  1.7G   1% /run
+tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+tmpfs           1.7G     <span class="m">0</span>  1.7G   0% /sys/fs/cgroup
+/dev/mmcblk0p1  253M   53M  200M  21% /boot
+/dev/sda2       3.3T   89M  3.1T   1% /media/disk
+tmpfs           348M     <span class="m">0</span>  348M   0% /run/user/1000
 </code></pre></div><p>可见系统目录 / 已经是366G了，/dev/sda2也自动挂载到/media/disk了。</p>
 <p>若/media/disk目录无权限,则</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">sudo chown pi:pi /media/disk
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$sudo</span> chown pi:pi /media/disk
 </code></pre></div><h3 id="3参考">3.参考</h3>
 <p><a href="https://www.youtube.com/watch?v=FM9wuFLufyA">https://www.youtube.com/watch?v=FM9wuFLufyA</a><br>
 <a href="https://blog.hqcodeshop.fi/archives/273-GNU-Parted-Solving-the-dreaded-The-resulting-partition-is-not-properly-aligned-for-best-performance.html">https://blog.hqcodeshop.fi/archives/273-GNU-Parted-Solving-the-dreaded-The-resulting-partition-is-not-properly-aligned-for-best-performance.html</a></p>

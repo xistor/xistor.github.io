@@ -146,9 +146,9 @@
 刷完之后很强大，就用它来搞定了。Padavan固件版本为3.4.3.9-099_7-02-21，我们需要的内网穿透工具frp已经在Padavan中内置了，相比与花生壳，使用frp我们需要自己搭建服务器，所以需要一台有固定ip的vps。内置的frp版本太低，frpc和frps版本差太多是跑不起来的。所以后面我们需要把它替换掉，ok,开干！</p>
 <h3 id="1配置服务器端">1.配置服务器端</h3>
 <p>使用一键安装脚本安装，脚本默认安装最新版的frp：</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">wget --no-check-certificate https://raw.githubusercontent.com/clangcn/onekey-install-shell/master/frps/install-frps.sh -O ./install-frps.sh
-chmod <span class="m">700</span> ./install-frps.sh
-./install-frps.sh install
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">$wget</span> --no-check-certificate https://raw.githubusercontent.com/clangcn/onekey-install-shell/master/frps/install-frps.sh -O ./install-frps.sh
+<span class="nv">$chmod</span> <span class="m">700</span> ./install-frps.sh
+$./install-frps.sh install
 </code></pre></div><p>安装过程中会每步询问，一般一路敲确定就行，想要配置也可以注意下。
 下面是我几个主要配置，具体的可以去frp的<a href="https://github.com/fatedier/frp/blob/master/README.md">官方文档</a>查看</p>
 <pre><code>bind_port = 7000 #绑定的端口，服务器和客户端通信用
@@ -163,37 +163,37 @@ privilege_mode = true
 <h3 id="2配置客户端">2.配置客户端</h3>
 <p>Padavan中frpc的设置在扩展功能-&gt;花生壳内网版-&gt;frp内网穿透中，打开frp内网穿透和frpc客户端功能。自带的frpc版本比较低所以我在frp_script中将它替换成了0.20版本的（和我服务器上安装的版本一致），第一次我是手工替换的，但重启后就没了，因为下载的frpc保存在内存中，而且k2的flash太小又不能插u盘，只能每次开机去网上下载替换，所以我将0.20版本的frpc上传到了阿里云上，frp_script脚本会自动去下载替换。脚本内容如下：</p>
 <div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">
-    <span class="c1">#!/bin/sh</span>
-    <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s1">&#39;/opt/usr/sbin:/opt/usr/bin:/opt/sbin:/opt/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin&#39;</span>
-    <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/lib:/opt/lib
-    killall frpc frps
-    mkdir -p /tmp/frp
-    <span class="c1">#删除低版本的frpc</span>
-    rm /opt/bin/frpc
-    <span class="c1">#下载替换</span>
-    wget -P /opt/bin/ https://code.aliyun.com/xistor/frpc-for-download/raw/master/frpc <span class="o">&amp;&amp;</span> chmod <span class="m">777</span> /opt/bin/frpc
-    chmod <span class="m">777</span> /opt/bin/frpc
+<span class="c1">#!/bin/sh</span>
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s1">&#39;/opt/usr/sbin:/opt/usr/bin:/opt/sbin:/opt/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin&#39;</span>
+<span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/lib:/opt/lib
+killall frpc frps
+mkdir -p /tmp/frp
+<span class="c1">#删除低版本的frpc</span>
+rm /opt/bin/frpc
+<span class="c1">#下载替换</span>
+wget -P /opt/bin/ https://code.aliyun.com/xistor/frpc-for-download/raw/master/frpc <span class="o">&amp;&amp;</span> chmod <span class="m">777</span> /opt/bin/frpc
+chmod <span class="m">777</span> /opt/bin/frpc
 
-    <span class="c1">#启动frp功能后会运行以下脚本</span>
-    <span class="c1">#使用方法请查看论坛教程地址: http://www.right.com.cn/forum/thread-191839-1-1.html</span>
-    <span class="c1">#frp项目地址教程: https://github.com/fatedier/frp/blob/master/README_zh.md</span>
-    <span class="c1">#请自行修改 auth_token 用于对客户端连接进行身份验证</span>
-    <span class="c1"># IP查询： http://119.29.29.29/d?dn=github.com</span>
+<span class="c1">#启动frp功能后会运行以下脚本</span>
+<span class="c1">#使用方法请查看论坛教程地址: http://www.right.com.cn/forum/thread-191839-1-1.html</span>
+<span class="c1">#frp项目地址教程: https://github.com/fatedier/frp/blob/master/README_zh.md</span>
+<span class="c1">#请自行修改 auth_token 用于对客户端连接进行身份验证</span>
+<span class="c1"># IP查询： http://119.29.29.29/d?dn=github.com</span>
 
-    <span class="c1">#客户端配置：</span>
-    cat &gt; <span class="s2">&#34;/tmp/frp/myfrpc.ini&#34;</span> <span class="s">&lt;&lt;-\EOF
-</span><span class="s">    [common]
-</span><span class="s">    server_addr =  #你服务器的ip
-</span><span class="s">    server_port = 7000
-</span><span class="s">    token = ******  #和你服务器上配置的一致
-</span><span class="s">    #authentication_timeout=0
-</span><span class="s">    [ssh]
-</span><span class="s">    type = tcp
-</span><span class="s">    local_ip = 192.168.1.32 #内网中树梅派的地址
-</span><span class="s">    local_port = 22
-</span><span class="s">    remote_port = 6666      #映射到外网的端口
+<span class="c1">#客户端配置：</span>
+cat &gt; <span class="s2">&#34;/tmp/frp/myfrpc.ini&#34;</span> <span class="s">&lt;&lt;-\EOF
+</span><span class="s">[common]
+</span><span class="s">server_addr =  #你服务器的ip
+</span><span class="s">server_port = 7000
+</span><span class="s">token = ******  #和你服务器上配置的一致
+</span><span class="s">#authentication_timeout=0
+</span><span class="s">[ssh]
+</span><span class="s">type = tcp
+</span><span class="s">local_ip = 192.168.1.32 #内网中树梅派的地址
+</span><span class="s">local_port = 22
+</span><span class="s">remote_port = 6666      #映射到外网的端口
 </span><span class="s">
-</span><span class="s">    EOF</span>
+</span><span class="s">EOF</span>
 </code></pre></div><p>ok,然后我们就可以用ssh -oPort=6666 <a href="mailto:pi@x.x.x.x">pi@x.x.x.x</a> 在外网访问派了！</p>
 <p>其实Padanvn有个脚本会去下载frpc，只要把那个链接改成我们的0.20版本的下载链接就可以了，但是我只在/tmp目录下找到了sh_frp脚本里面有下载frpc的相关操作，但是这个脚本每次开机会被覆盖掉，应该还有其他源头，所以只好写在frp_script中了。</p>
 
