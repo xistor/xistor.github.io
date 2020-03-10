@@ -34,7 +34,7 @@
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link href="/dist/even.a8191bf8.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/rpi4-boot-from-usb/" />
 <meta property="article:published_time" content="2020-03-08T22:03:16+08:00" />
-<meta property="article:modified_time" content="2020-03-08T23:38:30+08:00" />
+<meta property="article:modified_time" content="2020-03-11T01:26:00+08:00" />
 <meta itemprop="name" content="树莓派4B USB硬盘启动">
 <meta itemprop="description" content="树莓派4B 官方还没有提供从USB启动的方案，不过可以使用之前更改cmdline.txt的方法实现。 我的树莓派已经使用SD卡跑了挺长时间了，不">
 <meta itemprop="datePublished" content="2020-03-08T22:03:16&#43;08:00" />
-<meta itemprop="dateModified" content="2020-03-08T23:38:30&#43;08:00" />
-<meta itemprop="wordCount" content="899">
+<meta itemprop="dateModified" content="2020-03-11T01:26:00&#43;08:00" />
+<meta itemprop="wordCount" content="862">
 
 
 
@@ -150,103 +150,43 @@
 系统运行速度上会有提升，感觉不错，当然据说可能会有莫名其妙的问题，用全新系统更稳一些，这个看个人选择了。</p>
 <h3 id="1硬盘分区格式化">1.硬盘分区格式化</h3>
 <p>将有系统的SD卡和要用到的硬盘都插到树莓派上。我的是一枚4T WD紫盘。<br>
-由于MBR不支持超过2T的硬盘，使用GPT分区</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">    sudo parted
+由于MBR不支持超过2T的硬盘，使用GPT分区, /dev/sda为此硬盘</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo parted
 
     Using /dev/sda
-    Welcome to GNU Parted! Type &#39;help&#39; to view a list of commands.、
+    Welcome to GNU Parted! Type <span class="s1">&#39;help&#39;</span> to view a list of commands.、
 
-    (parted) print
+    <span class="o">(</span>parted<span class="o">)</span> print
 
-    Model: External USB 3.0 (scsi)
+    Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
     Disk /dev/sda: 4001GB
-    Sector size (logical/physical): 512B/4096B
+    Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
     Partition Table: gpt
     Disk Flags: 
 
     Number  Start   End     Size    File system  Name  Flags
     
-    (parted) rm 1 # 若之前存在分区，且可以删掉，则使用rm [Number] 命令删除
+    <span class="o">(</span>parted<span class="o">)</span> rm <span class="m">1</span> <span class="c1"># 若之前存在分区，且可以删掉，则使用rm [Number] 命令删除</span>
 
-    (parted) mkpart LVM ext4 0% 10% # 作为树莓派系统分区
+    <span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 0% 10% <span class="c1"># 作为树莓派系统分区</span>
 
-    (parted) mkpart LVM ext4 10% 100%  # 留作其他
+    <span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 10% 100%  <span class="c1"># 留作其他</span>
 
-    (parted) print
+    <span class="o">(</span>parted<span class="o">)</span> print
 
-    Model: External USB 3.0 (scsi)
+    Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
     Disk /dev/sda: 4001GB
-    Sector size (logical/physical): 512B/4096B
+    Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
     Partition Table: gpt
     Disk Flags
 
-    1      1049kB  400GB   400GB   ext4         LVM
-    2      400GB   4001GB  3601GB  ext4         LVM
+    <span class="m">1</span>      1049kB  400GB   400GB   ext4         LVM
+    <span class="m">2</span>      400GB   4001GB  3601GB  ext4         LVM
 
-    (parted) quit
-</code></pre></td></tr></table>
-</div>
-</div><p>分给树莓派10%的空间作为系统分区，大概360G。parted 使用quit命令退出后分区即生效。</p>
+    <span class="o">(</span>parted<span class="o">)</span> quit
+</code></pre></div><p>分给树莓派10%的空间作为系统分区，大概360G。parted 使用quit命令退出后分区即生效。</p>
 <p>还需要格式化分区：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-Bash" data-lang="Bash">sudo mkfs.ext4 /dev/sda1
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">sudo mkfs.ext4 /dev/sda1
 
 sudo mkfs.ext4 /dev/sda2
 
@@ -263,95 +203,30 @@ Disk identifier: C492CEA3-9C21-40D4-AFB0-23F887E360E9
 Device         Start        End    Sectors   Size Type
 /dev/sda1       <span class="m">2048</span>  <span class="m">781404159</span>  <span class="m">781402112</span> 372.6G Linux filesystem
 /dev/sda2  <span class="m">781404160</span> <span class="m">7814035455</span> <span class="m">7032631296</span>   3.3T Linux filesystem
-</code></pre></td></tr></table>
-</div>
-</div><h3 id="2系统迁移">2.系统迁移</h3>
+</code></pre></div><h3 id="2系统迁移">2.系统迁移</h3>
 <p>挂载硬盘：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-Bash" data-lang="Bash">    sudo mkdir /media/sys
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo mkdir /media/sys
     sudo mount /dev/sda1 /media/sys
-</code></pre></td></tr></table>
-</div>
-</div><p>拷贝系统文件：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-Bash" data-lang="Bash">    sudo rsync -avx / /media/sys
-</code></pre></td></tr></table>
-</div>
-</div><p>查看sda1分区PARTUUID:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-Bash" data-lang="Bash">    blkid
+</code></pre></div><p>拷贝系统文件：</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo rsync -avx / /media/sys
+</code></pre></div><p>查看sda1分区PARTUUID:</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    blkid
 
     /dev/sda1: <span class="nv">UUID</span><span class="o">=</span><span class="s2">&#34;ec074432-b020-44a7-8cb2-ce84d45296ab&#34;</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">&#34;ext4&#34;</span> <span class="nv">PARTLABEL</span><span class="o">=</span><span class="s2">&#34;LVM&#34;</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">&#34;18deaf7e-9704-44d2-9e63-a2c60358b26b&#34;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>记下PARTUUID。</p>
+</code></pre></div><p>记下PARTUUID。</p>
 <p>修改cmdline.txt文件</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">    sudo nano /boot/cmdline.txt
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo nano /boot/cmdline.txt
 
-    root=PARTUUID=18deaf7e-9704-44d2-9e63-a2c60358b26b # 此处修改为sda1的PARTUUID
-</code></pre></td></tr></table>
-</div>
-</div><p>保存退出。重启。</p>
+    <span class="nv">root</span><span class="o">=</span><span class="nv">PARTUUID</span><span class="o">=</span>18deaf7e-9704-44d2-9e63-a2c60358b26b <span class="c1"># 此处修改为sda1的PARTUUID</span>
+</code></pre></div><p>保存退出。重启。</p>
 <p>挂载sda2分区，4T硬盘还有另外一个分区需要开机挂载。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-Bash" data-lang="Bash">    sudo mkdir /media/disk
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    sudo mkdir /media/disk
     sudo nano /etc/fstab
-</code></pre></td></tr></table>
-</div>
-</div><p>最后新加一行<br>
+</code></pre></div><p>最后新加一行<br>
 UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导致启动不起来。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-Bash" data-lang="Bash"><span class="nv">UUID</span><span class="o">=</span>fdddd773-1ce7-430f-b4ff-3df3ac26494a /media/disk ext4 defaults,auto,users,rw,nofail <span class="m">0</span> <span class="m">0</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>保存退出，重启。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-Bash" data-lang="Bash">    df -h
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">UUID</span><span class="o">=</span>fdddd773-1ce7-430f-b4ff-3df3ac26494a /media/disk ext4 defaults,auto,users,rw,nofail <span class="m">0</span> <span class="m">0</span>
+</code></pre></div><p>保存退出，重启。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">    df -h
     Filesystem      Size  Used Avail Use% Mounted on
     /dev/root       366G  7.9G  340G   3% /
     devtmpfs        1.6G     <span class="m">0</span>  1.6G   0% /dev
@@ -362,10 +237,10 @@ UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导
     /dev/mmcblk0p1  253M   53M  200M  21% /boot
     /dev/sda2       3.3T   89M  3.1T   1% /media/disk
     tmpfs           348M     <span class="m">0</span>  348M   0% /run/user/1000
-</code></pre></td></tr></table>
-</div>
-</div><p>可见系统目录 / 已经是366G了，/dev/sda2也自动挂载到/media/disk了。</p>
-<h3 id="3参考">3.参考</h3>
+</code></pre></div><p>可见系统目录 / 已经是366G了，/dev/sda2也自动挂载到/media/disk了。</p>
+<p>若/media/disk目录无权限,则</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">sudo chown pi:pi /media/disk
+</code></pre></div><h3 id="3参考">3.参考</h3>
 <p><a href="https://www.youtube.com/watch?v=FM9wuFLufyA">https://www.youtube.com/watch?v=FM9wuFLufyA</a><br>
 <a href="https://blog.hqcodeshop.fi/archives/273-GNU-Parted-Solving-the-dreaded-The-resulting-partition-is-not-properly-aligned-for-best-performance.html">https://blog.hqcodeshop.fi/archives/273-GNU-Parted-Solving-the-dreaded-The-resulting-partition-is-not-properly-aligned-for-best-performance.html</a></p>
 
@@ -379,8 +254,8 @@ UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-03-08
-        <a href="/commit/4c94ac5016e6fdc9413cdc70b286e66d3c635dcf" title="add new note">(4c94ac5)</a>
+        2020-03-11
+        <a href="/commit/6fe5d307d9eda16ae46ad33b7b4c66570ff8ec85" title="change style">(6fe5d30)</a>
     </span>
   </p>
   
@@ -426,7 +301,6 @@ UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导
     <footer id="footer" class="footer">
       <div class="social-links">
       <a href="mailto:xueluqiang@gmail.com" class="iconfont icon-email" title="email"></a>
-      <a href="https://twitter.com/john__xue" class="iconfont icon-twitter" title="twitter"></a>
       <a href="https://github.com/xistor" class="iconfont icon-github" title="github"></a>
   <a href="https://xistor.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
 </div>
@@ -463,12 +337,19 @@ UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导
       <i class="iconfont icon-up"></i>
     </div>
   </div>
-  
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
 <script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 
 
 
