@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.66.0 with theme even" />
+<meta name="generator" content="Hugo 0.67.0 with theme even" />
 
 
 <link rel="canonical" href="https://xistor.github.io/post/rpi4-boot-from-usb/" />
@@ -33,8 +33,8 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
-
-<link href="/dist/even.a8191bf8.min.css" rel="stylesheet">
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
@@ -124,7 +124,7 @@
         <div class="post-category">
             <a href="/categories/raspberrypi/"> raspberrypi </a>
             </div>
-        
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
       </div>
     </header>
 
@@ -188,39 +188,39 @@
 </span><span class="lnt">33
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">    sudo parted
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">    sudo parted
 
     Using /dev/sda
-    Welcome to GNU Parted! Type <span class="s1">&#39;help&#39;</span> to view a list of commands.、
+    Welcome to GNU Parted! Type &#39;help&#39; to view a list of commands.、
 
-    <span class="o">(</span>parted<span class="o">)</span> print
+    (parted) print
 
-    Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
+    Model: External USB 3.0 (scsi)
     Disk /dev/sda: 4001GB
-    Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
+    Sector size (logical/physical): 512B/4096B
     Partition Table: gpt
     Disk Flags: 
 
     Number  Start   End     Size    File system  Name  Flags
     
-    <span class="o">(</span>parted<span class="o">)</span> rm <span class="m">1</span> <span class="c1"># 若之前存在分区，且可以删掉，则使用rm [Number] 命令删除</span>
+    (parted) rm 1 # 若之前存在分区，且可以删掉，则使用rm [Number] 命令删除
 
-    <span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 0% 10% <span class="c1"># 作为树莓派系统分区</span>
+    (parted) mkpart LVM ext4 0% 10% # 作为树莓派系统分区
 
-    <span class="o">(</span>parted<span class="o">)</span> mkpart LVM ext4 10% 100%  <span class="c1"># 留作其他</span>
+    (parted) mkpart LVM ext4 10% 100%  # 留作其他
 
-    <span class="o">(</span>parted<span class="o">)</span> print
+    (parted) print
 
-    Model: External USB 3.0 <span class="o">(</span>scsi<span class="o">)</span>
+    Model: External USB 3.0 (scsi)
     Disk /dev/sda: 4001GB
-    Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512B/4096B
+    Sector size (logical/physical): 512B/4096B
     Partition Table: gpt
     Disk Flags
 
-    <span class="m">1</span>      1049kB  400GB   400GB   ext4         LVM
-    <span class="m">2</span>      400GB   4001GB  3601GB  ext4         LVM
+    1      1049kB  400GB   400GB   ext4         LVM
+    2      400GB   4001GB  3601GB  ext4         LVM
 
-    <span class="o">(</span>parted<span class="o">)</span> quit
+    (parted) quit
 </code></pre></td></tr></table>
 </div>
 </div><p>分给树莓派10%的空间作为系统分区，大概360G。parted 使用quit命令退出后分区即生效。</p>
@@ -246,7 +246,7 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">sudo mkfs.ext4 /dev/sda1
+<pre class="chroma"><code class="language-Bash" data-lang="Bash">sudo mkfs.ext4 /dev/sda1
 
 sudo mkfs.ext4 /dev/sda2
 
@@ -273,7 +273,7 @@ Device         Start        End    Sectors   Size Type
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">    sudo mkdir /media/sys
+<pre class="chroma"><code class="language-Bash" data-lang="Bash">    sudo mkdir /media/sys
     sudo mount /dev/sda1 /media/sys
 </code></pre></td></tr></table>
 </div>
@@ -283,7 +283,7 @@ Device         Start        End    Sectors   Size Type
 <pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">    sudo rsync -avx / /media/sys
+<pre class="chroma"><code class="language-Bash" data-lang="Bash">    sudo rsync -avx / /media/sys
 </code></pre></td></tr></table>
 </div>
 </div><p>查看sda1分区PARTUUID:</p>
@@ -294,7 +294,7 @@ Device         Start        End    Sectors   Size Type
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">    blkid
+<pre class="chroma"><code class="language-Bash" data-lang="Bash">    blkid
 
     /dev/sda1: <span class="nv">UUID</span><span class="o">=</span><span class="s2">&#34;ec074432-b020-44a7-8cb2-ce84d45296ab&#34;</span> <span class="nv">TYPE</span><span class="o">=</span><span class="s2">&#34;ext4&#34;</span> <span class="nv">PARTLABEL</span><span class="o">=</span><span class="s2">&#34;LVM&#34;</span> <span class="nv">PARTUUID</span><span class="o">=</span><span class="s2">&#34;18deaf7e-9704-44d2-9e63-a2c60358b26b&#34;</span>
 </code></pre></td></tr></table>
@@ -308,9 +308,9 @@ Device         Start        End    Sectors   Size Type
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">    sudo nano /boot/cmdline.txt
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">    sudo nano /boot/cmdline.txt
 
-    <span class="nv">root</span><span class="o">=</span><span class="nv">PARTUUID</span><span class="o">=</span>18deaf7e-9704-44d2-9e63-a2c60358b26b <span class="c1"># 此处修改为sda1的PARTUUID</span>
+    root=PARTUUID=18deaf7e-9704-44d2-9e63-a2c60358b26b # 此处修改为sda1的PARTUUID
 </code></pre></td></tr></table>
 </div>
 </div><p>保存退出。重启。</p>
@@ -321,7 +321,7 @@ Device         Start        End    Sectors   Size Type
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">    sudo mkdir /media/disk
+<pre class="chroma"><code class="language-Bash" data-lang="Bash">    sudo mkdir /media/disk
     sudo nano /etc/fstab
 </code></pre></td></tr></table>
 </div>
@@ -332,7 +332,7 @@ UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导
 <pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">UUID</span><span class="o">=</span>fdddd773-1ce7-430f-b4ff-3df3ac26494a /media/disk ext4 defaults,auto,users,rw,nofail <span class="m">0</span> <span class="m">0</span>
+<pre class="chroma"><code class="language-Bash" data-lang="Bash"><span class="nv">UUID</span><span class="o">=</span>fdddd773-1ce7-430f-b4ff-3df3ac26494a /media/disk ext4 defaults,auto,users,rw,nofail <span class="m">0</span> <span class="m">0</span>
 </code></pre></td></tr></table>
 </div>
 </div><p>保存退出，重启。</p>
@@ -351,7 +351,7 @@ UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-bash" data-lang="bash">    df -h
+<pre class="chroma"><code class="language-Bash" data-lang="Bash">    df -h
     Filesystem      Size  Used Avail Use% Mounted on
     /dev/root       366G  7.9G  340G   3% /
     devtmpfs        1.6G     <span class="m">0</span>  1.6G   0% /dev
@@ -441,7 +441,11 @@ UUID为sda2的UUID, blkid可看， nofail最好加上，否则挂载失败会导
     <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
   </span>
 
-  
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
 
   <span class="copyright-year">
     &copy; 
