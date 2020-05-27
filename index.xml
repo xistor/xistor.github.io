@@ -6,10 +6,19 @@
     <description>Recent content on xistor&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 08 Mar 2020 22:03:16 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 27 May 2020 23:03:16 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Android 使用AIDL添加 native service</title>
+      <link>https://xistor.github.io/post/add-native-service/</link>
+      <pubDate>Wed, 27 May 2020 23:03:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/add-native-service/</guid>
+      <description>1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个se</description>
+    </item>
     
     <item>
       <title>树莓派4B USB硬盘启动</title>
@@ -27,15 +36,6 @@
       
       <guid>https://xistor.github.io/post/k2-frp-setting/</guid>
       <description>树梅派跑起来后，肯定是能够随时随地访问才够方便，但是家中的宽带没有固定ip,而且pi又躲在路由器后面，因此想要访问的话必须曲线一下，有好多方</description>
-    </item>
-    
-    <item>
-      <title>Android 使用AIDL添加 native service</title>
-      <link>https://xistor.github.io/post/add-native-service/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://xistor.github.io/post/add-native-service/</guid>
-      <description>1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个se</description>
     </item>
     
   </channel>
