@@ -17,7 +17,7 @@
       <pubDate>Wed, 27 May 2020 23:03:16 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/add-native-service/</guid>
-      <description>1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个se</description>
+      <description>1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s</description>
     </item>
     
     <item>
