@@ -12,6 +12,15 @@
     
     
     <item>
+      <title>Android 使用AIDL添加 native service</title>
+      <link>https://xistor.github.io/post/add-native-service/</link>
+      <pubDate>Sun, 08 Mar 2020 22:03:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/add-native-service/</guid>
+      <description>下载 AOSP源码，配置好编译环境。 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个service</description>
+    </item>
+    
+    <item>
       <title>树莓派4B USB硬盘启动</title>
       <link>https://xistor.github.io/post/rpi4-boot-from-usb/</link>
       <pubDate>Sun, 08 Mar 2020 22:03:16 +0800</pubDate>

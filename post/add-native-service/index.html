@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Android 使用AIDL添加 native service - xistor&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="xistor" /><meta name="description" content="下载 AOSP源码，配置好编译环境。 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个service" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.67.0 with theme even" />
+
+
+<link rel="canonical" href="https://xistor.github.io/post/add-native-service/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.a8191bf8.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Android 使用AIDL添加 native service" />
+<meta property="og:description" content="下载 AOSP源码，配置好编译环境。 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个service" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xistor.github.io/post/add-native-service/" />
+<meta property="article:published_time" content="2020-03-08T22:03:16+08:00" />
+<meta property="article:modified_time" content="2020-03-08T22:03:16+08:00" />
+<meta itemprop="name" content="Android 使用AIDL添加 native service">
+<meta itemprop="description" content="下载 AOSP源码，配置好编译环境。 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个service">
+<meta itemprop="datePublished" content="2020-03-08T22:03:16&#43;08:00" />
+<meta itemprop="dateModified" content="2020-03-08T22:03:16&#43;08:00" />
+<meta itemprop="wordCount" content="1139">
+
+
+
+<meta itemprop="keywords" content="android," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Android 使用AIDL添加 native service"/>
+<meta name="twitter:description" content="下载 AOSP源码，配置好编译环境。 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个service"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Xistor&#39;s Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Xistor&#39;s Blog</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Android 使用AIDL添加 native service</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-08 </span>
+        <div class="post-category">
+            <a href="/categories/android/"> android </a>
+            </div>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+    <div class="post-content">
+      <ol>
+<li>
+<p>下载 AOSP源码，配置好编译环境。</p>
+</li>
+<li>
+<p>device下新建一个sample目录保存我们即将写的native服务
+我的目录结构如下，这个service将在sample文件夹中实现。
+device
+|
+| - x
+|-service
+|-sample</p>
+</li>
+<li>
+<p>编写AIDL文件</p>
+<p>新建AIDL文件aidl,声明接口，接口名称要与文件名一致。 in/out来表示是输入/输出参数，默认是in，out参数在最终生成的从C++源文件会以指针实现。这里定义了一个DoSomething接口，有两个参数count和一个string数组，作用是返回count个数的&quot;Hello&quot;在ouput数组中。</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">sample</span><span class="p">;</span>
+
+<span class="kd">interface</span> <span class="nx">ISample</span> <span class="p">{</span>
+<span class="nx">void</span> <span class="nf">DoSomething</span><span class="p">(</span><span class="kt">int</span> <span class="nx">count</span><span class="p">,</span> <span class="nx">out</span> <span class="nx">List</span><span class="p">&lt;</span><span class="nx">String</span><span class="p">&gt;</span> <span class="nx">output</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div><p>新建一个Android.mk文件,编译生成对应的lib库以及头文件。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">LOCAL_PATH:= $(call my-dir)
+include $(CLEAR_VARS)
+   
+LOCAL_SRC_FILES:=\
+            sample/ISample.aidl \
+   
+LOCAL_MODULE_TAGS := optional
+   
+LOCAL_C_INCLUDES :=             \
+            $(TOP)/frameworks/native/include \
+            $(TOP)/system/core/base/include \
+
+LOCAL_SHARED_LIBRARIES := \
+            libbinder \
+            libcutils \
+            liblog \
+            libutils \
+
+LOCAL_MODULE:=libsample-aidl
+
+   
+include $(BUILD_SHARED_LIBRARY)
+</code></pre></div><p>编译会生成BnSample.h,BpSample.h和ISample.h三个头文件，在out/target/product/generic_x86_64/obj/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated 目录下。同级的src目录下还有对应的cpp源文件ISample.cpp,AIDL帮我们实现好了这些格式化的文件，自己手写实现也是可以的。</p>
+</li>
+<li>
+<p>实现 sampleService
+sampleService.h, sampleService继承自BnSample。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">#ifndef SAMPLE_SERVICE_H
+#define SAMPLE_SERVICE_H
+
+#include&lt;BnSample.h&gt;
+#include &lt;vector&gt;
+
+namespace android {
+
+class sampleService : public sample::BnSample {
+public:
+
+    sampleService();
+    ~sampleService();
+    virtual ::android::binder::Status DoSomething(int32_t count, ::std::vector&lt;::android::String16&gt;* output);
+}; 
+
+}
+
+#endif  // SAMPLE_SERVICE_H
+
+</code></pre></div><p>sampleService.cpp，在此实现DoSomething的逻辑，这里就简单的把count个&quot;Hello&quot;塞到vector中返回。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">#include&#34;sampleService.h&#34;
+
+using namespace android;
+
+sampleService::sampleService() {
+
+}
+
+sampleService::~sampleService() {
+       
+}
+
+::android::binder::Status sampleService::DoSomething(int32_t count, ::std::vector&lt;::android::String16&gt;* output) {
+
+    for(int i = 0; i &lt; count; i++) {
+        output-&gt;push_back(String16(&#34;Hello&#34;));
+    }
+
+    return ::android::binder::Status::ok(); 
+}
+</code></pre></div></li>
+</ol>
+<p>service的Android.mk 如下：</p>
+<pre><code>```
+LOCAL_PATH:= $(call my-dir)
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES:=\
+            sampleService.cpp \
+
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_C_INCLUDES :=             \
+            $(TOP)/frameworks/native/include \
+            $(TOP)/system/core/base/include \
+            $(TOP)/device/x/eva0/framerworks/service/sample/include \
+            $(TARGET_OUT_INTERMEDIATES)/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
+
+LOCAL_SHARED_LIBRARIES := \
+            libbinder \
+            libcutils \
+            liblog \
+            libutils \
+            libsample-aidl \
+
+LOCAL_MODULE:=libsampleservice
+
+include $(BUILD_SHARED_LIBRARY)
+
+```
+
+实现一个进程
+然后我们需要一个进程来承载我们的service，在main函数中调用serviceManager的addService方法将我们的service注册进去，以便客户端可以找到。
+
+```
+#include &lt;sys/types.h&gt;
+#include &lt;binder/IPCThreadState.h&gt;
+#include &lt;binder/ProcessState.h&gt;
+#include &lt;binder/IServiceManager.h&gt;
+#include &lt;cutils/log.h&gt;
+#include &quot;sampleService.h&quot;
+
+using namespace android;
+
+int main(int argc, char** argv) {
+
+    sp&lt;ProcessState&gt; proc(ProcessState::self());
+
+    sp&lt;IServiceManager&gt; sm = defaultServiceManager();
+
+    ALOGI(&quot;ServiceManager: %p&quot;, sm.get());
+
+    sm-&gt;addService(String16(&quot;sampleService&quot;), new sampleService());
+
+    ProcessState::self()-&gt;startThreadPool();
+
+    IPCThreadState::self()-&gt;joinThreadPool();
+
+    return 0;
+
+}
+```
+</code></pre>
+<ol start="6">
+<li>
+<p>实现客户端</p>
+<p>客户端就是简单的调用下DoSomething接口,count值传入3，并把返回的vector打印出来。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">#include &lt;binder/IServiceManager.h&gt;
+#include &lt;binder/Parcel.h&gt;
+#include &lt;utils/Errors.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;String16.h&gt;
+#include &lt;String8.h&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &#34;sampleService.h&#34;
+
+using namespace android;
+
+int main () {
+
+    sp&lt;sample::ISample&gt; sample_srv = interface_cast&lt;sample::ISample&gt;(defaultServiceManager()-&gt;getService(String16(&#34;sampleService&#34;)));
+
+    std::vector&lt;String16&gt; hellos;
+    sample_srv-&gt;DoSomething(3, &amp;hellos);
+
+    for (String16 s:hellos ) {
+        std::cout &lt;&lt; String8(s.string()).string() &lt;&lt; std::endl;
+    }
+
+    return 0;
+}
+
+</code></pre></div><p>mk文件</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">LOCAL_PATH:= $(call my-dir)
+include $(CLEAR_VARS)
+   
+LOCAL_SRC_FILES:=\
+            sample_test.cpp \
+   
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_C_INCLUDES :=             \
+            $(TOP)/frameworks/native/include \
+            $(TOP)/system/core/base/include \
+            $(TOP)/device/x/service/sample/include \
+            $(TOP)/system/core/include/utils \
+            $(TOP)/device/x/eva0/framerworks/service/sample/include \
+            $(TARGET_OUT_INTERMEDIATES)/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
+
+LOCAL_SHARED_LIBRARIES := \
+            libbinder \
+            libcutils \
+            liblog \
+            libutils \
+            libsample-aidl \
+            libsampleservice \
+
+LOCAL_MODULE:= sampletest
+   
+include $(BUILD_EXECUTABLE)	
+</code></pre></div></li>
+<li>
+<p>测试
+lunch之后输入emulator启动模拟器，将sampleService和Sampletest push进模拟器。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">sampleService &amp;
+sampletest
+</code></pre></div><p>输出三行Hello就代表成功了。</p>
+</li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">xistor</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-03-08
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/android/">android</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/rpi4-boot-from-usb/">
+            <span class="next-text nav-default">树莓派4B USB硬盘启动</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'xistor';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:xueluqiang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/xistor" class="iconfont icon-github" title="github"></a>
+  <a href="https://xistor.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2018 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">xistor</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

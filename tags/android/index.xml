@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>android on xistor&#39;s blog</title>
+    <link>https://xistor.github.io/tags/android/</link>
+    <description>Recent content in android on xistor&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 08 Mar 2020 22:03:16 +0800</lastBuildDate>
+    
+	<atom:link href="https://xistor.github.io/tags/android/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Android 使用AIDL添加 native service</title>
+      <link>https://xistor.github.io/post/add-native-service/</link>
+      <pubDate>Sun, 08 Mar 2020 22:03:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/add-native-service/</guid>
+      <description>下载 AOSP源码，配置好编译环境。 device下新建一个sample目录保存我们即将写的native服务 我的目录结构如下，这个service</description>
+    </item>
+    
+  </channel>
+</rss>
