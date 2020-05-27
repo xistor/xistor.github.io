@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/add-native-service/" />
 <meta property="article:published_time" content="2020-05-27T23:03:16+08:00" />
-<meta property="article:modified_time" content="2020-05-27T23:33:39+08:00" />
+<meta property="article:modified_time" content="2020-05-27T23:35:56+08:00" />
 <meta itemprop="name" content="Android 使用AIDL添加 native service">
 <meta itemprop="description" content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s">
 <meta itemprop="datePublished" content="2020-05-27T23:03:16&#43;08:00" />
-<meta itemprop="dateModified" content="2020-05-27T23:33:39&#43;08:00" />
-<meta itemprop="wordCount" content="1310">
+<meta itemprop="dateModified" content="2020-05-27T23:35:56&#43;08:00" />
+<meta itemprop="wordCount" content="1302">
 
 
 
@@ -218,7 +218,7 @@
 
 <span class="cp">#endif  </span><span class="c1">// SAMPLE_SERVICE_H
 </span><span class="c1"></span>
-</code></pre></div><p>sampleService.cpp，在此实现DoSomething的逻辑，这里就简单的把count个&quot;Hello&quot;塞到vector中返回。</p>
+</code></pre></div><p>sampleService.cpp，在此实现DoSomething的逻辑，这里就简单的把n个&quot;Hello&quot;塞到vector中返回。</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span><span class="cpf">&#34;sampleService.h&#34;</span><span class="cp">
 </span><span class="cp"></span>
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">android</span><span class="p">;</span>
@@ -320,7 +320,7 @@
 <span class="err">include</span> <span class="k">$(</span><span class="nv">BUILD_EXECUTABLE</span><span class="k">)</span>	
 	
 </code></pre></div><h3 id="6-实现客户端">6. 实现客户端</h3>
-<p>客户端就是通过serviceManager取得sampleService的指针后，简单的调用下DoSomething接口,count值传入3，并把返回的vector打印出来。</p>
+<p>客户端就是通过serviceManager取得sampleService的指针后，简单的调用下DoSomething接口, n值传入3，并把返回的vector打印出来。</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;binder/IServiceManager.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;binder/Parcel.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;utils/Errors.h&gt;</span><span class="cp">
@@ -394,7 +394,7 @@ sampletest
     <span class="item-title">LastMod</span>
     <span class="item-content">
         2020-05-27
-        <a href="/commit/dcb306a3cb15209acd4281d161462bb7a8bfd94a" title="mod post:aidl-native-service">(dcb306a)</a>
+        <a href="/commit/616d3c36a97cffd441137729ddaa03b9660395e0" title="mod post:aidl-native-service">(616d3c3)</a>
     </span>
   </p>
   
