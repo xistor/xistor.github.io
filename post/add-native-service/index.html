@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/add-native-service/" />
 <meta property="article:published_time" content="2020-05-27T23:03:16+08:00" />
-<meta property="article:modified_time" content="2020-05-27T23:26:03+08:00" />
+<meta property="article:modified_time" content="2020-05-27T23:33:39+08:00" />
 <meta itemprop="name" content="Android 使用AIDL添加 native service">
 <meta itemprop="description" content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s">
 <meta itemprop="datePublished" content="2020-05-27T23:03:16&#43;08:00" />
-<meta itemprop="dateModified" content="2020-05-27T23:26:03&#43;08:00" />
-<meta itemprop="wordCount" content="1302">
+<meta itemprop="dateModified" content="2020-05-27T23:33:39&#43;08:00" />
+<meta itemprop="wordCount" content="1310">
 
 
 
@@ -166,7 +166,7 @@
                     Android.mk
 </code></pre>
 <h3 id="3-编写aidl文件">3. 编写AIDL文件</h3>
-<p>新建AIDL文件aidl,声明接口，接口名称要与文件名一致。 in/out来表示是输入/输出参数，默认是in，out参数在最终生成的从C++源文件会以指针实现。这里定义了一个DoSomething接口，有两个参数:n和一个内含string的vector，功能是返回n个&quot;Hello&quot;在ouput数组中。</p>
+<p>新建AIDL文件ISample.aidl,声明接口，接口名称要与文件名一致。 in/out来表示是输入/输出参数，默认是in，out参数在最终生成的从C++源文件会以指针实现。这里定义了一个DoSomething接口，有两个参数:n和一个内含string的vector，功能是返回n个&quot;Hello&quot;在ouput数组中。</p>
 <div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">package</span> <span class="nx">sample</span><span class="p">;</span>
 
 <span class="kd">interface</span> <span class="nx">ISample</span> <span class="p">{</span>
@@ -394,7 +394,7 @@ sampletest
     <span class="item-title">LastMod</span>
     <span class="item-content">
         2020-05-27
-        <a href="/commit/7705ab29f72688f1d9def37e2a9b2571b68ec1b0" title="mod time">(7705ab2)</a>
+        <a href="/commit/dcb306a3cb15209acd4281d161462bb7a8bfd94a" title="mod post:aidl-native-service">(dcb306a)</a>
     </span>
   </p>
   
