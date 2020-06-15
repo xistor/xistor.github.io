@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="简要记录整理下。 1. 内核 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存" />
+<meta name="author" content="xistor" /><meta name="description" content="简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有" />
 
 
 
@@ -39,22 +39,22 @@
 
 
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记1.基本概念" />
-<meta property="og:description" content="简要记录整理下。 1. 内核 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存" />
+<meta property="og:description" content="简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s1/" />
 <meta property="article:published_time" content="2020-05-28T22:01:00+08:00" />
 <meta property="article:modified_time" content="2020-05-28T22:01:00+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记1.基本概念">
-<meta itemprop="description" content="简要记录整理下。 1. 内核 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存">
+<meta itemprop="description" content="简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有">
 <meta itemprop="datePublished" content="2020-05-28T22:01:00&#43;08:00" />
 <meta itemprop="dateModified" content="2020-05-28T22:01:00&#43;08:00" />
-<meta itemprop="wordCount" content="2642">
+<meta itemprop="wordCount" content="2463">
 
 
 
 <meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux/Unix系统编程手册-笔记1.基本概念"/>
-<meta name="twitter:description" content="简要记录整理下。 1. 内核 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存"/>
+<meta name="twitter:description" content="简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -135,7 +135,10 @@
   <ul>
     <li>
       <ul>
-        <li><a href="#1-内核">1. 内核</a></li>
+        <li><a href="#内核的职责">内核的职责</a></li>
+        <li><a href="#内核态和用户态">内核态和用户态</a></li>
+        <li><a href="#用户和组">用户和组</a></li>
+        <li><a href="#进程">进程</a></li>
       </ul>
     </li>
   </ul>
@@ -144,8 +147,7 @@
 </div>
     <div class="post-content">
       <p>简要记录整理下。</p>
-<h3 id="1-内核">1. 内核</h3>
-<h4 id="内核的职责">内核的职责</h4>
+<h3 id="内核的职责">内核的职责</h3>
 <ul>
 <li>进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。</li>
 <li>内存管理：物理内存属于有限资源，需要内核公平、高效的在进程间共享这一资源。Linux也采用了虚拟内存管理机制，有两方面优势：
@@ -160,17 +162,17 @@
 <li>联网</li>
 <li>提供系统调用应用编程接口（API）：进程可通过系统调用请求内核去执行各种任务。</li>
 </ul>
-<h4 id="内核态和用户态">内核态和用户态</h4>
+<h3 id="内核态和用户态">内核态和用户态</h3>
 <p>之前一直对这两个名词不太明白，如书中所述，这是须由硬件支持的功能。执行硬件指令可以在内核态和用户态之间切换，只有在内核态才能执行一些特定操作。这里引入了CPU Rings术语，Ring通常是由硬件强制的，Intel cpu支持4个Ring级别。Linux只用了其中两个：Ring0 拥有最高权限，用户进程跑在Ring3。Ring1和2并没有在Linux中使用。若一个用户进程想要执行更高权限操作，它必须将它的意图从Ring3传到Ring0,Ring0层即内核对它的参数进行检查，然后执行一系列操作，即进行了一次系统调用。
 参考：https://stackoverflow.com/questions/6710040/cpu-privilege-rings-why-rings-1-and-2-arent-used
 <a href="https://zh.wikipedia.org/zh-hans/%E5%88%86%E7%BA%A7%E4%BF%9D%E6%8A%A4%E5%9F%9F">https://zh.wikipedia.org/zh-hans/%E5%88%86%E7%BA%A7%E4%BF%9D%E6%8A%A4%E5%9F%9F</a></p>
-<h4 id="用户和组">用户和组</h4>
+<h3 id="用户和组">用户和组</h3>
 <p>系统密码文件/etc/passwd为每个用户都定义有一行记录：</p>
-<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">root❌0:0:root:/root:/bin/bash
-daemon❌1:1:daemon:/usr/sbin:/usr/sbin/nologin
-bin❌2:2:bin:/bin:/usr/sbin/nologin
-sys❌3:3:sys:/dev:/usr/sbin/nologin
-...
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+
 </code></pre></div><p>冒号分割的几项分别是</p>
 <ul>
 <li>登录名</li>
@@ -182,11 +184,11 @@ sys❌3:3:sys:/dev:/usr/sbin/nologin
 <li>登录shell:执行以解释用户命令的程序名称</li>
 </ul>
 <p>一个用户可以同时属于多个组，每个用户组都对应着/etc/group中的一行记录.</p>
-<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">root❌0:
-daemon❌1:
-bin❌2:
-sys❌3:
-adm❌4:syslog,x
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">root:x:0:
+daemon:x:1:
+bin:x:2:
+sys:x:3:
+adm:x:4:syslog,x
 
 </code></pre></div><p>每一项分别为：</p>
 <ul>
@@ -195,7 +197,7 @@ adm❌4:syslog,x
 <li>组ID</li>
 <li>用户列表：隶属于改组的用户登录名列表</li>
 </ul>
-<h4 id="进程">进程</h4>
+<h3 id="进程">进程</h3>
 <p>进程是正在执行的程序实例，执行程序时，内核会把程序载入虚拟内核，为程序变量分配空间，建立内核记账数据结构，以记录与进程有关的各种信息如进程ID、用户ID、组ID以及终止状态。</p>
 <p>进程的内存布局</p>
 <ul>

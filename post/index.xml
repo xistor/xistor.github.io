@@ -17,7 +17,7 @@
       <pubDate>Thu, 28 May 2020 22:01:00 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s1/</guid>
-      <description>简要记录整理下。 1. 内核 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存</description>
+      <description>简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有</description>
     </item>
     
     <item>
