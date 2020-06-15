@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on xistor&#39;s blog</title>
+    <link>https://xistor.github.io/categories/linux/</link>
+    <description>Recent content in Linux on xistor&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 28 May 2020 22:01:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://xistor.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Unix系统编程手册笔记-1.基本概念</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s1/</link>
+      <pubDate>Thu, 28 May 2020 22:01:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s1/</guid>
+      <description>1. 内核的职责 -进程调度： -内存管理：物理内存属于有限资源，需要内核公平、高效的在进程间共享这一资源。Linux也采用了虚拟内存管理机制，有两</description>
+    </item>
+    
+  </channel>
+</rss>
