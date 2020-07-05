@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Linux/Unix系统编程手册-笔记3.文件I/O - xistor&#39;s blog</title>
+  <title>Linux/Unix系统编程手册-笔记3.通用文件I/O - xistor&#39;s blog</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -38,22 +38,22 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记3.文件I/O" />
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记3.通用文件I/O" />
 <meta property="og:description" content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s3/" />
 <meta property="article:published_time" content="2020-07-05T16:01:00+08:00" />
-<meta property="article:modified_time" content="2020-06-24T12:23:57+08:00" />
-<meta itemprop="name" content="Linux/Unix系统编程手册-笔记3.文件I/O">
+<meta property="article:modified_time" content="2020-07-05T18:05:07+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记3.通用文件I/O">
 <meta itemprop="description" content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO">
 <meta itemprop="datePublished" content="2020-07-05T16:01:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-06-24T12:23:57&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-05T18:05:07&#43;08:00" />
 <meta itemprop="wordCount" content="846">
 
 
 
 <meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记3.文件I/O"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记3.通用文件I/O"/>
 <meta name="twitter:description" content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO"/>
 
 <!--[if lte IE 9]>
@@ -117,7 +117,7 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">Linux/Unix系统编程手册-笔记3.文件I/O</h1>
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记3.通用文件I/O</h1>
 
       <div class="post-meta">
         <span class="post-time"> 2020-07-05 </span>
@@ -210,8 +210,8 @@ int ioctl(int fd, int request, .../* argp */);
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-06-24
-        <a href="/commit/543d53fbdd4afae6f9307df1b767fa51504a5ffd" title="new post">(543d53f)</a>
+        2020-07-05
+        <a href="/commit/44ef7cc464d2fa1af3d1c3a3383febb660a38bc2" title="new post">(44ef7cc)</a>
     </span>
   </p>
   
