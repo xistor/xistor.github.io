@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s3/" />
 <meta property="article:published_time" content="2020-07-05T16:01:00+08:00" />
-<meta property="article:modified_time" content="2020-07-05T18:07:38+08:00" />
+<meta property="article:modified_time" content="2020-07-05T18:08:21+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记3.通用文件I/O">
 <meta itemprop="description" content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO">
 <meta itemprop="datePublished" content="2020-07-05T16:01:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-07-05T18:07:38&#43;08:00" />
-<meta itemprop="wordCount" content="846">
+<meta itemprop="dateModified" content="2020-07-05T18:08:21&#43;08:00" />
+<meta itemprop="wordCount" content="986">
 
 
 
@@ -131,7 +131,18 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    <nav id="TableOfContents"></nav>
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#文件io操作的四个主要系统调用">文件I/O操作的四个主要系统调用：</a></li>
+        <li><a href="#改变文件偏移量">改变文件偏移量：</a></li>
+        <li><a href="#文件空洞">文件空洞</a></li>
+        <li><a href="#exercise">Exercise</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
   </div>
 </div>
     <div class="post-content">
@@ -166,7 +177,7 @@
 </tr>
 </tbody>
 </table>
-<p>文件I/O操作的四个主要系统调用：</p>
+<h3 id="文件io操作的四个主要系统调用">文件I/O操作的四个主要系统调用：</h3>
 <ul>
 <li>fd = open(pathname, flags, mode), 函数打开pathname所标识的文件，并返回文件描述符， flags指定文件的打开方式。mode 指定创建文件的访问权限
 如果open函数并未创建文件，则忽略mode参数。</li>
@@ -174,9 +185,9 @@
 <li>numwritten = write(fd, buffer, count), 将buffer中的count个字节写入到fd所指代的文件中，numwritten为实际写入的字节数。</li>
 <li>status = close(fd), 释放文件描述符，以及与之相关的内核资源。</li>
 </ul>
-<p>改变文件偏移量：</p>
-<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">#include&lt;unistd.h&gt;
-off_t lseek(int fd, off_t offset, int whence);
+<h3 id="改变文件偏移量">改变文件偏移量：</h3>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span><span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="n">off_t</span> <span class="nf">lseek</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">off_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">int</span> <span class="n">whence</span><span class="p">);</span>
 </code></pre></div><p>whence参数表明应参照哪个基点来解释offset参数：</p>
 <ul>
 <li>SEEK_SET 将文件偏移量设置为从文件头部起始点开始的offset个字节。</li>
@@ -185,21 +196,83 @@ off_t lseek(int fd, off_t offset, int whence);
 </ul>
 <p>除了SEEK_SET情况下，offset必须为非负数，其他两种情况offset可正可负。
 lseek调用例子</p>
-<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">lseek(fd, 0, SEEK_SET); // start of file
-lseek(fd, 0, SEEK_END); // Next byte after the end of the file
-lssek(fd, -1, SEEK_END); // Last byte after the end
-lseek(fd, -10, SEEK_CUR); //Ten bytes prior to current location
-lseek(fd, 10000, SEEK_END); //10001 bytes past last byte of file
-</code></pre></div><p>文件空洞</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">lseek</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_SET</span><span class="p">);</span> <span class="c1">// start of file
+</span><span class="c1"></span><span class="n">lseek</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">);</span> <span class="c1">// Next byte after the end of the file
+</span><span class="c1"></span><span class="n">lssek</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">);</span> <span class="c1">// Last byte after the end
+</span><span class="c1"></span><span class="n">lseek</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="n">SEEK_CUR</span><span class="p">);</span> <span class="c1">//Ten bytes prior to current location
+</span><span class="c1"></span><span class="n">lseek</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">SEEK_END</span><span class="p">);</span> <span class="c1">//10001 bytes past last byte of file
+</span></code></pre></div><h3 id="文件空洞">文件空洞</h3>
 <p>看过之前的操作，会有一个疑问，文件偏移量跨越了文件末尾，再执行I/O操作，会发生什么？
 read()将会返回0，write()函数可以在文件末尾写入数据。从原文件末尾到新写入数据之间的这段空间称为文件空洞。
 读取空洞将会返回0填充的缓冲区。但是文件空洞不占用磁盘空间（对于大多数系统而言）。</p>
 <p>通用I/O模型以外的操作： ioctl()</p>
-<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">#include&lt;sys/ioctl.h&gt;
-int ioctl(int fd, int request, .../* argp */);
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span><span class="cpf">&lt;sys/ioctl.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">ioctl</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">request</span><span class="p">,</span> <span class="p">...</span><span class="cm">/* argp */</span><span class="p">);</span>
 
 </code></pre></div><p>fd 参数为某个设备或文件已打开的描述符， request参数指定了将在fd上执行的控制操作。ioctl根据request的参数值来确定argp所期望的类型。通常情况下，argp是指向整数或结构的指针。对于未纳入标准I/O模型的所有设备和操作而言，ioctl()系统调用是个百宝箱。</p>
+<h3 id="exercise">Exercise</h3>
+<ol>
+<li>实现 tee -a file:</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#define MAX_BUFFER 256
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">tee</span><span class="p">(</span><span class="kt">bool</span> <span class="n">append</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">file_name</span><span class="p">);</span>
 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+    <span class="kt">char</span> <span class="n">opt</span><span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">append</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">char</span><span class="o">*</span> <span class="n">file</span><span class="p">;</span>
+
+
+    <span class="k">while</span> <span class="p">((</span><span class="n">opt</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="s">&#34;a:&#34;</span><span class="p">))</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="n">opt</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="sc">&#39;a&#39;</span><span class="o">:</span>
+            <span class="n">append</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="n">optarg</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">default</span><span class="o">:</span> <span class="cm">/* &#39;?&#39; */</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Usage: %s [-a file]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+                    <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+            <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">tee</span><span class="p">(</span><span class="n">append</span><span class="p">,</span> <span class="n">file</span><span class="p">);</span>
+
+
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">tee</span><span class="p">(</span><span class="kt">bool</span> <span class="n">append</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">file_name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">MAX_BUFFER</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">numread</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">outputfd</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">openflag</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">append</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">openflag</span> <span class="o">=</span> <span class="n">O_CREAT</span> <span class="o">|</span> <span class="n">O_WRONLY</span> <span class="o">|</span> <span class="n">O_APPEND</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">openflag</span> <span class="o">=</span> <span class="n">O_CREAT</span> <span class="o">|</span> <span class="n">O_WRONLY</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="n">outputfd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">openflag</span><span class="p">,</span> <span class="n">S_IRUSR</span> <span class="o">|</span> <span class="n">S_IWUSR</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;append:&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">append</span> <span class="o">&lt;&lt;</span> <span class="s">&#34; file:&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">file_name</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">numread</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">STDIN_FILENO</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">buffer</span><span class="p">[</span><span class="n">numread</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s&#34;</span><span class="p">,</span> <span class="n">buffer</span><span class="p">);</span>
+        <span class="n">write</span><span class="p">(</span><span class="n">outputfd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">numread</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+<span class="p">}</span>
+
+</code></pre></div>
     </div>
 
     <div class="post-copyright">
@@ -211,7 +284,7 @@ int ioctl(int fd, int request, .../* argp */);
     <span class="item-title">LastMod</span>
     <span class="item-content">
         2020-07-05
-        <a href="/commit/ece87abb6f3f9b1f58abb780d67242778c1c6b3e" title="new post">(ece87ab)</a>
+        <a href="/commit/bea74a06d9fc57c76223b3c455a57c77589d38ed" title="new post">(bea74a0)</a>
     </span>
   </p>
   
