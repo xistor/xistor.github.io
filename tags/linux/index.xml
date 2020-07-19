@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Linux on xistor&#39;s blog</title>
+    <title>Linux on xistor&#39;s note</title>
     <link>https://xistor.github.io/tags/linux/</link>
-    <description>Recent content in Linux on xistor&#39;s blog</description>
+    <description>Recent content in Linux on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 05 Jul 2020 16:01:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 16 Jul 2020 14:01:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记5.进程</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s5/</link>
+      <pubDate>Thu, 16 Jul 2020 14:01:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s5/</guid>
+      <description>进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述</description>
+    </item>
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记4.深入探究文件I/O</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s4/</link>
+      <pubDate>Sun, 12 Jul 2020 16:01:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s4/</guid>
+      <description>原子操作与竞争条件 创建文件 当同时指定O_EXCL和O_CREAT作为open()的标志位时，如果要打开文件已然存在，open()将返回一个错</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记3.通用文件I/O</title>
