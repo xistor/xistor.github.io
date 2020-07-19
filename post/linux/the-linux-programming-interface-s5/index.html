@@ -43,11 +43,11 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s5/" />
 <meta property="article:published_time" content="2020-07-16T14:01:00+08:00" />
-<meta property="article:modified_time" content="2020-07-19T00:09:13+08:00" />
+<meta property="article:modified_time" content="2020-07-19T18:54:50+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记5.进程">
 <meta itemprop="description" content="进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述">
 <meta itemprop="datePublished" content="2020-07-16T14:01:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-07-19T00:09:13&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-19T18:54:50&#43;08:00" />
 <meta itemprop="wordCount" content="2614">
 
 
@@ -193,7 +193,7 @@ text data bss dec hex filename
 使用方法,在程序中声明：</p>
 <div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">extern</span> <span class="kt">char</span> <span class="n">etext</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">end</span><span class="p">;</span>
 </code></pre></div><p>虚拟内存会将程序使用的内存分成等大小的单元，称为“页”(pages)。在任意时刻只有程序需要的页才会在内存中，成为u常驻内存集，其他未用的页放在硬盘上的swap区域。当程序访问到了不在物理内存上的页时会触发page fault,内核会挂起程序，将所需的页从硬盘读入到内存中。</p>
-<p><img src="/img/the-linux-programming-interface-s5/overview_of_vm.png" alt="虚拟内存">
+<p><img src="/img/the-linux-programming-interface-s5/overview_of_vm.png" alt="虚拟内存"><br>
 如图，内核会为每一个进程维护一个page table,并不是进程的所有虚拟内存地址都有对应的page table入口，通常有一大部分虚拟地址空间是没用到的。当进程试图访问没有一个没有page table入口的地址时，会收到SIGSEGV信号。</p>
 <p>虚拟内存的好处：</p>
 <ul>
@@ -257,7 +257,7 @@ longjmp()的调用不能跳转到一个已经返回的函数，因为函数返�
     <span class="item-title">LastMod</span>
     <span class="item-content">
         2020-07-19
-        <a href="/commit/05b3e9ad3476f94553fc6af4f252437607ff8121" title="new post">(05b3e9a)</a>
+        <a href="/commit/c9dbb11e62da0688c9d09186c40ec5c43b1e0f2e" title="new post">(c9dbb11)</a>
     </span>
   </p>
   
