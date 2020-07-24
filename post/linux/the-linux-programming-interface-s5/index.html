@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s5/" />
 <meta property="article:published_time" content="2020-07-16T14:01:00+08:00" />
-<meta property="article:modified_time" content="2020-07-19T21:54:41+08:00" />
+<meta property="article:modified_time" content="2020-07-21T23:20:49+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记5.进程">
 <meta itemprop="description" content="进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述">
 <meta itemprop="datePublished" content="2020-07-16T14:01:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-07-19T21:54:41&#43;08:00" />
-<meta itemprop="wordCount" content="2614">
+<meta itemprop="dateModified" content="2020-07-21T23:20:49&#43;08:00" />
+<meta itemprop="wordCount" content="2787">
 
 
 
@@ -142,6 +142,7 @@
         <li><a href="#栈">栈</a></li>
         <li><a href="#环境变量">环境变量</a></li>
         <li><a href="#非局部跳转">非局部跳转</a></li>
+        <li><a href="#exercise">Exercise</a></li>
       </ul>
     </li>
   </ul>
@@ -245,6 +246,15 @@ user 栈里主要有两种信息：</p>
 longjmp()的调用不能跳转到一个已经返回的函数，因为函数返回后，env中保存的栈信息已经失效了。</p>
 <p>编译器优化<br>
 优化器对代码的优化会受到longjmp() 干扰，因此最好将局部变量声明为volatile，但最好尽可能避免使用setjmp()和longjmp()。</p>
+<h3 id="exercise">Exercise</h3>
+<ol>
+<li>编译后的mem_segments使用ll查看结果：</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">-rwxr-xr-x  1 x x 11624 Jul 20 23:35 mem_segments*
+</code></pre></div><p>使用命令<code>size mem_segments</code>查看：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">text	   data	    bss	        dec	        hex	    filename
+1918	   636	    10305568	10308122	9d4a1a	mem_segments
+</code></pre></div><p>可见bss区的大小已经10305568字节(大约9.8M)了,原因是bss段保存未初始化的全局变量和静态变量，当程序保存在硬盘上的时候是不需要保存这些没初始化的变量的，其空间是在程序载入内存的时候才会分配。</p>
 
     </div>
 
@@ -256,8 +266,8 @@ longjmp()的调用不能跳转到一个已经返回的函数，因为函数返�
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-07-19
-        <a href="/commit/44e32a1682d092e4298387522247413df27e2b82" title="new post">(44e32a1)</a>
+        2020-07-21
+        <a href="/commit/ba73164b12a59fa468c70e45e63d6ea5e70db7ac" title="new post">(ba73164)</a>
     </span>
   </p>
   
