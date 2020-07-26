@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux/Unix系统编程手册-笔记6.内存分配 - xistor&#39;s note</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="xistor" /><meta name="description" content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.72.0 with theme even" />
+
+
+<link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s6/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.a8191bf8.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记6.内存分配" />
+<meta property="og:description" content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s6/" />
+<meta property="article:published_time" content="2020-07-25T10:53:00+08:00" />
+<meta property="article:modified_time" content="2020-07-25T10:53:00+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记6.内存分配">
+<meta itemprop="description" content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()">
+<meta itemprop="datePublished" content="2020-07-25T10:53:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-25T10:53:00&#43;08:00" />
+<meta itemprop="wordCount" content="2414">
+
+
+
+<meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记6.内存分配"/>
+<meta name="twitter:description" content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Xistor&#39;s Note</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Xistor&#39;s Note</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记6.内存分配</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-25 </span>
+        <div class="post-category">
+            <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+            </div>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#在堆上分配内存">在堆上分配内存</a></li>
+        <li><a href="#malloc和free的实现">malloc()和free()的实现</a></li>
+        <li><a href="#在堆上分配内存的其他方法">在堆上分配内存的其他方法</a></li>
+        <li><a href="#exercise">Exercise</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <h3 id="在堆上分配内存">在堆上分配内存</h3>
+<p>系统提供了两个改变堆大小的系统调用：brk()和sbrk()</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">    <span class="kt">int</span> <span class="nf">brk</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">end_data_segment</span><span class="p">);</span> <span class="c1">// return 0 on success or -1 on error
+</span><span class="c1"></span>
+    <span class="kt">void</span> <span class="o">*</span><span class="nf">sbrk</span><span class="p">(</span><span class="n">intptr_t</span> <span class="n">increment</span><span class="p">);</span>     
+        <span class="c1">// return previous progrom break on success, or (void *) -1 on error
+</span></code></pre></div><p>brk()会将program break设置为参数end_data_segment所指定的位置（实际会四舍五入到下一个内存页的边界处）。<br>
+sbrk()会将program break 在原有地址上增加increment 大小。</p>
+<ul>
+<li>program break指进程数据段的末尾(end of process&rsquo;s data segment)</li>
+</ul>
+<p>C中的malloc()和free()函数在堆上分配和释放内存，一般情况下free()并不降低program break的位置。而是将这块内存添加到空闲内存列表中，供后续的malloc()函数循环使用。仅当堆顶空闲内存“足够”大的时候，free()函数的glibc()实现会调用sbrk()来降低program break的地址。这个大小取决于malloc()函数包行为的控制参数（默认为128K） 详细见<a href="https://man7.org/linux/man-pages/man3/mallopt.3.html">mallopt</a>,其中M_TRIM_THRESHOLD参数即此项。</p>
+<h3 id="malloc和free的实现">malloc()和free()的实现</h3>
+<p>malloc的实现很简单，它会先扫描之前由free()所释放的空闲内存块列表，以找到一块大小大于或等于要求的空闲内存。基于具体实现扫描策略有所不同，对于大于要求的空闲内存，会被分割。如果空闲列表中找不到足够大的内存块。malloc会调用sbrk()分配一块。而且为了减少sbrk()调用的次数，请求分配的内存并不是严格按照所需的内存，而是以更大幅度（虚拟内存页大小的数倍）来增加program break， 并将超出部分置于空闲内存列表中。</p>
+<ul>
+<li>每个进程一个空闲内存列表。</li>
+</ul>
+<p>malloc()在分配内存时会额外分配几个字节来记录这块内存大小，该整数位于内存块的起始处。</p>
+<p><img src="/img/the-linux-programming-interface-s6/mem_block_returned_by_malloc.png" alt="malloc返回的地址"></p>
+<p>当内存块置于空闲内存列表时，free()会使用内存块本身的空间来存放链表指针，将自身添加到列表中
+<img src="/img/the-linux-programming-interface-s6/a_block_on_the_free_list.png" alt="空闲列表中的内存块"></p>
+<p>随着对内存的不断释放和重新分配，空闲列表中的空闲内存会和已分配的内存混杂在一起，如下图:
+<img src="/img/the-linux-programming-interface-s6/heap_containing_allocated_blocks_and_a_free_kist.png" alt="包含有已分配内存和空闲内存列表的堆"></p>
+<p>书中的图展示的空闲列表为显式空闲链表，除此之外还有几种实现：</p>
+<ul>
+<li>隐式空闲链表：如下图，一个块由一个字的头部，有效载荷，以及可能的一些额外的填充，之所以称其为隐式空闲链表，是因为空闲块是通过头部中的大小字段隐含的链接着的。
+<img src="/img/the-linux-programming-interface-s6/a_block_of_Implicit_free_list.png" alt="隐式空闲列表">
+在隐式空闲链表合并空闲块时，释放当前块后，想要合并前一个空闲块，会遇到问题，因为按照上图的结构，我们无法直接知道前一个块的大小，也就无法在常数时间内完成合并，唯一的选择是遍历整个链表。<br>
+使用下图结构可以解决这个问题，如图，每个块的结尾添加了一个脚部，脚部就是头部的一个副本。每个块的脚部会与下一个块的头部相邻，所以下一个块可以很容易的访问到前一个块的脚部，以知道其前一个块的大小以及是否空闲。
+<img src="/img/the-linux-programming-interface-s6/a_block_with_footer.png" alt="带边界标记的堆块的格式"></li>
+<li>分离的空闲列表：维护多个空闲链表，其中每个链表中的块有大致的相等的大小，不同的分离存储的方法的主要区别就是如何定义大小类似的等价类（大小类），何时进行合并，何时向操作系统请求额外的堆内存，是否允许分割等。主要有：
+<ul>
+<li>简单分离存储<br>
+每个大小类的空闲链表包含大小相等的块，每个块的大小就是这个大小类中最大元素的大小。比如某个大小类定义为{17～32}，那么这个类的空闲链表全由大小i为32的块组成。此方法不分割、不合并。</li>
+<li>分离适配<br>
+分配器维护着一个空闲链表的数组。每个空闲链表按照一定关系和一个大小类相关连。为了分配一个块，首先确定大小类，并对适当的空闲链表做首次适配，查找一个合适的块，如果找到了，就分割它，并将剩下部分插入到适当的空闲链表中。如果找不到合适的块，那么就搜索下一个更大的大小类空闲链表。如果空闲链表没有合适的块，那么就向操作系统请求额外的堆内存，从中分割出合适块，将剩下的放置到合适的大小类中。要释放一个块，我们执行合并，并将结果放置到相应的空闲链表中。</li>
+<li>伙伴系统
+是分离适配的一个特例。每个大小类都是2的幂。基本思路是假设一个堆的大小为2^m个字，也就是说一开始只有一个2^m个字的空闲块。为了分配一个大小为2^k(0&lt;=k&lt;=m&gt;)的块，我们找到第一个可用的、大小为2^j的块(k&lt;=j&lt;=m),如果j=k,那么我们就完成了。否则，我们递归的二分割这个块，把每个剩下的半块（也叫做伙伴）放置到相应的空闲链表中，直到j=k。要释放一个大小为2^k的块，我们继续合并空闲的伙伴。当遇到一个已分配的伙伴的时候，我们就停止合并。</li>
+</ul>
+</li>
+</ul>
+<h3 id="在堆上分配内存的其他方法">在堆上分配内存的其他方法</h3>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">void</span><span class="o">*</span> <span class="nf">calloc</span><span class="p">(</span><span class="n">size_t</span> <span class="n">numitems</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="o">*</span> <span class="nf">realloc</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">);</span>
+</code></pre></div><p>calloc()与malloc()的区别是calloc()会将已分配的内存初始化为0。<br>
+realloc()函数来调整一块内存的大小，此块内存应是之前malloc包中函数分配的。</p>
+<h3 id="exercise">Exercise</h3>
+<ol>
+<li>修改free_and_sbrk.c如下，</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#define _BSD_SOURCE
+</span><span class="cp">#include</span> <span class="cpf">&#34;tlpi_hdr.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#define MAX_ALLOCS 1000000
+</span><span class="cp"></span>
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span><span class="p">[</span><span class="n">MAX_ALLOCS</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">blockSize</span><span class="p">,</span> <span class="n">numAllocs</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="o">||</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#34;--help&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">usageErr</span><span class="p">(</span><span class="s">&#34;%s num-allocs block-size [step [min [max]]]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+    <span class="n">numAllocs</span> <span class="o">=</span> <span class="n">getInt</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">GN_GT_0</span><span class="p">,</span> <span class="s">&#34;num-allocs&#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">numAllocs</span> <span class="o">&gt;</span> <span class="n">MAX_ALLOCS</span><span class="p">)</span>
+        <span class="n">cmdLineErr</span><span class="p">(</span><span class="s">&#34;num-allocs &gt; %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">MAX_ALLOCS</span><span class="p">);</span>
+
+    <span class="n">blockSize</span> <span class="o">=</span> <span class="n">getInt</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">GN_GT_0</span> <span class="o">|</span> <span class="n">GN_ANY_BASE</span><span class="p">,</span> <span class="s">&#34;block-size&#34;</span><span class="p">);</span>
+
+    
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Initial program break:          %10p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Allocating %d*%d bytes</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">numAllocs</span><span class="p">,</span> <span class="n">blockSize</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">numAllocs</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ptr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">blockSize</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ptr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+            <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;malloc&#34;</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Program break is now:           %10p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">numAllocs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">ptr</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;After free(), program break is: %10p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">numAllocs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ptr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">blockSize</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ptr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+            <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;malloc&#34;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;re malloc, program break is: %10p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">sbrk</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+
+    <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div><p>运行结果：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">$./malloc_and_sbrk 50 10240
+
+Initial program break:          0x56289c0f8000
+Allocating 50*10240 bytes
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c0f8000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c11b000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c13c000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+Program break is now:           0x56289c15f000
+After free(), program break is: 0x56289c15f000
+re malloc, program break is: 0x56289c15f000
+
+</code></pre></div><p>符合预期，malloc()不会每次申请内存都去调用sbrk()，而且free()后的内存会再次保存在空闲内存链表中，在malloc()再次申请时返回给调用者。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">xistor</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-25
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">Linux</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/linux/the-linux-programming-interface-s5/">
+            <span class="next-text nav-default">Linux/Unix系统编程手册-笔记5.进程</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'xistor';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:xueluqiang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/xistor" class="iconfont icon-github" title="github"></a>
+  <a href="https://xistor.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2018 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">xistor</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
