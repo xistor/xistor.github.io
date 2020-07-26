@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s6/" />
 <meta property="article:published_time" content="2020-07-25T10:53:00+08:00" />
-<meta property="article:modified_time" content="2020-07-25T10:53:00+08:00" />
+<meta property="article:modified_time" content="2020-07-26T22:02:14+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记6.内存分配">
 <meta itemprop="description" content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()">
 <meta itemprop="datePublished" content="2020-07-25T10:53:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-07-25T10:53:00&#43;08:00" />
-<meta itemprop="wordCount" content="2414">
+<meta itemprop="dateModified" content="2020-07-26T22:02:14&#43;08:00" />
+<meta itemprop="wordCount" content="2411">
 
 
 
@@ -179,7 +179,7 @@ sbrk()会将program break 在原有地址上增加increment 大小。</p>
 <li>分离的空闲列表：维护多个空闲链表，其中每个链表中的块有大致的相等的大小，不同的分离存储的方法的主要区别就是如何定义大小类似的等价类（大小类），何时进行合并，何时向操作系统请求额外的堆内存，是否允许分割等。主要有：
 <ul>
 <li>简单分离存储<br>
-每个大小类的空闲链表包含大小相等的块，每个块的大小就是这个大小类中最大元素的大小。比如某个大小类定义为{17～32}，那么这个类的空闲链表全由大小i为32的块组成。此方法不分割、不合并。</li>
+每个大小类的空闲链表包含大小相等的块，每个块的大小就是这个大小类中最大元素的大小。比如某个大小类定义为{17～32}，那么这个类的空闲链表全由大小为32的块组成。此方法不分割、不合并。</li>
 <li>分离适配<br>
 分配器维护着一个空闲链表的数组。每个空闲链表按照一定关系和一个大小类相关连。为了分配一个块，首先确定大小类，并对适当的空闲链表做首次适配，查找一个合适的块，如果找到了，就分割它，并将剩下部分插入到适当的空闲链表中。如果找不到合适的块，那么就搜索下一个更大的大小类空闲链表。如果空闲链表没有合适的块，那么就向操作系统请求额外的堆内存，从中分割出合适块，将剩下的放置到合适的大小类中。要释放一个块，我们执行合并，并将结果放置到相应的空闲链表中。</li>
 <li>伙伴系统
@@ -307,7 +307,7 @@ Program break is now:           0x56289c15f000
 After free(), program break is: 0x56289c15f000
 re malloc, program break is: 0x56289c15f000
 
-</code></pre></div><p>符合预期，malloc()不会每次申请内存都去调用sbrk()，而且free()后的内存会再次保存在空闲内存链表中，在malloc()再次申请时返回给调用者。</p>
+</code></pre></div><p>符合预期，malloc()不会每次申请内存都去调用sbrk()，而且free()后的内存会保存在空闲内存链表中，在malloc()再次申请时返回给调用者。</p>
 
     </div>
 
@@ -319,8 +319,8 @@ re malloc, program break is: 0x56289c15f000
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-07-25
-        
+        2020-07-26
+        <a href="/commit/e5e1e290b72c63b2e4378177c2519101aeccc6ed" title="typo">(e5e1e29)</a>
     </span>
   </p>
   

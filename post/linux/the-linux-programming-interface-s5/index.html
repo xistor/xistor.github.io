@@ -48,7 +48,7 @@
 <meta itemprop="description" content="进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述">
 <meta itemprop="datePublished" content="2020-07-16T14:01:00&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-21T23:20:49&#43;08:00" />
-<meta itemprop="wordCount" content="2787">
+<meta itemprop="wordCount" content="2807">
 
 
 
@@ -187,13 +187,13 @@ text data bss dec hex filename
 <p>引入虚拟内存是为了更高效的利用CPU和RAM,因为程序存在局部性。</p>
 <ul>
 <li>空间局部性：程序会趋向于访问最近访问过的内存地址附近的数据，因为程序指令连续，还有数据一般也是连续存储。</li>
-<li>时间局部性：程序会趋向于访问最近最近访问过的同一块内存（因为程序中有循环）。</li>
+<li>时间局部性：程序会趋向于访问最近访问过的同一块内存（因为程序中有循环）。</li>
 </ul>
 <p><img src="/img/the-linux-programming-interface-s5/vm_layout.png" alt="虚拟内存布局"></p>
 <p>图中的argv和environ是命令行输入的参数和进程环境变量。 etext, edata, 和end可以获得程序段的地址。
 使用方法,在程序中声明：</p>
 <div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">extern</span> <span class="kt">char</span> <span class="n">etext</span><span class="p">,</span> <span class="n">edata</span><span class="p">,</span> <span class="n">end</span><span class="p">;</span>
-</code></pre></div><p>虚拟内存会将程序使用的内存分成等大小的单元，称为“页”(pages)。在任意时刻只有程序需要的页才会在内存中，成为u常驻内存集，其他未用的页放在硬盘上的swap区域。当程序访问到了不在物理内存上的页时会触发page fault,内核会挂起程序，将所需的页从硬盘读入到内存中。</p>
+</code></pre></div><p>虚拟内存会将程序使用的内存分成等大小的单元，称为“页”(pages)。在任意时刻只有程序需要的页才会在内存中，成为常驻内存集，其他未用的页放在硬盘上的swap区域。当程序访问到了不在物理内存上的页时会触发page fault,内核会挂起程序，将所需的页从硬盘读入到内存中。</p>
 <p><img src="/img/the-linux-programming-interface-s5/overview_of_vm.png" alt="虚拟内存"><br>
 如图，内核会为每一个进程维护一个page table,并不是进程的所有虚拟内存地址都有对应的page table入口，通常有一大部分虚拟地址空间是没用到的。当进程试图访问没有一个没有page table入口的地址时，会收到SIGSEGV信号。</p>
 <p>虚拟内存的好处：</p>
@@ -206,14 +206,15 @@ text data bss dec hex filename
 </ul>
 <h3 id="栈">栈</h3>
 <p>栈是随着函数调用和返回自动增长缩小的，存在一个特殊的寄存器stack pointer跟踪当前的栈顶。
-大多数实现，栈帧被释放后并不会还给系统，而是留着复用。
+在大多数实现中，栈帧被释放后并不会还给系统，而是留着复用。
 user 栈里主要有两种信息：</p>
 <ul>
 <li>函数参数和局部变量。</li>
 <li>调用信息：函数会使用特定的CPU 寄存器，比如程序计数器(program counter)，当函数调用其他函数时，会把寄存器copy一份保存到栈中，以便在调用返回时恢复寄存器。</li>
 </ul>
 <h3 id="环境变量">环境变量</h3>
-<p>在c程序中访问环境变量：</p>
+<p>每个进程会收到一份其父进程的环境变量拷贝。
+在c程序中访问环境变量：</p>
 <ul>
 <li>使用全局变量 <code>char **environ</code> 访问环境列表。</li>
 <li>在main()函数参数中添加声明</li>
@@ -242,7 +243,7 @@ user 栈里主要有两种信息：</p>
 </ul>
 <p><code>s = setjmp(env);</code>语句是不符合标准的。</p>
 <p>之所以有这些限制，是因为作为常规函数的setjmp()实现无法保证拥有足够的信息来保存所有寄存器值和封闭表达式中用到的临时栈位置，因此，仅允许在足够简单且无需临时存储的表达式中调用setjmp()。</p>
-<p>滥用longjmp():
+<p>滥用longjmp():<br>
 longjmp()的调用不能跳转到一个已经返回的函数，因为函数返回后，env中保存的栈信息已经失效了。</p>
 <p>编译器优化<br>
 优化器对代码的优化会受到longjmp() 干扰，因此最好将局部变量声明为volatile，但最好尽可能避免使用setjmp()和longjmp()。</p>

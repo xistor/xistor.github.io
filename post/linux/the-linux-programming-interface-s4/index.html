@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s4/" />
 <meta property="article:published_time" content="2020-07-12T16:01:00+08:00" />
-<meta property="article:modified_time" content="2020-07-19T22:38:09+08:00" />
+<meta property="article:modified_time" content="2020-07-20T11:22:56+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记4.深入探究文件I/O">
 <meta itemprop="description" content="原子操作与竞争条件 创建文件 当同时指定O_EXCL和O_CREAT作为open()的标志位时，如果要打开文件已然存在，open()将返回一个错">
 <meta itemprop="datePublished" content="2020-07-12T16:01:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-07-19T22:38:09&#43;08:00" />
-<meta itemprop="wordCount" content="2754">
+<meta itemprop="dateModified" content="2020-07-20T11:22:56&#43;08:00" />
+<meta itemprop="wordCount" content="2753">
 
 
 
@@ -151,9 +151,9 @@
 </div>
     <div class="post-content">
       <h3 id="原子操作与竞争条件">原子操作与竞争条件</h3>
-<p>创建文件
-当同时指定O_EXCL和O_CREAT作为open()的标志位时，如果要打开文件已然存在，open()将返回一个错误。这提供了一种机制，保证进程是打开文件的创建者。负责当open()失败时，再次使用O_CREAT标志调用open()创建文件的过程中可能有另一个进程或线程已经创建了同名文件，因为无论文件存在与否，第二次调用open()总会成功。使用O_EXCL和O_CREAT标志来一次性的调用open()可以避免这种情况，因为其确保检查文件和创建文件属于一个单一的原子操作。</p>
-<p>向文件尾部追加数据
+<p>创建文件<br>
+当同时指定O_EXCL和O_CREAT作为open()的标志位时，如果要打开文件已然存在，open()将返回一个错误。这提供了一种机制，保证进程是打开文件的创建者。否则当open()失败时，再次使用O_CREAT标志调用open()创建文件的过程中可能有另一个进程或线程已经创建了同名文件，因为无论文件存在与否，第二次调用open()总会成功。使用O_EXCL和O_CREAT标志来一次性的调用open()可以避免这种情况，因为其确保检查文件和创建文件属于一个单一的原子操作。</p>
+<p>向文件尾部追加数据<br>
 多个进程向同一个文件尾部添加数据也会出现竞争状态，要规避这一问题，需要将文件偏移量移动和数据写操作纳入同一原子操作。在打开文件时加入O_APPEND标志就可以保证这一点。</p>
 <h3 id="文件控制操作-fcntl">文件控制操作： fcntl()</h3>
 <p>fcntl()系统调用对一个打开的文件描述符执行一系列控制操作。</p>
@@ -170,7 +170,7 @@
 
 </code></pre></div><p>判断文件访问模式:O_RDONLY(0),O_WRONLY(1),O_RDWR(2)</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">accessMode</span> <span class="o">=</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">O_ACCMODE</span><span class="p">;</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">accessMode</span> <span class="o">==</span> <span class="n">O_WRONLY</span> <span class="o">||</span> <span class="n">accessMOde</span> <span class="o">==</span> <span class="n">ORDWR</span><span class="p">)</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">accessMode</span> <span class="o">==</span> <span class="n">O_WRONLY</span> <span class="o">||</span> <span class="n">accessMOde</span> <span class="o">==</span> <span class="n">O_RDWR</span><span class="p">)</span>
     <span class="n">printf</span><span class="p">(</span><span class="s">&#34;file is writable</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 
 </code></pre></div><p>可以使用fcntl()的F_SETFL命令来修改打开文件的某些状态标志。允许修改的标志有O_APPEND、O_NONBLOCK、O_NOATIME、O_ASYNC和O_DIRECT。系统将忽略其他标志的修改。修改文件状态标志可以先使用fcntl的F_GETFL命令，来获取当前标志的副本，然后修改需要变更的标志位，再通过F_SETFL命令更新状态标志。</p>
@@ -189,7 +189,7 @@
 <li>系统级的打开文件表</li>
 <li>文件系统的i-node表</li>
 </ul>
-<p>对于每个进程中的文件描述符(open file descriptor)表。该表的每一条目都记录了单个文件描述符的相关信息。</p>
+<p>对于每个进程有文件描述符(open file descriptor)表。该表的每一条目都记录了单个文件描述符的相关信息。</p>
 <ul>
 <li>控制文件描述符操作的一组标志，（目前只定义了close-on-exec）</li>
 <li>对打开文件句柄的引用。</li>
@@ -325,7 +325,7 @@ The file is opened in append mode.  Before each write(2), the file offset is pos
 </span><span class="c1"></span>    <span class="n">getchar</span><span class="p">();</span>
     <span class="n">write</span><span class="p">(</span><span class="n">fd3</span><span class="p">,</span> <span class="s">&#34;Gidday&#34;</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span> <span class="c1">// &#34;GiddayWorld&#34;   
 </span><span class="c1"></span><span class="p">}</span>
-</code></pre></div><p>解释：fd1和fd2指向同一个打开的文件句柄，所以共享文件偏移量，fd3重新打开了文件，所以是一个单独的文件句柄，写入从文件头部开始。
+</code></pre></div><p>解释：fd1和fd2指向同一个打开的文件句柄，所以共享文件偏移量，fd3重新打开了文件，所以是一个单独的文件句柄，写入从文件头部开始。<br>
 7. 考虑原子性，writev()需要先分配一块大内存，将各数组copy过去后，调用一次write()写入文件。readv()按顺序读入即可。</p>
 
     </div>
@@ -338,8 +338,8 @@ The file is opened in append mode.  Before each write(2), the file offset is pos
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-07-19
-        <a href="/commit/ff4050bd8e303145225dacd3d1fafe452c79a8e7" title="new post">(ff4050b)</a>
+        2020-07-20
+        <a href="/commit/bc220ff768770b50a52145737e9851e09a45f77e" title="modify">(bc220ff)</a>
     </span>
   </p>
   
