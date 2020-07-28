@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>xistor&#39;s note</title>
+  <title>Linux/Unix系统编程手册-笔记8.进程信任状态 - xistor&#39;s note</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="Xistor&#39;s Note" />
+<meta name="author" content="xistor" /><meta name="description" content="每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us" />
 
 
 
@@ -26,9 +26,7 @@
 <meta name="generator" content="Hugo 0.72.0 with theme even" />
 
 
-<link rel="canonical" href="https://xistor.github.io/" />
-  <link href="https://xistor.github.io/index.xml" rel="alternate" type="application/rss+xml" title="xistor&#39;s note" />
-  <link href="https://xistor.github.io/index.xml" rel="feed" type="application/rss+xml" title="xistor&#39;s note" />
+<link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s8/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -40,15 +38,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="xistor&#39;s note" />
-<meta property="og:description" content="Xistor&#39;s Note" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://xistor.github.io/" />
-<meta property="og:updated_time" content="2020-07-28T22:32:52+08:00" />
-<meta itemprop="name" content="xistor&#39;s note">
-<meta itemprop="description" content="Xistor&#39;s Note"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="xistor&#39;s note"/>
-<meta name="twitter:description" content="Xistor&#39;s Note"/>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记8.进程信任状态" />
+<meta property="og:description" content="每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s8/" />
+<meta property="article:published_time" content="2020-07-28T10:53:00+08:00" />
+<meta property="article:modified_time" content="2020-07-28T18:12:06+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记8.进程信任状态">
+<meta itemprop="description" content="每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us">
+<meta itemprop="datePublished" content="2020-07-28T10:53:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-28T18:12:06&#43;08:00" />
+<meta itemprop="wordCount" content="715">
+
+
+
+<meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记8.进程信任状态"/>
+<meta name="twitter:description" content="每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -108,123 +114,115 @@
     <main id="main" class="main">
       <div class="content-wrapper">
         <div id="content" class="content">
-          <section id="posts" class="posts">
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s8/">Linux/Unix系统编程手册-笔记8.进程信任状态</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-28 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s8/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s7/">Linux/Unix系统编程手册-笔记7.用户和组</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-27 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： #define _XOPEN_SOURCE #include &lt;unistd.h&gt;char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */ crypt
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s7/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s6/">Linux/Unix系统编程手册-笔记6.内存分配</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-25 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s6/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s5/">Linux/Unix系统编程手册-笔记5.进程</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-16 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s5/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s4/">Linux/Unix系统编程手册-笔记4.深入探究文件I/O</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-12 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      原子操作与竞争条件 创建文件 当同时指定O_EXCL和O_CREAT作为open()的标志位时，如果要打开文件已然存在，open()将返回一个错
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s4/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    </section>
-  
-  <nav class="pagination">
+          <article class="post">
     
-    <a class="next" href="/page/2/">
-        <span class="next-text">Next</span>
-        <i class="iconfont icon-right"></i>
-      </a>
-  </nav>
-        </div>
+    <header class="post-header">
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记8.进程信任状态</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-28 </span>
+        <div class="post-category">
+            <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+            </div>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+        <li><a href="#set-user-id-和-set-group-id-programs">Set-User-ID 和 Set-Group-ID Programs</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>每个进程有一组相关的UID和GID:</p>
+<ul>
+<li>真实用户ID(real user ID)和组ID</li>
+<li>有效用户ID(effective user ID)和组ID</li>
+<li>保存的set-user-ID(saved set-user-ID)和set-group-ID</li>
+<li>文件系统用户ID(file-system user ID)和组ID</li>
+<li>补充组ID(supplementary group ID)</li>
+</ul>
+<h4 id="real-user-id-和-real-group-id">real user ID 和 real group ID</h4>
+<p>ruid、rgid 由启动进程的用户决定，通常是登录用户，或者是继承自父进程。</p>
+<h4 id="effective-user-id-和-effective-group-id">Effective User ID 和 Effective Group ID</h4>
+<p>在访问文件时，系统会检查进程的euid和egid，以判断进程是不是有权限访问。在一般情况下和ruid、rgid是一样的。但再两种情况下可以不一样,一种是使用setuid()函数改变uid,一种是执行set-user-id和set-group-id程序。</p>
+<h3 id="set-user-id-和-set-group-id-programs">Set-User-ID 和 Set-Group-ID Programs</h3>
+<p>一个set-user-ID 程序可以在其运行时以它的可执行文件的uid和gid运行。
+比如典型的passwd,一般用户没有权限修改/etc/shadow, 所以passwd需要以root运行：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">$ll /usr/bin/passwd
+-rwsr-xr-x 1 root root 54256 Mar 27  2019 /usr/bin/passwd*
+</code></pre></div><p>代表可执行权限的&rsquo;x&rsquo;变成了&rsquo;s&rsquo;。然后我们执行&rsquo;passwd&rsquo;，并用&rsquo;ps -al&rsquo; 看一下&rsquo;passwd&rsquo;进程的uid。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">F S   UID   PID  PPID  C PRI  NI ADDR SZ  WCHAN TTY          TIME CMD
+0 S  1000     7     6  1  80   0 -  3782      - tty1     00:00:00 bash
+0 S     0    34     7  0  80   0 -  3527      - tty1     00:00:00 passwd
+...
+
+</code></pre></div><p>可见&rsquo;passwd&rsquo;的uid并不是去执行它的用户的uid,而是其可执行文件的uid,也就是root。<br>
+可以通过&rsquo;chmod&rsquo;给可执行文件设置  set-user-ID 和 set-group-ID bits</p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">chmod u+s xxx       // Turn on set-user-ID permission bit        
+chmod g+s xxx       // Turn on set-group-ID permission bit
+</code></pre></div><h4 id="saved-set-user-id-和-saved-set-group-id">Saved Set-User-ID 和 Saved Set-Group-ID</h4>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">xistor</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-28
+        <a href="/commit/b7d7f571e58acf1db4b6fb8183b9cde45429fa8b" title="new post">(b7d7f57)</a>
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">Linux</a>
+          </div>
+      <nav class="post-nav">
         
+        <a class="next" href="/post/linux/the-linux-programming-interface-s7/">
+            <span class="next-text nav-default">Linux/Unix系统编程手册-笔记7.用户和组</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'xistor';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
 
       </div>
     </main>

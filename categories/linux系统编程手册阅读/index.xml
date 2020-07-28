@@ -6,10 +6,28 @@
     <description>Recent content in Linux系统编程手册阅读 on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 25 Jul 2020 10:53:00 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jul 2020 10:53:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记8.进程信任状态</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s8/</link>
+      <pubDate>Tue, 28 Jul 2020 10:53:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s8/</guid>
+      <description>每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us</description>
+    </item>
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记7.用户和组</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s7/</link>
+      <pubDate>Mon, 27 Jul 2020 10:53:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s7/</guid>
+      <description>本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： #define _XOPEN_SOURCE #include &amp;lt;unistd.h&amp;gt;char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */ crypt</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记6.内存分配</title>
