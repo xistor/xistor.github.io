@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s9/" />
 <meta property="article:published_time" content="2020-07-30T10:53:00+08:00" />
-<meta property="article:modified_time" content="2020-07-30T21:11:14+08:00" />
+<meta property="article:modified_time" content="2020-08-02T23:06:04+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记9.时间">
 <meta itemprop="description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display">
 <meta itemprop="datePublished" content="2020-07-30T10:53:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-07-30T21:11:14&#43;08:00" />
-<meta itemprop="wordCount" content="1368">
+<meta itemprop="dateModified" content="2020-08-02T23:06:04&#43;08:00" />
+<meta itemprop="wordCount" content="1396">
 
 
 
@@ -164,7 +164,7 @@
     <span class="cm">/* Retrieve time, convert and display it in various forms */</span>
 
     <span class="cm">/*
-</span><span class="cm">        time()函数返回一个time_t类型的值，是一个有符号整数，值代表离1970.1.1零点过去的秒数
+</span><span class="cm">        time()函数返回一个time_t类型的值，是一个有符号整数，值代表当前时间离1970.1.1零点过去的秒数
 </span><span class="cm">    */</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
     <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Seconds since the Epoch (1 Jan 1970): %ld&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">t</span><span class="p">);</span>
@@ -173,7 +173,7 @@
     <span class="cm">/* 
 </span><span class="cm">    timeval 结构体
 </span><span class="cm">      struct timeval {
-</span><span class="cm">          time_t tv_sec;    // 从1970.1.1 零点开始的秒数
+</span><span class="cm">          time_t tv_sec;            // 从1970.1.1 零点开始的秒数
 </span><span class="cm">          suseconds _t tv_usec;     // 附加的毫秒 (long int)
 </span><span class="cm">      }
 </span><span class="cm">    */</span>
@@ -198,7 +198,7 @@
 </span><span class="cm">                               &lt; 0 : 尝试判定DTS在每年的这一时间是否生效
 </span><span class="cm">        }
 </span><span class="cm">
-</span><span class="cm">        gmtime()函数能够把日历时间转换为一个对应于UTC的分解时间
+</span><span class="cm">        gmtime()函数能够把日历时间转换为一个对应于UTC的分解时间，也就是上面的结构体
 </span><span class="cm">
 </span><span class="cm">    */</span>
     <span class="n">gmp</span> <span class="o">=</span> <span class="n">gmtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
@@ -218,7 +218,7 @@
 </span><span class="cm">                TZ=Pacific/Auckland calendar_time
 </span><span class="cm">    */</span>
 
-    <span class="cm">/* localtime()函数会考虑时区和夏令时设置 */</span>
+    <span class="cm">/* localtime()函数会考虑时区和夏令时设置，其他和gmtime()一致 */</span>
     <span class="n">locp</span> <span class="o">=</span> <span class="n">localtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">locp</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
         <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;localtime&#34;</span><span class="p">);</span>
@@ -340,8 +340,8 @@
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-07-30
-        <a href="/commit/b335be415977fd755b83c19a3cb476cd98429837" title="new post">(b335be4)</a>
+        2020-08-02
+        <a href="/commit/1f33b9cd2266c0a04e537defbf543731b1d10707" title="new post">(1f33b9c)</a>
     </span>
   </p>
   
