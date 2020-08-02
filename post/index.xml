@@ -17,7 +17,7 @@
       <pubDate>Thu, 30 Jul 2020 10:53:00 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s9/</guid>
-      <description></description>
+      <description>直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &amp;lt;locale.h&amp;gt;#include &amp;lt;time.h&amp;gt;#include &amp;lt;sys/time.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display</description>
     </item>
     
     <item>

@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="" />
+<meta name="author" content="xistor" /><meta name="description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &amp;lt;locale.h&amp;gt;#include &amp;lt;time.h&amp;gt;#include &amp;lt;sys/time.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display" />
 
 
 
@@ -39,22 +39,22 @@
 
 
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记9.时间" />
-<meta property="og:description" content="" />
+<meta property="og:description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s9/" />
 <meta property="article:published_time" content="2020-07-30T10:53:00+08:00" />
 <meta property="article:modified_time" content="2020-07-30T21:11:14+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记9.时间">
-<meta itemprop="description" content="">
+<meta itemprop="description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display">
 <meta itemprop="datePublished" content="2020-07-30T10:53:00&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-30T21:11:14&#43;08:00" />
-<meta itemprop="wordCount" content="0">
+<meta itemprop="wordCount" content="1368">
 
 
 
 <meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux/Unix系统编程手册-笔记9.时间"/>
-<meta name="twitter:description" content=""/>
+<meta name="twitter:description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -131,11 +131,205 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    <nav id="TableOfContents"></nav>
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#时区">时区</a></li>
+        <li><a href="#软件时钟-jiffies">软件时钟 (jiffies)</a></li>
+        <li><a href="#进程时间">进程时间</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
   </div>
 </div>
     <div class="post-content">
-      
+      <p>直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;locale.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/time.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;tlpi_hdr.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60)
+</span><span class="cp"></span>
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">time_t</span> <span class="n">t</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">tm</span> <span class="o">*</span><span class="n">gmp</span><span class="p">,</span> <span class="o">*</span><span class="n">locp</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">tm</span> <span class="n">gm</span><span class="p">,</span> <span class="n">loc</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">timeval</span> <span class="n">tv</span><span class="p">;</span>
+
+    <span class="cm">/* Retrieve time, convert and display it in various forms */</span>
+
+    <span class="cm">/*
+</span><span class="cm">        time()函数返回一个time_t类型的值，是一个有符号整数，值代表离1970.1.1零点过去的秒数
+</span><span class="cm">    */</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Seconds since the Epoch (1 Jan 1970): %ld&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">t</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34; (about %6.3f years)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">t</span> <span class="o">/</span> <span class="n">SECONDS_IN_TROPICAL_YEAR</span><span class="p">);</span>
+
+    <span class="cm">/* 
+</span><span class="cm">    timeval 结构体
+</span><span class="cm">      struct timeval {
+</span><span class="cm">          time_t tv_sec;    // 从1970.1.1 零点开始的秒数
+</span><span class="cm">          suseconds _t tv_usec;     // 附加的毫秒 (long int)
+</span><span class="cm">      }
+</span><span class="cm">    */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;gettimeofday&#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;  gettimeofday() returned %ld secs, %ld microsecs</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+            <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span><span class="p">);</span>
+
+    <span class="cm">/*
+</span><span class="cm">    gmp是一个指向tm结构体的指针，
+</span><span class="cm">        struct tm {
+</span><span class="cm">            int tm_sec;
+</span><span class="cm">            int tm_min;
+</span><span class="cm">            int tm_hour;
+</span><span class="cm">            int tm_mday;
+</span><span class="cm">            int tm_mon;
+</span><span class="cm">            int tm_year;
+</span><span class="cm">            int tm_wday;    // 一周内的第几天（星期天=0）
+</span><span class="cm">            int tm_yday;    // 一年内的第几天
+</span><span class="cm">            int tm_isdst;   // &gt; 0 : 夏令时
+</span><span class="cm">                               = 0 : 非夏令时
+</span><span class="cm">                               &lt; 0 : 尝试判定DTS在每年的这一时间是否生效
+</span><span class="cm">        }
+</span><span class="cm">
+</span><span class="cm">        gmtime()函数能够把日历时间转换为一个对应于UTC的分解时间
+</span><span class="cm">
+</span><span class="cm">    */</span>
+    <span class="n">gmp</span> <span class="o">=</span> <span class="n">gmtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">gmp</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;gmtime&#34;</span><span class="p">);</span>
+
+    <span class="n">gm</span> <span class="o">=</span> <span class="o">*</span><span class="n">gmp</span><span class="p">;</span>          <span class="cm">/* Save local copy, since *gmp may be modified
+</span><span class="cm">                           by asctime() or gmtime() */</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Broken down by gmtime():</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;  year=%d mon=%d mday=%d hour=%d min=%d sec=%d &#34;</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_year</span><span class="p">,</span>
+            <span class="n">gm</span><span class="p">.</span><span class="n">tm_mon</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_mday</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_hour</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_min</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_sec</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;wday=%d yday=%d isdst=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_wday</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_yday</span><span class="p">,</span> <span class="n">gm</span><span class="p">.</span><span class="n">tm_isdst</span><span class="p">);</span>
+
+    <span class="cm">/* The TZ environment variable will affect localtime().
+</span><span class="cm">       Try, for example:
+</span><span class="cm">
+</span><span class="cm">                TZ=Pacific/Auckland calendar_time
+</span><span class="cm">    */</span>
+
+    <span class="cm">/* localtime()函数会考虑时区和夏令时设置 */</span>
+    <span class="n">locp</span> <span class="o">=</span> <span class="n">localtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">locp</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;localtime&#34;</span><span class="p">);</span>
+
+    <span class="n">loc</span> <span class="o">=</span> <span class="o">*</span><span class="n">locp</span><span class="p">;</span>        <span class="cm">/* Save local copy */</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Broken down by localtime():</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;  year=%d mon=%d mday=%d hour=%d min=%d sec=%d &#34;</span><span class="p">,</span>
+            <span class="n">loc</span><span class="p">.</span><span class="n">tm_year</span><span class="p">,</span> <span class="n">loc</span><span class="p">.</span><span class="n">tm_mon</span><span class="p">,</span> <span class="n">loc</span><span class="p">.</span><span class="n">tm_mday</span><span class="p">,</span>
+            <span class="n">loc</span><span class="p">.</span><span class="n">tm_hour</span><span class="p">,</span> <span class="n">loc</span><span class="p">.</span><span class="n">tm_min</span><span class="p">,</span> <span class="n">loc</span><span class="p">.</span><span class="n">tm_sec</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;wday=%d yday=%d isdst=%d</span><span class="se">\n\n</span><span class="s">&#34;</span><span class="p">,</span>
+            <span class="n">loc</span><span class="p">.</span><span class="n">tm_wday</span><span class="p">,</span> <span class="n">loc</span><span class="p">.</span><span class="n">tm_yday</span><span class="p">,</span> <span class="n">loc</span><span class="p">.</span><span class="n">tm_isdst</span><span class="p">);</span>
+
+    <span class="cm">/* asctime()函数 将分解后的时间格式化为字符串,参数为一个tm结构体 */</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;asctime() formats the gmtime() value as: %s&#34;</span><span class="p">,</span> <span class="n">asctime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gm</span><span class="p">));</span>
+    <span class="cm">/* ctime()函数 将time_t转换为可打印格式 */</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;ctime() formats the time() value as:     %s&#34;</span><span class="p">,</span> <span class="n">ctime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">));</span>
+
+    <span class="cm">/* mktime()函数 将一个本地时区的分解时间解释为time_t值 */</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mktime() of gmtime() value:    %ld secs</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">mktime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">gm</span><span class="p">));</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mktime() of localtime() value: %ld secs</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">mktime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loc</span><span class="p">));</span>
+
+    <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div><h3 id="时区">时区</h3>
+<p>时区信息保存在文件中，位于/usr/share/zoneinfo中。为运行中的程序指定一个时区，需要设置TZ环境变量。设置方法：</p>
+<div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh"><span class="nv">TZ</span><span class="o">=</span><span class="s2">&#34;:Pacific/Aukland&#34;</span> ./show_time
+</code></pre></div><h3 id="软件时钟-jiffies">软件时钟 (jiffies)</h3>
+<p>在本书中所描述的时间相关的各种系统调用的精度是受限于系统软件时钟的分辨率，他的度量单位被称为jiffies。jiffies的大小是定义在内核源代码的常量HZ。这是内核按照round-robin的分时调度算法分配CPU进程的单位。</p>
+<p>更高的软件时钟速率意味着定时器可以有更高的操作精度和时间精度，然而因为每个时钟中断会消耗少量的CPU时间，，这部分时间CPU无法执行任何操作。</p>
+<p>最终，软件时钟频率成为一个可配置的内核选项。内核可以设置为100、250（默认）、1000、300。</p>
+<h3 id="进程时间">进程时间</h3>
+<p>进程时间是进程创建后使用的CPU时间数量。内核把CPU时间分以下两部分：</p>
+<ul>
+<li>用户CPU时间：在用户模式下执行所花费的时间数量</li>
+<li>系统CPU时间：在内核模式中执行所花费的时间数量。
+有时候，进程时间是指出现处理过程中所消耗的总CPU时间。</li>
+</ul>
+<p>还是直接看例程：</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="cp">#include</span> <span class="cpf">&lt;sys/times.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;tlpi_hdr.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">static</span> <span class="kt">void</span>             <span class="cm">/* Display &#39;msg&#39; and process times */</span>
+<span class="n">displayProcessTimes</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">msg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="nc">tms</span> <span class="n">t</span><span class="p">;</span>
+    <span class="n">clock_t</span> <span class="n">clockTime</span><span class="p">;</span>
+    <span class="k">static</span> <span class="kt">long</span> <span class="n">clockTicks</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">msg</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">clockTicks</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>      <span class="cm">/* 获取每秒包含的时钟计时单元 */</span>
+        <span class="n">clockTicks</span> <span class="o">=</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_CLK_TCK</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">clockTicks</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;sysconf&#34;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="cm">/*
+</span><span class="cm">        clock()返回调用进程使用的总的CPU时间，包括用户和系统。
+</span><span class="cm">    */</span>
+    <span class="n">clockTime</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">clockTime</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;clock&#34;</span><span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;        clock() returns: %ld clocks-per-sec (%.2f secs)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+            <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">clockTime</span><span class="p">,</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="n">clockTime</span> <span class="o">/</span> <span class="n">CLOCKS_PER_SEC</span><span class="p">);</span>
+
+    <span class="cm">/* times()返回一个tms结构体
+</span><span class="cm">        struct tms {
+</span><span class="cm">            clock_t tms_utime;  // 调用者使用的用户CPU时间
+</span><span class="cm">            clock_t tms_stime;  // 调用者使用的系统CPU时间
+</span><span class="cm">            clock_t tms_cutime; // 调用者执行了系统调用wait()的所有已经终止的子进程使用的用户CPU时间
+</span><span class="cm">            clock_t tms_cstime; // 调用者执行了系统调用wait()的所有已经终止的子进程使用的系统CPU时间
+</span><span class="cm">        }
+</span><span class="cm">
+</span><span class="cm">        
+</span><span class="cm">    */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">times</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;times&#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;        times() yields: user CPU=%.2f; system CPU: %.2f</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+            <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="n">t</span><span class="p">.</span><span class="n">tms_utime</span> <span class="o">/</span> <span class="n">clockTicks</span><span class="p">,</span>
+            <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="n">t</span><span class="p">.</span><span class="n">tms_stime</span> <span class="o">/</span> <span class="n">clockTicks</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">numCalls</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;CLOCKS_PER_SEC=%ld  sysconf(_SC_CLK_TCK)=%ld</span><span class="se">\n\n</span><span class="s">&#34;</span><span class="p">,</span>
+            <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">CLOCKS_PER_SEC</span><span class="p">,</span> <span class="n">sysconf</span><span class="p">(</span><span class="n">_SC_CLK_TCK</span><span class="p">));</span>
+
+    <span class="n">displayProcessTimes</span><span class="p">(</span><span class="s">&#34;At program start:</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+
+    <span class="cm">/* Call getppid() a large number of times, so that
+</span><span class="cm">       some user and system CPU time are consumed */</span>
+
+    <span class="n">numCalls</span> <span class="o">=</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">?</span> <span class="n">getInt</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">GN_GT_0</span><span class="p">,</span> <span class="s">&#34;num-calls&#34;</span><span class="p">)</span> <span class="o">:</span> <span class="mi">100000000</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">numCalls</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">getppid</span><span class="p">();</span>
+
+    <span class="n">displayProcessTimes</span><span class="p">(</span><span class="s">&#34;After getppid() loop:</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+
+    <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div>
     </div>
 
     <div class="post-copyright">
