@@ -6,10 +6,28 @@
     <description>Recent content on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 30 Jul 2020 10:53:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 03 Aug 2020 14:53:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记11.系统和进程信息</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s11/</link>
+      <pubDate>Mon, 03 Aug 2020 14:53:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s11/</guid>
+      <description>现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘</description>
+    </item>
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记10.系统限制和选项</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s10/</link>
+      <pubDate>Mon, 03 Aug 2020 10:53:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s10/</guid>
+      <description>系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。 程序获取限制值有两种途径： 在编译程序时能获得一些限制和选项，例</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记9.时间</title>

@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s9/" />
 <meta property="article:published_time" content="2020-07-30T10:53:00+08:00" />
-<meta property="article:modified_time" content="2020-08-02T23:06:04+08:00" />
+<meta property="article:modified_time" content="2020-08-03T12:07:18+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记9.时间">
 <meta itemprop="description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display">
 <meta itemprop="datePublished" content="2020-07-30T10:53:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-02T23:06:04&#43;08:00" />
-<meta itemprop="wordCount" content="1396">
+<meta itemprop="dateModified" content="2020-08-03T12:07:18&#43;08:00" />
+<meta itemprop="wordCount" content="1469">
 
 
 
@@ -282,6 +282,7 @@
 
     <span class="cm">/*
 </span><span class="cm">        clock()返回调用进程使用的总的CPU时间，包括用户和系统。
+</span><span class="cm">        clock() 返回的时间分辨率是 CLOCKS_PER_SEC
 </span><span class="cm">    */</span>
     <span class="n">clockTime</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">clockTime</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -298,7 +299,7 @@
 </span><span class="cm">            clock_t tms_cstime; // 调用者执行了系统调用wait()的所有已经终止的子进程使用的系统CPU时间
 </span><span class="cm">        }
 </span><span class="cm">
-</span><span class="cm">        
+</span><span class="cm">       times()返回的时间分辨率是ticks， sysconf(_SC_CLK_TCK)返回的是每秒ticks数。相除即得秒数。 
 </span><span class="cm">    */</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">times</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;times&#34;</span><span class="p">);</span>
@@ -340,8 +341,8 @@
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-08-02
-        <a href="/commit/1f33b9cd2266c0a04e537defbf543731b1d10707" title="new post">(1f33b9c)</a>
+        2020-08-03
+        <a href="/commit/cc578703fc83ba085c6c916e7dc3a43cc6cb300c" title="fix typo">(cc57870)</a>
     </span>
   </p>
   
@@ -352,7 +353,11 @@
           <a href="/tags/linux/">Linux</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/linux/the-linux-programming-interface-s10/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记10.系统限制和选项</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/linux/the-linux-programming-interface-s8/">
             <span class="next-text nav-default">Linux/Unix系统编程手册-笔记8.进程信任状态</span>
             <span class="next-text nav-mobile">Next</span>
