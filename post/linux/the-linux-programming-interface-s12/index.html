@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s12/" />
 <meta property="article:published_time" content="2020-08-10T10:53:00+08:00" />
-<meta property="article:modified_time" content="2020-08-10T17:27:48+08:00" />
+<meta property="article:modified_time" content="2020-08-10T23:55:57+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记12.文件I/O缓冲">
 <meta itemprop="description" content="Overview 首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： 由图所示I/O缓冲分两个层次 用户空间缓冲区，stdio的输入输出函数内部所使用的缓">
 <meta itemprop="datePublished" content="2020-08-10T10:53:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-10T17:27:48&#43;08:00" />
-<meta itemprop="wordCount" content="2250">
+<meta itemprop="dateModified" content="2020-08-10T23:55:57&#43;08:00" />
+<meta itemprop="wordCount" content="2249">
 
 
 
@@ -189,7 +189,7 @@
 <p><code>fflush</code>将强制将stdio缓冲区的数据写入到内核缓冲区。</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span><span class="cp"></span><span class="kt">int</span> <span class="nf">fflush</span><span class="p">(</span><span class="n">FILE</span> <span class="o">*</span><span class="n">stream</span><span class="p">);</span>
-</code></pre></div><p>如果参数<code>stream</code>为NULL, <code>fflush</code>将刷新所有stdio缓冲区。<code>fflush</code>用户read stream 时会把读缓冲区中的数据全部丢弃。</p>
+</code></pre></div><p>如果参数<code>stream</code>为NULL, <code>fflush</code>将刷新所有stdio缓冲区。<code>fflush</code>用于读文件流时会把读缓冲区中的数据全部丢弃。</p>
 <p><strong>stdio缓冲区刷新时机</strong><br>
 除了 无缓冲、行缓冲、全缓冲这三个模式下规定的刷新时机，还有以下两种情况。</p>
 <ul>
@@ -268,7 +268,7 @@ O_RSYNC标志与O_SYNC标志或O_DSYNC标志配合一起使用的，将这些标
     <span class="item-title">LastMod</span>
     <span class="item-content">
         2020-08-10
-        <a href="/commit/d8ea9eecac4d3214af7f59cde41b47ec22061084" title="new post">(d8ea9ee)</a>
+        <a href="/commit/042b1e86a1a49d7ee5c6d9a1762d8953fdcfaeb0" title="add content">(042b1e8)</a>
     </span>
   </p>
   
