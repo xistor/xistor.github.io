@@ -17,7 +17,7 @@
       <pubDate>Mon, 10 Aug 2020 10:53:00 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s12/</guid>
-      <description>首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： I/O缓冲分两种 stdio的输入输出函数内部所使用的缓冲，也就是图中的user mem</description>
+      <description>Overview 首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： 由图所示I/O缓冲分两个层次 用户空间缓冲区，stdio的输入输出函数内部所使用的缓</description>
     </item>
     
     <item>
