@@ -6,10 +6,19 @@
     <description>Recent content in Linux系统编程手册阅读 on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 10 Aug 2020 10:53:00 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 11 Aug 2020 09:49:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记13.文件系统</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s13/</link>
+      <pubDate>Tue, 11 Aug 2020 09:49:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s13/</guid>
+      <description>设备文件 一个设备文件对应一个设备，这个设备可以是真实的设备(鼠标、键盘、磁盘等)，也可以是虚拟设备。 设备分两种： 字符设备： 以字符为单位处理数</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记12.文件I/O缓冲</title>

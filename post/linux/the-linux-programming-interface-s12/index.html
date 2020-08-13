@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s12/" />
 <meta property="article:published_time" content="2020-08-10T10:53:00+08:00" />
-<meta property="article:modified_time" content="2020-08-11T00:00:54+08:00" />
+<meta property="article:modified_time" content="2020-08-11T14:36:08+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记12.文件I/O缓冲">
 <meta itemprop="description" content="Overview 首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： 由图所示I/O缓冲分两个层次 用户空间缓冲区，stdio的输入输出函数内部所使用的缓">
 <meta itemprop="datePublished" content="2020-08-10T10:53:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-11T00:00:54&#43;08:00" />
-<meta itemprop="wordCount" content="2249">
+<meta itemprop="dateModified" content="2020-08-11T14:36:08&#43;08:00" />
+<meta itemprop="wordCount" content="2247">
 
 
 
@@ -236,7 +236,7 @@ vm.dirty_expire_centisecs <span class="o">=</span> <span class="m">3000</span>
 </blockquote>
 <p><strong>O_SYNC</strong></p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">pathname</span><span class="p">,</span> <span class="n">O_WRONLY</span> <span class="o">|</span> <span class="n">O_SYNC</span><span class="p">);</span>
-</code></pre></div><p>open后后续每个write()调用会自动将文件爱你数据和元数据直接写入磁盘。</p>
+</code></pre></div><p>open后后续每个write()调用会自动将文件数据和元数据直接写入磁盘。</p>
 <p><strong>O_DSYNC和O_RSYNC</strong></p>
 <p>O_DSYNC标志的效果类似与fdatasync()，而O_SYNC类似于fsync()。<br>
 O_RSYNC标志与O_SYNC标志或O_DSYNC标志配合一起使用的，将这些标志对写操作的作用结合到读操作中。</p>
@@ -268,7 +268,7 @@ O_RSYNC标志与O_SYNC标志或O_DSYNC标志配合一起使用的，将这些标
     <span class="item-title">LastMod</span>
     <span class="item-content">
         2020-08-11
-        <a href="/commit/e356e46ec4f1c0d62743980140eb82acc7a0b32c" title="fix typo">(e356e46)</a>
+        <a href="/commit/f63755d87d4989fced5f8f572ce20b9764a0acec" title="fix typo">(f63755d)</a>
     </span>
   </p>
   
@@ -279,7 +279,11 @@ O_RSYNC标志与O_SYNC标志或O_DSYNC标志配合一起使用的，将这些标
           <a href="/tags/linux/">Linux</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/linux/the-linux-programming-interface-s13/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记13.文件系统</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/linux/the-linux-programming-interface-s11/">
             <span class="next-text nav-default">Linux/Unix系统编程手册-笔记11.系统和进程信息</span>
             <span class="next-text nav-mobile">Next</span>
