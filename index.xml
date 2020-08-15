@@ -155,5 +155,14 @@
       <description>树梅派跑起来后，肯定是能够随时随地访问才够方便，但是家中的宽带没有固定ip,而且pi又躲在路由器后面，因此想要访问的话必须曲线一下，有好多方</description>
     </item>
     
+    <item>
+      <title></title>
+      <link>https://xistor.github.io/post/unlock-the-pixel3-bootloader/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://xistor.github.io/post/unlock-the-pixel3-bootloader/</guid>
+      <description>title: &amp;ldquo;pixel3 解锁bootloader&amp;rdquo; date: 2020-08-15T09:55:16+08:00 tags: [&amp;ldquo;Android&amp;rdquo;] categories: [&amp;ldquo;Android&amp;rdquo;] 参考官方教程 https://source.android.com/setup/build/running step1 a. 进入手机设置(setting)-&amp;gt;关于手机(about phon</description>
+    </item>
+    
   </channel>
 </rss>
