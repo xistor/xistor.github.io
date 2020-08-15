@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>android on xistor&#39;s note</title>
+    <title>Android on xistor&#39;s note</title>
     <link>https://xistor.github.io/tags/android/</link>
-    <description>Recent content in android on xistor&#39;s note</description>
+    <description>Recent content in Android on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 27 May 2020 23:03:16 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 15 Aug 2020 09:55:16 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/tags/android/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Pixel3 解锁bootloader</title>
+      <link>https://xistor.github.io/post/unlock-the-pixel3-bootloader/</link>
+      <pubDate>Sat, 15 Aug 2020 09:55:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/unlock-the-pixel3-bootloader/</guid>
+      <description>参考官方教程 https://source.android.com/setup/build/running step1 a. 进入手机设置(setting)-&amp;gt;关于手机(about phone)-&amp;gt;点击版本号(Build number) 7次 b. 当看到“你</description>
+    </item>
     
     <item>
       <title>Android 使用AIDL添加 native service</title>

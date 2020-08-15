@@ -44,7 +44,7 @@
 <meta property="og:description" content="Xistor&#39;s Note" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://xistor.github.io/" />
-<meta property="og:updated_time" content="2020-08-13T23:31:42+08:00" />
+<meta property="og:updated_time" content="2020-08-15T12:04:24+08:00" />
 <meta itemprop="name" content="xistor&#39;s note">
 <meta itemprop="description" content="Xistor&#39;s Note"><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="xistor&#39;s note"/>
@@ -109,6 +109,27 @@
       <div class="content-wrapper">
         <div id="content" class="content">
           <section id="posts" class="posts">
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s9/">Linux/Unix系统编程手册-笔记9.时间</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-07-30 </span>
+      <div class="post-category">
+          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display
+    </div>
+    <div class="read-more">
+      <a href="/post/linux/the-linux-programming-interface-s9/" class="read-more-link">Read more...</a>
+    </div>
+  </div>
+</article>
+
     <article class="post">
   <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s8/">Linux/Unix系统编程手册-笔记8.进程信任状态</a></h1>
@@ -189,27 +210,6 @@
     </div>
     <div class="read-more">
       <a href="/post/linux/the-linux-programming-interface-s5/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s4/">Linux/Unix系统编程手册-笔记4.深入探究文件I/O</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-12 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      原子操作与竞争条件 创建文件 当同时指定O_EXCL和O_CREAT作为open()的标志位时，如果要打开文件已然存在，open()将返回一个错
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s4/" class="read-more-link">Read more...</a>
     </div>
   </div>
 </article>
