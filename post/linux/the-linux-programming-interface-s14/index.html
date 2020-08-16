@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>xistor&#39;s note</title>
+  <title>Linux/Unix系统编程手册-笔记14.文件属性 - xistor&#39;s note</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="Xistor&#39;s Note" />
+<meta name="author" content="xistor" /><meta name="description" content="获取文件信息 #include &amp;lt;sys/stat.h&amp;gt; int stat(const char *pathname, struct stat * statbuf); int lstat(const char *pathname, struct stat * statbuf); int fstat(int fd, struct stat *statbuf); 通过以上三个系统调用可以获取文件属性，它们大多数提取自i-node。 lstat(" />
 
 
 
@@ -26,9 +26,7 @@
 <meta name="generator" content="Hugo 0.72.0 with theme even" />
 
 
-<link rel="canonical" href="https://xistor.github.io/" />
-  <link href="https://xistor.github.io/index.xml" rel="alternate" type="application/rss+xml" title="xistor&#39;s note" />
-  <link href="https://xistor.github.io/index.xml" rel="feed" type="application/rss+xml" title="xistor&#39;s note" />
+<link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s14/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -40,15 +38,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="xistor&#39;s note" />
-<meta property="og:description" content="Xistor&#39;s Note" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://xistor.github.io/" />
-<meta property="og:updated_time" content="2020-08-15T23:37:00+08:00" />
-<meta itemprop="name" content="xistor&#39;s note">
-<meta itemprop="description" content="Xistor&#39;s Note"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="xistor&#39;s note"/>
-<meta name="twitter:description" content="Xistor&#39;s Note"/>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记14.文件属性" />
+<meta property="og:description" content="获取文件信息 #include &lt;sys/stat.h&gt; int stat(const char *pathname, struct stat * statbuf); int lstat(const char *pathname, struct stat * statbuf); int fstat(int fd, struct stat *statbuf); 通过以上三个系统调用可以获取文件属性，它们大多数提取自i-node。 lstat(" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s14/" />
+<meta property="article:published_time" content="2020-08-15T23:37:00+08:00" />
+<meta property="article:modified_time" content="2020-08-15T23:37:00+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记14.文件属性">
+<meta itemprop="description" content="获取文件信息 #include &lt;sys/stat.h&gt; int stat(const char *pathname, struct stat * statbuf); int lstat(const char *pathname, struct stat * statbuf); int fstat(int fd, struct stat *statbuf); 通过以上三个系统调用可以获取文件属性，它们大多数提取自i-node。 lstat(">
+<meta itemprop="datePublished" content="2020-08-15T23:37:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-08-15T23:37:00&#43;08:00" />
+<meta itemprop="wordCount" content="125">
+
+
+
+<meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记14.文件属性"/>
+<meta name="twitter:description" content="获取文件信息 #include &lt;sys/stat.h&gt; int stat(const char *pathname, struct stat * statbuf); int lstat(const char *pathname, struct stat * statbuf); int fstat(int fd, struct stat *statbuf); 通过以上三个系统调用可以获取文件属性，它们大多数提取自i-node。 lstat("/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -108,126 +114,90 @@
     <main id="main" class="main">
       <div class="content-wrapper">
         <div id="content" class="content">
-          <section id="posts" class="posts">
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s10/">Linux/Unix系统编程手册-笔记10.系统限制和选项</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-08-03 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。 程序获取限制值有两种途径： 在编译程序时能获得一些限制和选项，例
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s10/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记14.文件属性</h1>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s9/">Linux/Unix系统编程手册-笔记9.时间</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-30 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s9/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
+      <div class="post-meta">
+        <span class="post-time"> 2020-08-15 </span>
+        <div class="post-category">
+            <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+            </div>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s8/">Linux/Unix系统编程手册-笔记8.进程信任状态</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-28 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s8/" class="read-more-link">Read more...</a>
-    </div>
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#获取文件信息">获取文件信息</a></li>
+  </ul>
+</nav>
   </div>
-</article>
+</div>
+    <div class="post-content">
+      <h2 id="获取文件信息">获取文件信息</h2>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">stat</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">stat</span> <span class="o">*</span> <span class="n">statbuf</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">lstat</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">stat</span> <span class="o">*</span> <span class="n">statbuf</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">fstat</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">stat</span> <span class="o">*</span><span class="n">statbuf</span><span class="p">);</span>
+</code></pre></div><p>通过以上三个系统调用可以获取文件属性，它们大多数提取自i-node。<br>
+<code>lstat()</code>和<code>stat()</code>的区别在于如果文件属于符号链接， 那么所返回的信息针对的是符号链接本身（而非符号链接指向的文件）</p>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s7/">Linux/Unix系统编程手册-笔记7.用户和组</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-27 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
     </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： #define _XOPEN_SOURCE #include &lt;unistd.h&gt;char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */ crypt
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s7/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s6/">Linux/Unix系统编程手册-笔记6.内存分配</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-25 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s6/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    </section>
-  
-  <nav class="pagination">
-    <a class="prev" href="/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text">Prev</span>
-      </a>
-    <a class="next" href="/page/3/">
-        <span class="next-text">Next</span>
-        <i class="iconfont icon-right"></i>
-      </a>
-  </nav>
-        </div>
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">xistor</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-08-15
         
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">Linux</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/unlock-the-pixel3-bootloader/">
+            <span class="next-text nav-default">Pixel3 解锁bootloader</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'xistor';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
 
       </div>
     </main>

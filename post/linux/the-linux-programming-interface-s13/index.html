@@ -48,7 +48,7 @@
 <meta itemprop="description" content="设备文件 一个设备文件对应一个设备，这个设备可以是真实的设备(鼠标、键盘、磁盘等)，也可以是虚拟设备。 设备分两种： 字符设备： 以字符为单位处理数">
 <meta itemprop="datePublished" content="2020-08-11T09:49:00&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-13T23:31:42&#43;08:00" />
-<meta itemprop="wordCount" content="1417">
+<meta itemprop="wordCount" content="1910">
 
 
 
@@ -136,6 +136,8 @@
     <li><a href="#设备文件">设备文件</a></li>
     <li><a href="#文件系统">文件系统</a></li>
     <li><a href="#i-nodes">I-nodes</a></li>
+    <li><a href="#获得文件系统有关的信息--statvfs">获得文件系统有关的信息 ： statvfs()</a></li>
+    <li><a href="#exercise">Exercise</a></li>
   </ul>
 </nav>
   </div>
@@ -208,6 +210,33 @@ i-node 中维护的信息包括:</p>
 <p>！<a href="/img/the-linux-programming-interface-s13/structure_of_file_blocks_for_a_file_in_an_ext2_file_system.png">数据块指针</a></p>
 <p>对于大小为4096字节的块而言，只计算三重指针，单个文件大小可略大于1024×1024×1024×4096字节（即4TB）。<br>
 该设计的另一优点在于文件可以有黑洞。文件系统只需要将i节点和间接指针块中的相应指针打上标记（值0），表明这些指针并未只想实际的磁盘块即可。</p>
+<h2 id="获得文件系统有关的信息--statvfs">获得文件系统有关的信息 ： statvfs()</h2>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;sys/statvfs.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">statvfs</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pathname</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">statvfs</span> <span class="o">*</span> <span class="n">statvfsbuf</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">fstatvfs</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">stuct</span> <span class="n">statvfs</span> <span class="o">*</span><span class="n">statvfsbuf</span><span class="p">);</span>
+</code></pre></div><p>两者区别仅在于其识别文件系统的方式。返回的 statvfs数据结构如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">statvfs</span>
+  <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">int</span> <span class="n">f_bsize</span><span class="p">;</span>          <span class="c1">// 文件系统 block大小（bytes）
+</span><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">int</span> <span class="n">f_frsize</span><span class="p">;</span>         <span class="c1">// 基本文件系统 block大小（bytes）
+</span><span class="c1"></span>    <span class="n">fsblkcnt_t</span> <span class="n">f_blocks</span><span class="p">;</span>                <span class="c1">// 文件系统中block总数
+</span><span class="c1"></span>    <span class="n">fsblkcnt_t</span> <span class="n">f_bfree</span><span class="p">;</span>                 <span class="c1">// 空闲block总数
+</span><span class="c1"></span>    <span class="n">fsblkcnt_t</span> <span class="n">f_bavail</span><span class="p">;</span>                <span class="c1">// 非特权进程可用的空闲block数
+</span><span class="c1"></span>    <span class="n">fsfilcnt_t</span> <span class="n">f_files</span><span class="p">;</span>                 <span class="c1">// i-nodes数量
+</span><span class="c1"></span>    <span class="n">fsfilcnt_t</span> <span class="n">f_ffree</span><span class="p">;</span>                 <span class="c1">// 空闲 i-nodes数量
+</span><span class="c1"></span>    <span class="n">fsfilcnt_t</span> <span class="n">f_favail</span><span class="p">;</span>                <span class="c1">// 非特权进程可用的i-nodes数量
+</span><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">int</span> <span class="n">f_fsid</span><span class="p">;</span>           <span class="c1">// file-system ID
+</span><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">int</span> <span class="n">f_flag</span><span class="p">;</span>           <span class="c1">// mount flags
+</span><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">int</span> <span class="n">f_namemax</span><span class="p">;</span>        <span class="c1">// 此文件系统上的文件名最大长度
+</span></code></pre></div><ul>
+<li>绝大多数Linux文件系统上f_bsize和f_frsize是相同的，但有些文件系统支持块片段的概念，，在无需使用完整数据块的情况下，可在文件尾部分配较小的存储单元，从而避免因分配完整块而导致的空间浪费。在此类文件系统上f_frsize和f_bsize分别为块片段和整个块的大小。</li>
+<li>一般文件系统都会给root预留一部分空间，ext3、ext4一般默认预留5%</li>
+</ul>
+<h2 id="exercise">Exercise</h2>
+<ol>
+<li>个人认为区别不大，文件删除只删除i-node信息，i-node信息直接通过i-number可以随机访问，所以随机删除和按顺序删除的耗时应该区别不大。</li>
+</ol>
 
     </div>
 

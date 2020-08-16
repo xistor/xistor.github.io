@@ -6,10 +6,19 @@
     <description>Recent content in Linux系统编程手册阅读 on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 11 Aug 2020 09:49:00 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 15 Aug 2020 23:37:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记14.文件属性</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s14/</link>
+      <pubDate>Sat, 15 Aug 2020 23:37:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s14/</guid>
+      <description>获取文件信息 #include &amp;lt;sys/stat.h&amp;gt; int stat(const char *pathname, struct stat * statbuf); int lstat(const char *pathname, struct stat * statbuf); int fstat(int fd, struct stat *statbuf); 通过以上三个系统调用可以获取文件属性，它们大多数提取自i-node。 lstat(</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记13.文件系统</title>

@@ -44,7 +44,7 @@
 <meta property="og:description" content="Xistor&#39;s Note" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://xistor.github.io/" />
-<meta property="og:updated_time" content="2020-08-15T12:04:24+08:00" />
+<meta property="og:updated_time" content="2020-08-15T23:37:00+08:00" />
 <meta itemprop="name" content="xistor&#39;s note">
 <meta itemprop="description" content="Xistor&#39;s Note"><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="xistor&#39;s note"/>
@@ -111,6 +111,27 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s14/">Linux/Unix系统编程手册-笔记14.文件属性</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-08-15 </span>
+      <div class="post-category">
+          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      获取文件信息 #include &lt;sys/stat.h&gt; int stat(const char *pathname, struct stat * statbuf); int lstat(const char *pathname, struct stat * statbuf); int fstat(int fd, struct stat *statbuf); 通过以上三个系统调用可以获取文件属性，它们大多数提取自i-node。 lstat(
+    </div>
+    <div class="read-more">
+      <a href="/post/linux/the-linux-programming-interface-s14/" class="read-more-link">Read more...</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
     <h1 class="post-title"><a class="post-link" href="/post/unlock-the-pixel3-bootloader/">Pixel3 解锁bootloader</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2020-08-15 </span>
@@ -122,7 +143,7 @@
   
   <div class="post-content">
     <div class="post-summary">
-      参考官方教程 https://source.android.com/setup/build/running step1 a. 进入手机设置(setting)-&gt;关于手机(about phone)-&gt;点击版本号(Build number) 7次 b. 当看到“你
+      参考官方教程 https://source.android.com/setup/build/running step1 a. 进入手机设置(setting)-&gt;关于手机(about phone)-&gt;点击版本号(Build number) 7次 b. 输入PIN
     </div>
     <div class="read-more">
       <a href="/post/unlock-the-pixel3-bootloader/" class="read-more-link">Read more...</a>
@@ -189,27 +210,6 @@
     </div>
     <div class="read-more">
       <a href="/post/linux/the-linux-programming-interface-s11/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s10/">Linux/Unix系统编程手册-笔记10.系统限制和选项</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-08-03 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。 程序获取限制值有两种途径： 在编译程序时能获得一些限制和选项，例
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s10/" class="read-more-link">Read more...</a>
     </div>
   </div>
 </article>
