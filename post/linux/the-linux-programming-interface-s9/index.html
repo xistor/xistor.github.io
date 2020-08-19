@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s9/" />
 <meta property="article:published_time" content="2020-07-30T10:53:00+08:00" />
-<meta property="article:modified_time" content="2020-08-03T12:07:18+08:00" />
+<meta property="article:modified_time" content="2020-08-19T10:54:27+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记9.时间">
 <meta itemprop="description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &lt;locale.h&gt;#include &lt;time.h&gt;#include &lt;sys/time.h&gt;#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display">
 <meta itemprop="datePublished" content="2020-07-30T10:53:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-03T12:07:18&#43;08:00" />
-<meta itemprop="wordCount" content="1469">
+<meta itemprop="dateModified" content="2020-08-19T10:54:27&#43;08:00" />
+<meta itemprop="wordCount" content="1678">
 
 
 
@@ -330,7 +330,29 @@
     <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
 <span class="p">}</span>
 
-</code></pre></div>
+</code></pre></div><p>需要注意的是，有时候我们在程序中需要记录程序某个操作的运行时间，会使用类似下面的代码</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">double</span> <span class="n">dur</span><span class="p">;</span>
+<span class="n">clock_t</span> <span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">;</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
+
+<span class="n">foo</span><span class="p">();</span>  <span class="c1">// dosomething
+</span><span class="c1"></span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">clock</span><span class="p">();</span>
+<span class="n">dur</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">);</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">&#34;Use Time:%f</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,(</span><span class="n">dur</span><span class="o">/</span><span class="n">CLOCKS_PER_SEC</span><span class="p">));</span>
+</code></pre></div><p>但是clock()内统计的是cpu运行时间，如果在两次clock()调用之间调用了sleep(),由于sleep()不会占用cpu()，所以我们实际感觉的程序运行时间会比使用上述方式统计的时间长。最好使用下面这种方式来计算运行时间：</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">
+<span class="n">time_t</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">;</span>
+<span class="kt">float</span> <span class="n">diff_time</span><span class="p">;</span>
+
+<span class="n">time</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t1</span><span class="p">);</span>
+
+<span class="n">foo</span><span class="p">();</span>  <span class="c1">// dosomething
+</span><span class="c1"></span>
+<span class="n">time</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t2</span><span class="p">);</span>
+<span class="n">diff_time</span> <span class="o">=</span> <span class="n">difftime</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="n">t1</span><span class="p">);</span>
+</code></pre></div><p>这个时间一般才是我们想要运行时间。</p>
+
     </div>
 
     <div class="post-copyright">
@@ -341,8 +363,8 @@
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-08-03
-        <a href="/commit/cc578703fc83ba085c6c916e7dc3a43cc6cb300c" title="fix typo">(cc57870)</a>
+        2020-08-19
+        <a href="/commit/d064f814d6d2282abeb8a61718deb1c8b5dd0b89" title="add content">(d064f81)</a>
     </span>
   </p>
   

@@ -6,10 +6,19 @@
     <description>Recent content on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 15 Aug 2020 23:37:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 17 Aug 2020 15:25:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记15.扩展属性</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s15/</link>
+      <pubDate>Mon, 17 Aug 2020 15:25:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s15/</guid>
+      <description>概述 文件的扩展属性(extended attributes, EAs), 允许我们给文件添加自定义的键值对属性，可以以此记录文件版本、MMIE类型信息、或文件字符编码等。 扩展</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记14.文件属性</title>
