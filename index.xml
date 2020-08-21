@@ -6,10 +6,28 @@
     <description>Recent content on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 17 Aug 2020 15:25:00 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 20 Aug 2020 18:25:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记17.目录和链接</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s17/</link>
+      <pubDate>Thu, 20 Aug 2020 18:25:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s17/</guid>
+      <description>目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&amp;quot;目录&amp;rdquo;</description>
+    </item>
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记16.访问控制列表</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s16/</link>
+      <pubDate>Wed, 19 Aug 2020 22:40:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s16/</guid>
+      <description>访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记15.扩展属性</title>

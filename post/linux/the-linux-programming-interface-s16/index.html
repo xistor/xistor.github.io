@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>xistor&#39;s note</title>
+  <title>Linux/Unix系统编程手册-笔记16.访问控制列表 - xistor&#39;s note</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="Xistor&#39;s Note" />
+<meta name="author" content="xistor" /><meta name="description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:" />
 
 
 
@@ -26,9 +26,7 @@
 <meta name="generator" content="Hugo 0.72.0 with theme even" />
 
 
-<link rel="canonical" href="https://xistor.github.io/" />
-  <link href="https://xistor.github.io/index.xml" rel="alternate" type="application/rss+xml" title="xistor&#39;s note" />
-  <link href="https://xistor.github.io/index.xml" rel="feed" type="application/rss+xml" title="xistor&#39;s note" />
+<link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s16/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -40,15 +38,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="xistor&#39;s note" />
-<meta property="og:description" content="Xistor&#39;s Note" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://xistor.github.io/" />
-<meta property="og:updated_time" content="2020-08-20T23:37:22+08:00" />
-<meta itemprop="name" content="xistor&#39;s note">
-<meta itemprop="description" content="Xistor&#39;s Note"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="xistor&#39;s note"/>
-<meta name="twitter:description" content="Xistor&#39;s Note"/>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记16.访问控制列表" />
+<meta property="og:description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s16/" />
+<meta property="article:published_time" content="2020-08-19T22:40:00+08:00" />
+<meta property="article:modified_time" content="2020-08-20T23:37:22+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记16.访问控制列表">
+<meta itemprop="description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:">
+<meta itemprop="datePublished" content="2020-08-19T22:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-08-20T23:37:22&#43;08:00" />
+<meta itemprop="wordCount" content="225">
+
+
+
+<meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记16.访问控制列表"/>
+<meta name="twitter:description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -108,126 +114,106 @@
     <main id="main" class="main">
       <div class="content-wrapper">
         <div id="content" class="content">
-          <section id="posts" class="posts">
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s3/">Linux/Unix系统编程手册-笔记3.通用文件I/O</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-05 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s3/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记16.访问控制列表</h1>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s2/">Linux/Unix系统编程手册-笔记2.系统调用</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-06-21 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      系统调用 系统调用将处理器从用户态切换到核心态，以便CPU访问收到保护的内核内存。 系统调用的组成是固定的。每个系统调用都有一个唯一的数字来标识
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s2/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
+      <div class="post-meta">
+        <span class="post-time"> 2020-08-19 </span>
+        <div class="post-category">
+            <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+            </div>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s1/">Linux/Unix系统编程手册-笔记1.基本概念</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-05-28 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s1/" class="read-more-link">Read more...</a>
-    </div>
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
   </div>
-</article>
+</div>
+    <div class="post-content">
+      <p>访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。</p>
+<p>一个ACL的结构如下图:
+<img src="/img/the-linux-programming-interface-s16/an_access_control_list.png" alt="acl"></p>
+<p>在shell中运行<code>getfacl</code>命令，可查看应用于文件的ACL。会得到类似如下输出：</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">getfacl README.md 
+# file: README.md
+# owner: x
+# group: x
+user::rw-
+group::r--
+other::r--
+</code></pre></div><p><code>setfacl</code>命令可用来修改文件的ACL。<code>setfacl -m</code>可修改现有ACE,或者当给定标记类型和限定符的ACE不存在时，会追加新的ACE记录。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">#命令格式
+setfacl -m u:[user]:[permission],g[group]:[permission] file
 
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/add-native-service/">Android 使用AIDL添加 native service</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-05-27 </span>
-      <div class="post-category">
-          <a href="/categories/android/"> Android </a>
+#执行效果
+setfacl -m u:paulh:rx,g:teach:x tfile
+getfacl --omit-hrader tfile
+user::rwx
+user:paulh:r-x
+group::r-x
+group:teach:--x
+mask::r-x
+other::--x
+</code></pre></div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">xistor</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-08-20
+        <a href="/commit/09abae5a1458877a30e28e819a6a068ca727d33e" title="new post">(09abae5)</a>
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">Linux</a>
           </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s
-    </div>
-    <div class="read-more">
-      <a href="/post/add-native-service/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/rpi4-boot-from-usb/">树莓派4B USB硬盘启动</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-03-08 </span>
-      <div class="post-category">
-          <a href="/categories/raspberrypi/"> raspberrypi </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      树莓派4B 官方还没有提供从USB启动的方案，不过可以使用之前更改cmdline.txt的方法实现。 我的树莓派已经使用SD卡跑了挺长时间了，不
-    </div>
-    <div class="read-more">
-      <a href="/post/rpi4-boot-from-usb/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    </section>
-  
-  <nav class="pagination">
-    <a class="prev" href="/page/3/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text">Prev</span>
-      </a>
-    <a class="next" href="/page/5/">
-        <span class="next-text">Next</span>
-        <i class="iconfont icon-right"></i>
-      </a>
-  </nav>
+      <nav class="post-nav">
+        <a class="prev" href="/post/linux/the-linux-programming-interface-s17/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记17.目录和链接</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/linux/the-linux-programming-interface-s15/">
+            <span class="next-text nav-default">Linux/Unix系统编程手册-笔记15.扩展属性</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
         </div>
-        
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'xistor';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
 
       </div>
     </main>
