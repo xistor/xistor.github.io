@@ -26,7 +26,7 @@
       <pubDate>Wed, 19 Aug 2020 22:40:00 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s16/</guid>
-      <description>访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:</description>
+      <description>访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩</description>
     </item>
     
     <item>

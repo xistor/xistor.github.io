@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:" />
+<meta name="author" content="xistor" /><meta name="description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩" />
 
 
 
@@ -39,22 +39,22 @@
 
 
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记16.访问控制列表" />
-<meta property="og:description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:" />
+<meta property="og:description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s16/" />
 <meta property="article:published_time" content="2020-08-19T22:40:00+08:00" />
 <meta property="article:modified_time" content="2020-08-20T23:37:22+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记16.访问控制列表">
-<meta itemprop="description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:">
+<meta itemprop="description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩">
 <meta itemprop="datePublished" content="2020-08-19T22:40:00&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-20T23:37:22&#43;08:00" />
-<meta itemprop="wordCount" content="225">
+<meta itemprop="wordCount" content="1048">
 
 
 
 <meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux/Unix系统编程手册-笔记16.访问控制列表"/>
-<meta name="twitter:description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。 一个ACL的结构如下图:"/>
+<meta name="twitter:description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -131,13 +131,41 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    <nav id="TableOfContents"></nav>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#acl的结构">ACL的结构</a></li>
+    <li><a href="#shell-命令">shell 命令</a></li>
+    <li><a href="#默认型acl">默认型ACL</a></li>
+    <li><a href="#acl-api">ACL API</a></li>
+  </ul>
+</nav>
   </div>
 </div>
     <div class="post-content">
-      <p>访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。</p>
-<p>一个ACL的结构如下图:
+      <p>访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩展属性实现的。</p>
+<h2 id="acl的结构">ACL的结构</h2>
+<p>如下图:
 <img src="/img/the-linux-programming-interface-s16/an_access_control_list.png" alt="acl"></p>
+<p>每条记录由3部分组成：</p>
+<ul>
+<li>标记类型：标记该记录作用于一个用户、组，还是其他类别的用户。</li>
+<li>标记限定符号： 某个用户的ID或组ID</li>
+<li>权限</li>
+</ul>
+<p><strong>带OBJ后缀的项</strong>
+对于应传统的用户权限</p>
+<p><strong>ACL_MASK</strong>
+该值记录了可由 ACL_USER、ACL_GROUP_OBJ以及ACL_GROUP型ACE所能授予的最高权限。这一项设立的目的在于即使运行并无ACL概念的应用程序，也能保障其行为的一致性。当ACL包含标记类型为ACL_MASK的ACE时：</p>
+<ul>
+<li>调用chmod()对传统组权限所做的变更，会改变ACL_MASK（而非ACL_GROUP_OBJ）</li>
+<li>调用stat(),在st_mode字段的组权限爱你位中会返回ACL_MASK权限。</li>
+</ul>
+<p>但是正是如此，假设某文件设置了如下ACL</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">user::rw-, group::---,mask::---,other::r--
+</code></pre></div><p>若针对该文件执行chmod g+rw，则ACL将会变为</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">user::rw-, group::---,mask::rw-,other::r--
+</code></pre></div><p>这时组用户仍无法访问该文件。迂回策略是修改针对组的ACE,赋予其所有权限，那么组用户将会获得和ACL_MASK一样的权限。</p>
+<h2 id="shell-命令">shell 命令</h2>
 <p>在shell中运行<code>getfacl</code>命令，可查看应用于文件的ACL。会得到类似如下输出：</p>
 <div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">getfacl README.md 
 # file: README.md
@@ -148,7 +176,7 @@ group::r--
 other::r--
 </code></pre></div><p><code>setfacl</code>命令可用来修改文件的ACL。<code>setfacl -m</code>可修改现有ACE,或者当给定标记类型和限定符的ACE不存在时，会追加新的ACE记录。</p>
 <div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">#命令格式
-setfacl -m u:[user]:[permission],g[group]:[permission] file
+setfacl -m u:[user]:[permission],g:[group]:[permission] file
 
 #执行效果
 setfacl -m u:paulh:rx,g:teach:x tfile
@@ -159,7 +187,45 @@ group::r-x
 group:teach:--x
 mask::r-x
 other::--x
-</code></pre></div>
+</code></pre></div><h2 id="默认型acl">默认型ACL</h2>
+<p>前面讨论的都是访问型ACL，即当进程访问与该ACL相关的文件时，将使用访问型ACL来判定进程对文件的访问权限。针对目录有第二种ACL：默认型ACL。</p>
+<p>访问目录时，默认型ACL并不参与判定所授予的权限，相反，默认型ACL的存在与否决定了在目录下所创建的文件或子目录的ACL和权限。
+比如创建一个文件夹，并给设置默认型ACL，然后在此文件夹下新建文件</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">mkdir test
+setfacl -d -m u::rwx,u:x:rx,g::rx,g:x:rwx,o::- test
+getfacl test
+# file: test
+# owner: x
+# group: x
+user::rwx
+group::rwx
+other::r-x
+default:user::rwx
+default:user:x:r-x
+default:group::r-x
+default:group:x:rwx
+default:mask::rwx
+default:other::---
+
+cd test
+echo &#34;hello&#34; &gt;&gt; hello
+
+getfacl hello     
+# file: hello
+# owner: root
+# group: root
+user::rw-
+user:x:r-x			#effective:r--
+group::r-x			#effective:r--
+group:x:rwx			#effective:rw-
+mask::rw-
+other::---
+
+</code></pre></div><p>可以看到新建的文件继承了目录的默认ACL。一旦目录拥有默认型ACL,那么对于新创建于该目录下的文件来说，进程的unmask并不参与判定文件访问型ACL中所记录的权限。</p>
+<h2 id="acl-api">ACL API</h2>
+<p><img src="/img/the-linux-programming-interface-s16/ACL_library_function_and_datastrures.png" alt="ACL库函数及数据结构"></p>
+<p>ACL 的API比较繁杂，如图，需要首先从文件中将ACL读入内存中，然后从中依次get每条记录，从ACE中读取/修改标记类型、获取/修改标记限定符、获取/修改权限分别对应下面三组函数。</p>
+
     </div>
 
     <div class="post-copyright">
