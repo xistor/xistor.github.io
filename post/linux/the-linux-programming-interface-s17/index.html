@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s17/" />
 <meta property="article:published_time" content="2020-08-20T18:25:00+08:00" />
-<meta property="article:modified_time" content="2020-08-21T18:27:54+08:00" />
+<meta property="article:modified_time" content="2020-08-24T19:56:18+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记17.目录和链接">
 <meta itemprop="description" content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&quot;目录&rdquo;">
 <meta itemprop="datePublished" content="2020-08-20T18:25:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-21T18:27:54&#43;08:00" />
-<meta itemprop="wordCount" content="3761">
+<meta itemprop="dateModified" content="2020-08-24T19:56:18&#43;08:00" />
+<meta itemprop="wordCount" content="5476">
 
 
 
@@ -348,9 +348,152 @@ closedir()函数将dirp指代的目录流关闭。</p>
 <li>
 <p>根据提示，在编译前后使用<code>ls -li</code>查看，发现可执行文件的i-number改变了，所以实际行为为原可执行文件的在目录中的记录被删除了，但其i-node在其执行期间还存在，只不过新建了一个新文件以及i-node信息，文件名指向了新的i-number。</p>
 </li>
-<li></li>
+<li>
+<p>Github上找到了一个小哥写的<a href="https://github.com/timjb/tlpi-exercises/blob/master/realpath_clone.c">程序</a>，花了点时间看懂了，加了些注释。</p>
+</li>
 </ol>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;limits.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;libgen.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/stat.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;tlpi_hdr.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">char</span> <span class="o">*</span><span class="nf">my_realpath_relative</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="p">);</span>
+<span class="kt">char</span> <span class="o">*</span><span class="nf">my_realpath</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="p">);</span>
 
+<span class="kt">char</span> <span class="o">*</span><span class="nf">my_realpath_relative</span> <span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">relative_path</span><span class="p">)</span> <span class="p">{</span>
+  
+  <span class="c1">// path为绝对路径的话， relative_path先赋值为“/”
+</span><span class="c1"></span>  <span class="c1">// 这个relative_path也就是上层调用传入的resolved_path，也就是最终调用者拿到的真实路径所在的缓冲区指针
+</span><span class="c1"></span>  <span class="c1">// 所以对其修改都会影响到最终解析出的路径
+</span><span class="c1"></span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">relative_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;/&#39;</span><span class="p">;</span>
+    <span class="n">relative_path</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="c1">// 遍历path
+</span><span class="c1"></span>  <span class="k">while</span> <span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*
+</span><span class="cm">      i 指向一层目录的起始处，j 指向一层目录结尾 &#39;/&#39;或 &#39;\0&#39;
+</span><span class="cm">      比如传入路径为&#34;/home/x/work/a/b/c&#34;， 在第一次循环时i指向&#39;h&#39;, j 指向&#34;home&#34;之后的&#39;/&#39;字符
+</span><span class="cm">      这样就把一层目录分割出来，每次循环前进一层目录，直至字符串末尾
+</span><span class="cm">    */</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="n">i</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;/&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">path</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;\0&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">j</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+
+
+    <span class="c1">// 当 path 为 &#34;/&#34;时会出现 j == i
+</span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="cm">/*
+</span><span class="cm">        接下来处理单层目录，分了三种情况
+</span><span class="cm">      */</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/*  当前处理目录字符串是 &#34;.&#34;， 什么也不做 */</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* 当前处理的目录字符串是 &#34;..&#34;， 调用dirname()，取得上层目录路径，并取代relative_path中原先的路径 */</span>
+
+        <span class="kt">char</span> <span class="o">*</span><span class="n">dirn</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="n">relative_path</span><span class="p">);</span>
+        <span class="n">strncpy</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="n">dirn</span><span class="p">,</span> <span class="n">PATH_MAX</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">relative_path</span><span class="p">[</span><span class="n">strlen</span><span class="p">(</span><span class="n">relative_path</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">strncat</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="n">PATH_MAX</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="cm">/* 
+</span><span class="cm">          记录当前relative_path内路径字符串的长度，后面有用
+</span><span class="cm">          比如传入路径为&#34;/home/x/work/a/b/c&#34;， 当前处理到&#34;work&#34;这层，此时&#34;work&#34;还没有被添加到relative_path中，
+</span><span class="cm">          所以得到的为&#34;/home/x/&#34;的长度， relative_path_len 为8
+</span><span class="cm">          后续都以&#34;work&#34;为例
+</span><span class="cm">        */</span>
+        <span class="n">size_t</span> <span class="n">relative_path_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">relative_path</span><span class="p">);</span>
+
+        <span class="cm">/* 把当前处理的目录append到relative_path的末尾，那么relative_path执行完下面这句后为
+</span><span class="cm">          &#34;/home/x/work/&#34;
+</span><span class="cm">        */</span>
+        <span class="n">strncat</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">j</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+        <span class="k">struct</span> <span class="nc">stat</span> <span class="n">stat_buf</span><span class="p">;</span> 
+        <span class="k">if</span> <span class="p">(</span><span class="n">lstat</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">stat_buf</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span> <span class="p">}</span>
+        <span class="cm">/*
+</span><span class="cm">          如果当前是一个符号链接的话，则调用readlink()读取符号链接内的字符串，
+</span><span class="cm">          并将relative_path恢复，比如当前处理的&#34;work&#34;是一个符号链接，则将&#34;work&#34;从relative_path中删除，
+</span><span class="cm">          也就是说relative_path变成了&#34;/home/x/&#34;, 当然从符号链接中取出的路径还是要继续解析的，所以还需要递归的
+</span><span class="cm">          调用my_realpath_relative。这里又有两种情况：
+</span><span class="cm">          1. 符号链接里的是绝对路径：那么my_realpath_relative函数一开始会判断并将relative_path重置为&#34;/&#34;,
+</span><span class="cm">          使用符号链接里的路径继续解析，比如&#34;work&#34;指向的路径为&#34;/a/b/c&#34;，一个前缀完全不一样的绝对路径，则再次进入
+</span><span class="cm">          my_realpath_relative后，relative_path被重置为&#34;/&#34;,然后按a-&gt;b-&gt;开始重新解析。
+</span><span class="cm">          2. 符号链接里的是相对路径：那么relative_path中保存路径还是有用的，则my_realpath_relative会在relative_path
+</span><span class="cm">          后面添加新的解析后的路径。
+</span><span class="cm">        */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">S_ISLNK</span><span class="p">(</span><span class="n">stat_buf</span><span class="p">.</span><span class="n">st_mode</span><span class="p">))</span> <span class="p">{</span>
+          <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">PATH_MAX</span><span class="p">];</span>
+          <span class="n">ssize_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">readlink</span><span class="p">(</span><span class="n">relative_path</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">PATH_MAX</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span> <span class="p">}</span>
+          <span class="n">relative_path</span><span class="p">[</span><span class="n">relative_path_len</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">my_realpath_relative</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">relative_path</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+          <span class="p">}</span>
+          <span class="c1">// 至此，递归结束后，relative_path中已经为&#34;work&#34;在文件系统中的绝对路径。
+</span><span class="c1"></span>        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="cm">/*
+</span><span class="cm">      进入下一层目录
+</span><span class="cm">    */</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">j</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="n">relative_path</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">char</span> <span class="o">*</span><span class="nf">my_realpath</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">resolved_path</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">path</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">errno</span> <span class="o">=</span> <span class="n">EINVAL</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">resolved_path</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">resolved_path</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="n">PATH_MAX</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// 如果是相对路径的话就先获取当前工作目录，作为前缀加到resolved_path中
+</span><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="sc">&#39;/&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">getcwd</span><span class="p">(</span><span class="n">resolved_path</span><span class="p">,</span> <span class="n">PATH_MAX</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">strncat</span><span class="p">(</span><span class="n">resolved_path</span><span class="p">,</span> <span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="n">PATH_MAX</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="cm">/* 
+</span><span class="cm">    解析路径 
+</span><span class="cm">    当参数path是相对路径，resolved_path已经有了其绝对路径前缀，后续解析在它之后添加就可以了
+</span><span class="cm">    当参数path是绝对路径，则resolved_path内还是空的，继续看my_realpath_relative函数
+</span><span class="cm">  */</span>
+  <span class="k">return</span> <span class="n">my_realpath_relative</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">resolved_path</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">usageErr</span><span class="p">(</span><span class="s">&#34;%s path&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">path</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="kt">char</span> <span class="n">resolved_path</span><span class="p">[</span><span class="n">PATH_MAX</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">my_realpath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">resolved_path</span><span class="p">)</span> <span class="o">==</span> <span class="n">resolved_path</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s&#34;</span><span class="p">,</span> <span class="n">resolved_path</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;my_realpath</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
     </div>
 
     <div class="post-copyright">
@@ -361,8 +504,8 @@ closedir()函数将dirp指代的目录流关闭。</p>
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-08-21
-        <a href="/commit/ccb0be3cc119b212d352288177f6786a9264a0c8" title="new post">(ccb0be3)</a>
+        2020-08-24
+        <a href="/commit/f30fa1ee8b05449f2e776e6a96d250893f678781" title="update">(f30fa1e)</a>
     </span>
   </p>
   
@@ -373,7 +516,11 @@ closedir()函数将dirp指代的目录流关闭。</p>
           <a href="/tags/linux/">Linux</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/linux/the-linux-programming-interface-s18/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记18.目录和链接</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/linux/the-linux-programming-interface-s16/">
             <span class="next-text nav-default">Linux/Unix系统编程手册-笔记16.访问控制列表</span>
             <span class="next-text nav-mobile">Next</span>
