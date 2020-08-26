@@ -48,7 +48,7 @@
 <meta itemprop="description" content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&quot;目录&rdquo;">
 <meta itemprop="datePublished" content="2020-08-20T18:25:00&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-24T19:56:18&#43;08:00" />
-<meta itemprop="wordCount" content="5476">
+<meta itemprop="wordCount" content="5502">
 
 
 
@@ -251,7 +251,7 @@ readlink():获取链接的本身内容，即其所指向的路径名，符号链
 <span class="kt">int</span> <span class="nf">closedir</span><span class="p">(</span><span class="n">DIR</span> <span class="o">*</span><span class="n">dirp</span><span class="p">);</span>
 
 <span class="kt">int</span> <span class="nf">readdir_r</span><span class="p">(</span><span class="n">DIR</span> <span class="o">*</span><span class="n">dirp</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">dirent</span> <span class="o">*</span><span class="n">entry</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">dirent</span> <span class="o">**</span><span class="n">result</span><span class="p">);</span> <span class="c1">// 可重入版的readdir()
-</span></code></pre></div><p>opendir()和fdopendir()都会但会指向DIR类型结构的指针。该结构即所谓目录流。每调用readdir()一次，就会从dirp所指代的目录流读取下一目录条目。并返回一枚指针指向静态分配而得的dirent类型结构，每次调用readdir()都会覆盖该结构。<br>
+</span></code></pre></div><p>opendir()和fdopendir()都会但会指向DIR类型结构的指针。该结构即所谓目录流。每调用readdir()一次，就会从dirp所指代的目录流读取下一目录条目。并返回一枚指针指向静态分配而得的dirent类型结构，每次调用readdir()都会覆盖该结构,读取完毕后返回NULL。<br>
 rewinddir()函数可将目录流回移到起点。<br>
 closedir()函数将dirp指代的目录流关闭。</p>
 <h2 id="文件树遍历">文件树遍历</h2>
@@ -344,14 +344,8 @@ closedir()函数将dirp指代的目录流关闭。</p>
 <span class="kt">char</span> <span class="o">*</span><span class="nf">basename</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">pathname</span><span class="p">);</span>
 </code></pre></div><p><code>dirname()</code>和<code>basename()</code>函数将一个路径名字符串分解成目录和文件名两部分。比如给定路径名<code>/home/britta/prog.c</code>,<code>dirname()</code>将返回<code>/home/britta</code>,而<code>basename()</code>将返回<code>prog.c</code>。</p>
 <h2 id="exercise">Exercise</h2>
-<ol>
-<li>
-<p>根据提示，在编译前后使用<code>ls -li</code>查看，发现可执行文件的i-number改变了，所以实际行为为原可执行文件的在目录中的记录被删除了，但其i-node在其执行期间还存在，只不过新建了一个新文件以及i-node信息，文件名指向了新的i-number。</p>
-</li>
-<li>
-<p>Github上找到了一个小哥写的<a href="https://github.com/timjb/tlpi-exercises/blob/master/realpath_clone.c">程序</a>，花了点时间看懂了，加了些注释。</p>
-</li>
-</ol>
+<p>1.根据提示，在编译前后使用<code>ls -li</code>查看，发现可执行文件的i-number改变了，所以实际行为为原可执行文件的在目录中的记录被删除了，但其i-node在其执行期间还存在，只不过新建了一个新文件以及i-node信息，文件名指向了新的i-number。<br>
+3.Github上找到了一个小哥写的<a href="https://github.com/timjb/tlpi-exercises/blob/master/realpath_clone.c">程序</a>，花了点时间看懂了，加了些注释。</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;limits.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;libgen.h&gt;</span><span class="cp">
@@ -493,6 +487,10 @@ closedir()函数将dirp指代的目录流关闭。</p>
   <span class="p">}</span>
   <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
 <span class="p">}</span>
+</code></pre></div><p>7.实现nftw()</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">
+
+
 </code></pre></div>
     </div>
 
@@ -518,7 +516,7 @@ closedir()函数将dirp指代的目录流关闭。</p>
       <nav class="post-nav">
         <a class="prev" href="/post/linux/the-linux-programming-interface-s18/">
             <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记18.目录和链接</span>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记18.监控文件事件</span>
             <span class="prev-text nav-mobile">Prev</span>
           </a>
         <a class="next" href="/post/linux/the-linux-programming-interface-s16/">

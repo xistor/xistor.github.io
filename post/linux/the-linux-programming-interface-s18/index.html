@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Linux/Unix系统编程手册-笔记18.目录和链接 - xistor&#39;s note</title>
+  <title>Linux/Unix系统编程手册-笔记18.监控文件事件 - xistor&#39;s note</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="" />
+<meta name="author" content="xistor" /><meta name="description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &amp;lt;sys/inotify.h&amp;gt;#include &amp;lt;limits.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&amp;#34; wd =%2d; &amp;#34;, i-&amp;gt;wd); if (i-&amp;gt;cookie &amp;gt; 0) printf(&amp;#34;cookie =%4d; &amp;#34;, i-&amp;gt;cookie); printf(&amp;#34;mask = &amp;#34;); if (i-&amp;gt;mask &amp;amp;" />
 
 
 
@@ -38,23 +38,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记18.目录和链接" />
-<meta property="og:description" content="" />
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记18.监控文件事件" />
+<meta property="og:description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&#34; wd =%2d; &#34;, i-&gt;wd); if (i-&gt;cookie &gt; 0) printf(&#34;cookie =%4d; &#34;, i-&gt;cookie); printf(&#34;mask = &#34;); if (i-&gt;mask &amp;" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s18/" />
-<meta property="article:published_time" content="2020-08-24T18:25:00+08:00" />
-<meta property="article:modified_time" content="2020-08-24T19:56:18+08:00" />
-<meta itemprop="name" content="Linux/Unix系统编程手册-笔记18.目录和链接">
-<meta itemprop="description" content="">
-<meta itemprop="datePublished" content="2020-08-24T18:25:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-24T19:56:18&#43;08:00" />
-<meta itemprop="wordCount" content="0">
+<meta property="article:published_time" content="2020-08-25T18:25:00+08:00" />
+<meta property="article:modified_time" content="2020-08-25T20:34:54+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记18.监控文件事件">
+<meta itemprop="description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&#34; wd =%2d; &#34;, i-&gt;wd); if (i-&gt;cookie &gt; 0) printf(&#34;cookie =%4d; &#34;, i-&gt;cookie); printf(&#34;mask = &#34;); if (i-&gt;mask &amp;">
+<meta itemprop="datePublished" content="2020-08-25T18:25:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-08-25T20:34:54&#43;08:00" />
+<meta itemprop="wordCount" content="567">
 
 
 
 <meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记18.目录和链接"/>
-<meta name="twitter:description" content=""/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记18.监控文件事件"/>
+<meta name="twitter:description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&#34; wd =%2d; &#34;, i-&gt;wd); if (i-&gt;cookie &gt; 0) printf(&#34;cookie =%4d; &#34;, i-&gt;cookie); printf(&#34;mask = &#34;); if (i-&gt;mask &amp;"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -117,10 +117,10 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">Linux/Unix系统编程手册-笔记18.目录和链接</h1>
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记18.监控文件事件</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2020-08-24 </span>
+        <span class="post-time"> 2020-08-25 </span>
         <div class="post-category">
             <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
             </div>
@@ -135,7 +135,102 @@
   </div>
 </div>
     <div class="post-content">
-      
+      <p>这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接：</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;sys/inotify.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;limits.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;tlpi_hdr.h&#34;</span><span class="cp">
+</span><span class="cp"></span><span class="k">static</span> <span class="kt">void</span> <span class="cm">/* Display information from inotify_event structure */</span>
+<span class="n">displayInotifyEvent</span><span class="p">(</span><span class="k">struct</span> <span class="nc">inotify_event</span> <span class="o">*</span><span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34; wd =%2d; &#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">-&gt;</span><span class="n">wd</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">cookie</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;cookie =%4d; &#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">-&gt;</span><span class="n">cookie</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mask = &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_ACCESS</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_ACCESS &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_ATTRIB</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_ATTRIB &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_CLOSE_NOWRITE</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_CLOSE_NOWRITE &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_CLOSE_WRITE</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_CLOSE_WRITE &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_CREATE</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_CREATE &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_DELETE</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_DELETE &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_DELETE_SELF</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_DELETE_SELF &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_IGNORED</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_IGNORED &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_ISDIR</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_ISDIR &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_MODIFY</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_MODIFY &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_MOVE_SELF</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_MOVE_SELF &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_MOVED_FROM</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_MOVED_FROM &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_MOVED_TO</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_MOVED_TO &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_OPEN</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_OPEN &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_Q_OVERFLOW</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_Q_OVERFLOW &#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">IN_UNMOUNT</span><span class="p">)</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IN_UNMOUNT &#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34; name = %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">#define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
+</span><span class="cp"></span><span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">inotifyFd</span><span class="p">,</span> <span class="n">wd</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">BUF_LEN</span><span class="p">];</span>
+    <span class="n">ssize_t</span> <span class="n">numRead</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">inotify_event</span> <span class="o">*</span><span class="n">event</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">||</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#34;--help&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">usageErr</span><span class="p">(</span><span class="s">&#34;%s pathname... </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+    <span class="cm">/*
+</span><span class="cm">        使用inotify主要分三步
+</span><span class="cm">        step 1: 调用inotify_init()创建一个inotify实例
+</span><span class="cm">    */</span>
+    <span class="n">inotifyFd</span> <span class="o">=</span> <span class="n">inotify_init</span><span class="p">();</span> <span class="cm">/* Create inotify instance */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">inotifyFd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;inotify_init&#34;</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/*
+</span><span class="cm">            step 2 : int inotify_add_watch(int fd, const char *pathname, uint32_t mask);
+</span><span class="cm">            添加想要监控的目录路径，mask可以指定监控哪些事件，这里监控所有事件
+</span><span class="cm">        */</span>
+        <span class="n">wd</span> <span class="o">=</span> <span class="n">inotify_add_watch</span><span class="p">(</span><span class="n">inotifyFd</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">IN_ALL_EVENTS</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">wd</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;inotify_add_watch&#34;</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Watching %s using wd %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">wd</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span> <span class="cm">/* Read events forever */</span>
+        <span class="cm">/*
+</span><span class="cm">            step 3 : 读取事件，若没有事件会阻塞
+</span><span class="cm">        */</span>
+        <span class="n">numRead</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">inotifyFd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">BUF_LEN</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">numRead</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">fatal</span><span class="p">(</span><span class="s">&#34;read() from inotify fd returned 0!&#34;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">numRead</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;read&#34;</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Read %ld bytes from inotify fd</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">numRead</span><span class="p">);</span>
+        <span class="cm">/* Process all of the events in buffer returned by read() */</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">buf</span><span class="p">;</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">buf</span> <span class="o">+</span> <span class="n">numRead</span><span class="p">;</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">inotify_event</span> <span class="o">*</span><span class="p">)</span> <span class="n">p</span><span class="p">;</span>
+            <span class="n">displayInotifyEvent</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+            <span class="n">p</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">inotify_event</span><span class="p">)</span> <span class="o">+</span> <span class="n">event</span><span class="o">-&gt;</span><span class="n">len</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div><p>可供监控的事件如下：</p>
+<p><img src="/img/the-linux-programming-interface-s18/events.png" alt="事件"></p>
+<p>read()返回buf结构如下:</p>
+<p><img src="/img/the-linux-programming-interface-s18/return_buf.png" alt="返回的buf"></p>
+<p>其中每个结构体为：</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">inotify_event</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">wd</span><span class="p">;</span> <span class="cm">/* Watch descriptor on which event occurred */</span>
+    <span class="kt">uint32_t</span> <span class="n">mask</span><span class="p">;</span> <span class="cm">/* Bits describing event that occurred */</span>
+    <span class="kt">uint32_t</span> <span class="n">cookie</span><span class="p">;</span> <span class="cm">/* Cookie for related events (for rename()) */</span>
+    <span class="kt">uint32_t</span> <span class="n">len</span><span class="p">;</span> <span class="cm">/* Size of &#39;name&#39; field */</span>
+    <span class="kt">char</span> <span class="n">name</span><span class="p">[];</span> <span class="cm">/* Optional null-terminated filename */</span>
+<span class="p">};</span>
+</code></pre></div><p>然后要做的就像例程中，遍历每个事件，解析哪个文件发生了什么事件，做出对应操作。</p>
+
     </div>
 
     <div class="post-copyright">
@@ -146,8 +241,8 @@
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-08-24
-        <a href="/commit/f30fa1ee8b05449f2e776e6a96d250893f678781" title="update">(f30fa1e)</a>
+        2020-08-25
+        <a href="/commit/fd727aea03f21ad002e36fa2004c61d5626bfe7a" title="update">(fd727ae)</a>
     </span>
   </p>
   

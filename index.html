@@ -44,7 +44,7 @@
 <meta property="og:description" content="Don&#39;t Panic" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://xistor.github.io/" />
-<meta property="og:updated_time" content="2020-08-24T19:56:18+08:00" />
+<meta property="og:updated_time" content="2020-08-25T20:34:54+08:00" />
 <meta itemprop="name" content="xistor&#39;s note">
 <meta itemprop="description" content="Don&#39;t Panic"><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="xistor&#39;s note"/>
@@ -111,9 +111,9 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s18/">Linux/Unix系统编程手册-笔记18.目录和链接</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s18/">Linux/Unix系统编程手册-笔记18.监控文件事件</a></h1>
     <div class="post-meta">
-      <span class="post-time"> 2020-08-24 </span>
+      <span class="post-time"> 2020-08-25 </span>
       <div class="post-category">
           <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
           </div>
@@ -122,7 +122,7 @@
   
   <div class="post-content">
     <div class="post-summary">
-      
+      这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&#34; wd =%2d; &#34;, i-&gt;wd); if (i-&gt;cookie &gt; 0) printf(&#34;cookie =%4d; &#34;, i-&gt;cookie); printf(&#34;mask = &#34;); if (i-&gt;mask &amp;
     </div>
     <div class="read-more">
       <a href="/post/linux/the-linux-programming-interface-s18/" class="read-more-link">Read more...</a>
