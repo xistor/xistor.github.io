@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &amp;lt;sys/inotify.h&amp;gt;#include &amp;lt;limits.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&amp;#34; wd =%2d; &amp;#34;, i-&amp;gt;wd); if (i-&amp;gt;cookie &amp;gt; 0) printf(&amp;#34;cookie =%4d; &amp;#34;, i-&amp;gt;cookie); printf(&amp;#34;mask = &amp;#34;); if (i-&amp;gt;mask &amp;amp;" />
+<meta name="author" content="xistor" /><meta name="description" content="这章就只介绍了inotify机制,用来监控某个目录下的文件变化。直接看例程比较简单直接： #include &amp;lt;sys/inotify.h&amp;gt;#include &amp;lt;limits.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34;static void /* 这一坨函数只是打印出变化事件 */ displayInotifyEvent(struct inotify_event *i) { printf(&amp;#34;" />
 
 
 
@@ -39,22 +39,22 @@
 
 
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记18.监控文件事件" />
-<meta property="og:description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&#34; wd =%2d; &#34;, i-&gt;wd); if (i-&gt;cookie &gt; 0) printf(&#34;cookie =%4d; &#34;, i-&gt;cookie); printf(&#34;mask = &#34;); if (i-&gt;mask &amp;" />
+<meta property="og:description" content="这章就只介绍了inotify机制,用来监控某个目录下的文件变化。直接看例程比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* 这一坨函数只是打印出变化事件 */ displayInotifyEvent(struct inotify_event *i) { printf(&#34;" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s18/" />
 <meta property="article:published_time" content="2020-08-25T18:25:00+08:00" />
 <meta property="article:modified_time" content="2020-08-25T20:34:54+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记18.监控文件事件">
-<meta itemprop="description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&#34; wd =%2d; &#34;, i-&gt;wd); if (i-&gt;cookie &gt; 0) printf(&#34;cookie =%4d; &#34;, i-&gt;cookie); printf(&#34;mask = &#34;); if (i-&gt;mask &amp;">
+<meta itemprop="description" content="这章就只介绍了inotify机制,用来监控某个目录下的文件变化。直接看例程比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* 这一坨函数只是打印出变化事件 */ displayInotifyEvent(struct inotify_event *i) { printf(&#34;">
 <meta itemprop="datePublished" content="2020-08-25T18:25:00&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-25T20:34:54&#43;08:00" />
-<meta itemprop="wordCount" content="567">
+<meta itemprop="wordCount" content="592">
 
 
 
 <meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux/Unix系统编程手册-笔记18.监控文件事件"/>
-<meta name="twitter:description" content="这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&#34; wd =%2d; &#34;, i-&gt;wd); if (i-&gt;cookie &gt; 0) printf(&#34;cookie =%4d; &#34;, i-&gt;cookie); printf(&#34;mask = &#34;); if (i-&gt;mask &amp;"/>
+<meta name="twitter:description" content="这章就只介绍了inotify机制,用来监控某个目录下的文件变化。直接看例程比较简单直接： #include &lt;sys/inotify.h&gt;#include &lt;limits.h&gt;#include &#34;tlpi_hdr.h&#34;static void /* 这一坨函数只是打印出变化事件 */ displayInotifyEvent(struct inotify_event *i) { printf(&#34;"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -135,11 +135,12 @@
   </div>
 </div>
     <div class="post-content">
-      <p>这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接：</p>
+      <p>这章就只介绍了inotify机制,用来监控某个目录下的文件变化。直接看例程比较简单直接：</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;sys/inotify.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;limits.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&#34;tlpi_hdr.h&#34;</span><span class="cp">
-</span><span class="cp"></span><span class="k">static</span> <span class="kt">void</span> <span class="cm">/* Display information from inotify_event structure */</span>
+</span><span class="cp"></span><span class="k">static</span> <span class="kt">void</span> <span class="cm">/* 这一坨函数只是打印出变化事件 */</span>
+
 <span class="n">displayInotifyEvent</span><span class="p">(</span><span class="k">struct</span> <span class="nc">inotify_event</span> <span class="o">*</span><span class="n">i</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">printf</span><span class="p">(</span><span class="s">&#34; wd =%2d; &#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">-&gt;</span><span class="n">wd</span><span class="p">);</span>
@@ -167,7 +168,11 @@
     <span class="n">printf</span><span class="p">(</span><span class="s">&#34; name = %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
 <span class="p">}</span>
 <span class="cp">#define BUF_LEN (10 * (sizeof(struct inotify_event) + NAME_MAX + 1))
-</span><span class="cp"></span><span class="kt">int</span>
+</span><span class="cp"></span>
+
+<span class="cm">/*下面是使用inotify的三个步骤*/</span>
+
+<span class="kt">int</span>
 <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">inotifyFd</span><span class="p">,</span> <span class="n">wd</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
@@ -179,7 +184,6 @@
         <span class="n">usageErr</span><span class="p">(</span><span class="s">&#34;%s pathname... </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
 
     <span class="cm">/*
-</span><span class="cm">        使用inotify主要分三步
 </span><span class="cm">        step 1: 调用inotify_init()创建一个inotify实例
 </span><span class="cm">    */</span>
     <span class="n">inotifyFd</span> <span class="o">=</span> <span class="n">inotify_init</span><span class="p">();</span> <span class="cm">/* Create inotify instance */</span>

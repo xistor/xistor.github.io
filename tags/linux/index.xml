@@ -17,7 +17,7 @@
       <pubDate>Tue, 25 Aug 2020 18:25:00 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s18/</guid>
-      <description>这章就只介绍了inotify机制。直接根据例程看如何使用比较简单直接： #include &amp;lt;sys/inotify.h&amp;gt;#include &amp;lt;limits.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34;static void /* Display information from inotify_event structure */ displayInotifyEvent(struct inotify_event *i) { printf(&amp;#34; wd =%2d; &amp;#34;, i-&amp;gt;wd); if (i-&amp;gt;cookie &amp;gt; 0) printf(&amp;#34;cookie =%4d; &amp;#34;, i-&amp;gt;cookie); printf(&amp;#34;mask = &amp;#34;); if (i-&amp;gt;mask &amp;amp;</description>
+      <description>这章就只介绍了inotify机制,用来监控某个目录下的文件变化。直接看例程比较简单直接： #include &amp;lt;sys/inotify.h&amp;gt;#include &amp;lt;limits.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34;static void /* 这一坨函数只是打印出变化事件 */ displayInotifyEvent(struct inotify_event *i) { printf(&amp;#34;</description>
     </item>
     
     <item>
