@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux/Unix系统编程手册-笔记19.信号 - xistor&#39;s note</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="xistor" /><meta name="description" content="信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.72.0 with theme even" />
+
+
+<link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s19/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<link href="/dist/even.a8191bf8.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记19.信号" />
+<meta property="og:description" content="信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s19/" />
+<meta property="article:published_time" content="2020-08-25T18:25:00+08:00" />
+<meta property="article:modified_time" content="2020-08-27T23:32:11+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记19.信号">
+<meta itemprop="description" content="信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软">
+<meta itemprop="datePublished" content="2020-08-25T18:25:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-08-27T23:32:11&#43;08:00" />
+<meta itemprop="wordCount" content="1699">
+
+
+
+<meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记19.信号"/>
+<meta name="twitter:description" content="信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Xistor&#39;s Note</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Xistor&#39;s Note</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记19.信号</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-08-25 </span>
+        <div class="post-category">
+            <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+            </div>
+        <span id="busuanzi_container_page_pv" class="more-meta"> <span id="busuanzi_value_page_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> times read </span>
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#信号类型">信号类型</a></li>
+    <li><a href="#改变信号的处置方式">改变信号的处置方式</a></li>
+    <li><a href="#发送信号">发送信号</a></li>
+    <li><a href="#信号掩码">信号掩码</a></li>
+    <li><a href="#处于等待中的信号">处于等待中的信号</a></li>
+    <li><a href="#sigaction">sigaction()</a></li>
+    <li><a href="#等待信号">等待信号</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p>信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。</p>
+<blockquote>
+<p>信号和软中断的区别：中断可以看作是CPU和OS kernel之间的通信，信号是OS kernel和进程之间的通信。中断可以由CPU(异常，如:除以零，页面错误)，设备(硬件中断，如:可用输入)，或者由CPU指令(陷阱，如系统调用，断点)发起。它们最终由CPU管理，它“中断”当前任务，并调用os内核提供的ISR/中断处理程序。信号由操作系统内核（如：SIGFPE, SIGSEGV, SIGIO），或者其他进程（kill()）发起。由操作系统内核管理，内核将信号发送给目标线程/进程，调用一个默认动作(ignore, terminate, termiante and dump core) 或者调用进程自定义的handler。</p>
+</blockquote>
+<h2 id="信号类型">信号类型</h2>
+<p>信号分两大类：一种是标准信号，编号从1到31，定义在&lt;signal.h&gt;中，被内核用来通知进程事件发生。
+另一种是实时信号，信号取值区间SIGRTMIN~SIGRTMAX，没有明确的含义，而是由使用者自己来决定如何使用。</p>
+<p>定义的信号如下表，signal number列中字母代表平台架构，S=Sun SPARC, A=Digital Alpha, M=MIPS, P=HP PA_RISC
+<img src="/img/the-linux-programming-interface-s19/signal_number.png" alt="信号表"></p>
+<h2 id="改变信号的处置方式">改变信号的处置方式</h2>
+<p>使用<code>signal()</code>函数可以设立一个信号处理handler。参数<code>sig</code>是我们想要改变处置方式的信号，<code>handler</code>是当信号到达时，我们想要调用的函数，<code>signal()</code>的返回值是前一个handler函数。</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">void</span> <span class="p">(</span> <span class="o">*</span><span class="n">signal</span><span class="p">(</span><span class="kt">int</span> <span class="n">sig</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">handler</span><span class="p">)(</span><span class="kt">int</span><span class="p">))</span> <span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">);</span>
+</code></pre></div><p>当信号处理函数被调用时，可能在任何时间中断主程序流程，内核代表进程取表用处理函数，在处理函数返回后，在程序中断的地方继续执行。信号处理函数的参数的传入参数为信号编号，利用这个可以使用一个信号处理函数来处置多个信号。</p>
+<h2 id="发送信号">发送信号</h2>
+<p>一个进程可以使用kill()给另外的进程发送信号，之所以命名为kill,是因为早期大多数信号的默认处置方式都会终止进程。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">kill</span><span class="p">(</span><span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sig</span><span class="p">);</span>   <span class="c1">// retturn 0 on success, or -1 on error
+</span></code></pre></div><p>对于参数pid：</p>
+<ul>
+<li>如果pid大于0，信号会被发给对应pid的进程。</li>
+<li>pid = 0, 信号会被发给同一个进程组的所有进程，包括调用进程自己。</li>
+<li>pid &lt; -1, 会取绝对值发送。</li>
+<li>pid = -1, 会发给所有有权限发送的进程，除了init和调用进程。</li>
+</ul>
+<h2 id="信号掩码">信号掩码</h2>
+<p>对于每个进程，内核维护一个信号掩码,在这个集合中的信号会被阻塞，直到信号从mask中移除后，才会被送达。（信号掩码实际是一个线程级的属性，使用pthread_mask()可配置）。</p>
+<p>一个信号可能以以下几种方式被加入到信号掩码中：</p>
+<ul>
+<li>当信号处理函数被调用时，信号会自动加入信号掩码，这个是否出现取决于使用sigaction()注册信号处理函数时传入的flag（当包括SA_NODEFER时，在信号处理函数中也会响应信号）。</li>
+<li>使用sigprocmask()</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">sigprocmask</span><span class="p">(</span><span class="kt">int</span> <span class="n">how</span><span class="p">,</span> <span class="k">const</span> <span class="n">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">,</span> <span class="n">sigset_t</span> <span class="o">*</span><span class="n">oldset</span><span class="p">);</span>
+</code></pre></div><p>how参数指定了函数想给掩码带来的变化</p>
+<ul>
+<li>SIG_BLOCK 将set指向的信号集内的指定信号添加到信号掩码中</li>
+<li>SIG_UNBLOCK 将set指向的信号集内的信号从信号掩码中移除</li>
+<li>SIG_SETMASK 将set指向的信号集赋给信号掩码</li>
+</ul>
+<p>sigprocmask()使用例子：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="n">sigset_t</span> <span class="n">blockset</span><span class="p">,</span> <span class="n">prevMask</span><span class="p">;</span>
+
+<span class="c1">// 这两个函数定义在signal.h中
+</span><span class="c1"></span><span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">blockset</span><span class="p">);</span>
+<span class="n">sigaddset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">blockset</span><span class="p">,</span> <span class="n">SIGINT</span><span class="p">);</span>
+
+<span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">blockset</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">preMask</span><span class="p">);</span>
+
+</code></pre></div><h2 id="处于等待中的信号">处于等待中的信号</h2>
+<p>某进程接受了一个正在阻塞的信号，会把该信号加到进程的等待信号集中，使用<code>sigpending()</code>可以看</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">sigpending</span><span class="p">(</span><span class="n">sigset_t</span> <span class="o">*</span><span class="n">set</span><span class="p">);</span>
+</code></pre></div><p>等待信号集仅仅是一个掩码，仅表明一个信号是否发生，而未表明其发生的次数。换言之，如果同一个信号在阻塞状态下发生多次， 那么会将该信号记录在等待信号集中，并在稍后仅传递一次。</p>
+<h2 id="sigaction">sigaction()</h2>
+<p>相比signal()， sigaction()系统调用使用更加灵活，可移植性更佳。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">sigaction</span><span class="p">(</span><span class="kt">int</span> <span class="n">sig</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">sigaction</span> <span class="o">*</span><span class="n">act</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sigation</span> <span class="o">*</span><span class="n">oldact</span><span class="p">);</span>
+
+<span class="c1">//  return 0 on success, or -1 on error
+</span></code></pre></div><p>sig参数是想要获取或改变的信号编号</p>
+<p>参数act是指向描述信号新处置的数据结构，如果只想获取现有处置，可以置null。<br>
+oldact和act类型相同，是只想之前信号处置的数据结构。</p>
+<p>sigaction结构体如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">sigaction</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">sa_handler</span><span class="p">)(</span><span class="kt">int</span><span class="p">);</span>
+    <span class="n">sigset_t</span> <span class="n">sa_mask</span><span class="p">;</span>
+
+    <span class="kt">int</span> <span class="n">sa_flags</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">sa_restorer</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>    
+<span class="p">}</span>
+</code></pre></div><p>sa_handler: 信号handler<br>
+sa_mask: handler调用时会阻塞的信号集<br>
+sa_flags: 控制信号处理过程的各种选项<br>
+sa_restorer: 仅仅内部使用，用以恢复进程上下文</p>
+<h2 id="等待信号">等待信号</h2>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">pause</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</code></pre></div><p>调用<code>pause()</code>将暂停进程的执行，直到一个进程处理函数中断该调用为止。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">xistor</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-08-27
+        <a href="/commit/919c2b906ed22ec8b51ab3d115c6e80cfef235fb" title="update">(919c2b9)</a>
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">Linux</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/linux/the-linux-programming-interface-s18/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记18.监控文件事件</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/linux/the-linux-programming-interface-s17/">
+            <span class="next-text nav-default">Linux/Unix系统编程手册-笔记17.目录和链接</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    (function() {
+      
+      
+      if (window.location.hostname === 'localhost') return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'xistor';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:xueluqiang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/xistor" class="iconfont icon-github" title="github"></a>
+  <a href="https://xistor.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  <div class="busuanzi-footer">
+    <span id="busuanzi_container_site_pv"> site pv: <span id="busuanzi_value_site_pv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+      <span class="division">|</span>
+    <span id="busuanzi_container_site_uv"> site uv: <span id="busuanzi_value_site_uv"><img src="/img/spinner.svg" alt="spinner.svg"/></span> </span>
+  </div>
+
+  <span class="copyright-year">
+    &copy; 
+    2018 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">xistor</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  <script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js" integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js" integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin="anonymous"></script><script></script><script src="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js" integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js" integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js" integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin="anonymous"></script> <script src="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js" integrity="sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css" integrity="sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF" crossorigin="anonymous">
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

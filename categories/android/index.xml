@@ -6,10 +6,19 @@
     <description>Recent content in Android on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 15 Aug 2020 09:55:16 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 30 Aug 2020 10:56:16 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/categories/android/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>AOSP组入OpenGApps</title>
+      <link>https://xistor.github.io/post/add_opengapps_to_aosp/</link>
+      <pubDate>Sun, 30 Aug 2020 10:56:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/add_opengapps_to_aosp/</guid>
+      <description>自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO</description>
+    </item>
     
     <item>
       <title>Pixel3 解锁bootloader</title>

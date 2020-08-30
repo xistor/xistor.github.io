@@ -6,10 +6,19 @@
     <description>Recent content in Posts on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 25 Aug 2020 18:25:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 30 Aug 2020 10:56:16 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>AOSP组入OpenGApps</title>
+      <link>https://xistor.github.io/post/add_opengapps_to_aosp/</link>
+      <pubDate>Sun, 30 Aug 2020 10:56:16 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/add_opengapps_to_aosp/</guid>
+      <description>自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记18.监控文件事件</title>
@@ -18,6 +27,15 @@
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s18/</guid>
       <description>这章就只介绍了inotify机制,用来监控某个目录下的文件变化。直接看例程比较简单直接： #include &amp;lt;sys/inotify.h&amp;gt;#include &amp;lt;limits.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34;static void /* 这一坨函数只是打印出变化事件 */ displayInotifyEvent(struct inotify_event *i) { printf(&amp;#34;</description>
+    </item>
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记19.信号</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s19/</link>
+      <pubDate>Tue, 25 Aug 2020 18:25:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s19/</guid>
+      <description>信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软</description>
     </item>
     
     <item>
