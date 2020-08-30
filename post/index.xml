@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>Linux/Unix系统编程手册-笔记19.信号</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s19/</link>
+      <pubDate>Fri, 28 Aug 2020 18:20:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s19/</guid>
+      <description>信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软</description>
+    </item>
+    
+    <item>
       <title>Linux/Unix系统编程手册-笔记18.监控文件事件</title>
       <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s18/</link>
       <pubDate>Tue, 25 Aug 2020 18:25:00 +0800</pubDate>
