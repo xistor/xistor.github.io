@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s19/" />
 <meta property="article:published_time" content="2020-08-28T18:20:00+08:00" />
-<meta property="article:modified_time" content="2020-08-30T17:40:15+08:00" />
+<meta property="article:modified_time" content="2020-09-02T08:42:38+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记19.信号">
 <meta itemprop="description" content="信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软">
 <meta itemprop="datePublished" content="2020-08-28T18:20:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-30T17:40:15&#43;08:00" />
-<meta itemprop="wordCount" content="1699">
+<meta itemprop="dateModified" content="2020-09-02T08:42:38&#43;08:00" />
+<meta itemprop="wordCount" content="2805">
 
 
 
@@ -140,6 +140,14 @@
     <li><a href="#处于等待中的信号">处于等待中的信号</a></li>
     <li><a href="#sigaction">sigaction()</a></li>
     <li><a href="#等待信号">等待信号</a></li>
+    <li><a href="#信号处理函数">信号处理函数</a>
+      <ul>
+        <li><a href="#可重入和异步信号安全">可重入和异步信号安全</a></li>
+        <li><a href="#线程安全和异步信号安全">线程安全和异步信号安全</a></li>
+        <li><a href="#全局变量和sig_atomic_t">全局变量和sig_atomic_t</a></li>
+      </ul>
+    </li>
+    <li><a href="#在备选栈中处理信号">在备选栈中处理信号</a></li>
   </ul>
 </nav>
   </div>
@@ -229,6 +237,38 @@ sa_restorer: 仅仅内部使用，用以恢复进程上下文</p>
 </span><span class="cp"></span>
 <span class="kt">int</span> <span class="nf">pause</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 </code></pre></div><p>调用<code>pause()</code>将暂停进程的执行，直到一个进程处理函数中断该调用为止。</p>
+<h2 id="信号处理函数">信号处理函数</h2>
+<p>信号处理函数尽量越简单越好，以避免数据竞争。<br>
+一般的信号处理函数设计：</p>
+<ul>
+<li>在信号处理函数内去设一个全局变量，在主程序中定时或者监控此变量的变化。</li>
+<li>在信号处理函数内做一些清理工作，之后结束掉进程或通过非局部跳转到主程序中。</li>
+</ul>
+<h3 id="可重入和异步信号安全">可重入和异步信号安全</h3>
+<p>可重入：一个函数在执行完毕前由于某种原因被中断，在中断处理程序中该函数被再次调用的情况下，函数在不被上述中断影响下的执行结果与出现上述中断情况下的最终执行结果一致。</p>
+<p>一个函数内如果写了全局变量或静态变量，那么它可能是不可重入的。若一个函数内只有局部变量，那么它一定是可重入的。</p>
+<p>异步信号安全:一个异步信号安全函数是可重入的，或者不会被信号处理函数打断的。</p>
+<p>所以我们在写信号处理函数时一定要保证不去调用不安全的函数。</p>
+<h3 id="线程安全和异步信号安全">线程安全和异步信号安全</h3>
+<p>线程安全(thread-safety)和异步信号安全(async-signal-safety)概念有点相似，查了些资料，解释如下：
+一般来说异步信号安全意味着线程安全（<a href="https://en.wikipedia.org/wiki/Reentrancy_(computing)">反例</a>）。线程安全意味着在多个线程内同时调用函数是没问题的。而异步信号安全要求更高一些，因为两次相关的调用可以发生在同一个线程。线程之间可以使用互斥锁来防止资源竞争。但信号处理函数和主程序之间不能使用锁这种东西，比如，在主程序使用<code>printf()</code>输出时，来了一个信号进入信号处理函数，在信号处理函数中也使用<code>printf()</code>输出，那么两个输出就会交织在一起。如果使用<code>mutex</code>来保护<code>printf()</code>，当前一个线程正在<code>printf()</code>，并持有和lock了<code>mutex</code>，这时来了一个信号，进入信号处理函数并也要去<code>printf()</code>,就会再次尝试获取<code>mutex</code>,然后就造成了死锁。</p>
+<h3 id="全局变量和sig_atomic_t">全局变量和sig_atomic_t</h3>
+<p>尽管存在可重入问题， 但信号处理函数和主程序之间共享全局变量还是非常有用的。为了保证个这个过程正确，一般可以这样声明共享的全局变量：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">volatile</span> <span class="n">sig_atomic_t</span> <span class="n">flag</span><span class="p">;</span>
+</code></pre></div><p><code>sig_atomic_t</code>并不是一个C++中那样的原子类型，实际上一般是一个int，在signal.h可以看到定义是<code>typedef int sig_atomic_t</code>。因为int类型一般读或写只需要一条机器指令。</p>
+<h2 id="在备选栈中处理信号">在备选栈中处理信号</h2>
+<p>当进程的栈增长达到了了限制，内核将为该进程产生SIGSEGC信号，不过，因为栈空间已经耗尽，信号处理函数也就无法被调用，进程就中止了。这就需要使用<code>signalstack()</code>来指定备选栈。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">signalstack</span><span class="p">(</span><span class="k">const</span> <span class="n">stack_t</span> <span class="o">*</span><span class="n">sigstack</span><span class="p">,</span> <span class="n">stack_t</span> <span class="o">*</span><span class="n">old_sigstack</span><span class="p">);</span>
+
+<span class="c1">// sigstack为NULL时，仅通过old_sigstack返回上一备选栈的信息
+</span></code></pre></div><p>使用步骤：</p>
+<ol>
+<li>分配一块内存作为备选栈。</li>
+<li>调用<code>signalstack()</code>告知内核备选栈的存在。</li>
+<li>创建信号处理函数时指定SA_ONSTACK标志，</li>
+</ol>
 
     </div>
 
@@ -240,8 +280,8 @@ sa_restorer: 仅仅内部使用，用以恢复进程上下文</p>
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-08-30
-        <a href="/commit/1efaceaac3e3294779d0c28817d35452a3ec552a" title="fix time">(1efacea)</a>
+        2020-09-02
+        <a href="/commit/5c652ab2722bde638f4fbcf198816ac97f68b338" title="update">(5c652ab)</a>
     </span>
   </p>
   

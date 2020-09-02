@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/add_opengapps_to_aosp/" />
 <meta property="article:published_time" content="2020-08-30T10:56:16+08:00" />
-<meta property="article:modified_time" content="2020-08-30T17:25:09+08:00" />
+<meta property="article:modified_time" content="2020-09-02T22:53:19+08:00" />
 <meta itemprop="name" content="AOSP组入OpenGApps">
 <meta itemprop="description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO">
 <meta itemprop="datePublished" content="2020-08-30T10:56:16&#43;08:00" />
-<meta itemprop="dateModified" content="2020-08-30T17:25:09&#43;08:00" />
-<meta itemprop="wordCount" content="471">
+<meta itemprop="dateModified" content="2020-09-02T22:53:19&#43;08:00" />
+<meta itemprop="wordCount" content="1119">
 
 
 
@@ -139,6 +139,7 @@
     <li><a href="#拉取">拉取</a></li>
     <li><a href="#修改devicemk">修改device.mk</a></li>
     <li><a href="#编译刷机">编译、刷机</a></li>
+    <li><a href="#遇到的问题">遇到的问题</a></li>
   </ul>
 </nav>
   </div>
@@ -149,7 +150,7 @@
 github: <a href="https://github.com/opengapps/aosp_build">https://github.com/opengapps/aosp_build</a></p>
 <h2 id="环境">环境：</h2>
 <p>AOSP分支  ：android-10.0.0_r41<br>
-lunch选项 ：aosp_blueline-userdebug
+lunch选项 ：aosp_blueline-userdebug<br>
 实机      ：Pixel 3</p>
 <p>组入步骤按以下走就行。</p>
 <h2 id="安装lunzip--git-lfs">安装lunzip &amp; git lfs</h2>
@@ -192,6 +193,53 @@ lunch选项 ：aosp_blueline-userdebug
 <p>刷入手机中</p>
 <div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">adb reboot bootloader
 fastboot flashall -w
+</code></pre></div><h2 id="遇到的问题">遇到的问题</h2>
+<ol>
+<li>刷完之后遇到了这个问题,显示“Android Setup keeps stopping”</li>
+</ol>
+<p><img src="/img/add_opengapps_to_aosp/error.png" alt="error"></p>
+<p>打开ADB,看log发现是权限问题</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">WifiService: Permission violation - getScanResults not allowed for uid=10056,
+packageName=com.google.android.setupwizard, reason=java.lang.SecurityException: 
+UID 10056 has no location permission
+
+...
+
+</code></pre></div><p>解决方法：在vendor/opengapps/build/modules/SetupWizard/Android.mk中添加一句，给SetupWizard加上platform签名</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">LOCAL_CERTIFICATE := platform
+</code></pre></div><p>加完这个需要<code>make clean</code>，重新编译才能生效。</p>
+<ol start="2">
+<li>上面问题解决后，再次刷人发现PixelLauncher也在挂，依然是权限问题，报错类似这样</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">03-25 18:04:17.889 750 7019 W ActivityManager: Permission Denial: setShelfHeight() from pid=8517, uid=10012 requires android.permission.STATUS_BAR
+03-25 18:04:17.890 8517 8517 D AndroidRuntime: Shutting down VM
+03-25 18:04:17.891 8517 8517 E AndroidRuntime: FATAL EXCEPTION: main
+03-25 18:04:17.891 8517 8517 E AndroidRuntime: Process: com.google.android.apps.nexuslauncher, PID: 8517
+03-25 18:04:17.891 8517 8517 E AndroidRuntime: java.lang.RuntimeException: Unable to resume activity
+</code></pre></div><p>由于PixelLauncher貌似没有申请<code>android.permission.STATUS_BAR</code>权限，所以给他重新签名也没效果，这个问题找到两种解决方式</p>
+<ul>
+<li>如果使用的是userdebug版本的话，可以执行<code>adb push packages.xml /data/system/packages.xml</code>，将package.xml拉到本地修改，在<code>com.google.android.apps.nexuslauncher</code>下的<code>perm</code>内添加下面两项, 然后再<code>adb push</code>回原位置。</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">&#34;android.permission.STATUS_BAR&#34;</span> <span class="na">granted=</span><span class="s">&#34;true&#34;</span> <span class="na">flags=</span><span class="s">&#34;0&#34;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">&#34;android.permission.MANAGE_ACTIVITY_STACKS&#34;</span> <span class="na">granted=</span><span class="s">&#34;true&#34;</span> <span class="na">flags=</span><span class="s">&#34;0&#34;</span> <span class="nt">/&gt;</span>
+</code></pre></div><ul>
+<li>或者<a href="https://c55jeremy-tech.blogspot.com/2019/04/aosppixel-2-romrom.html">参考</a>修改frameworks/base/services/core/java/com/android/server/wm/WindowManagerService.java
+删除权限检查的地方</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">--- a/services/core/java/com/android/server/wm/WindowManagerService.java
++++ b/services/core/java/com/android/server/wm/WindowManagerService.java
+@@ -6001,8 +6001,8 @@ public class WindowManagerService extends IWindowManager.Stub
+ 
+     @Override
+     public void setShelfHeight(boolean visible, int shelfHeight) {
+-        mAmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.STATUS_BAR,
+-                &#34;setShelfHeight()&#34;);
++        //mAmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.STATUS_BAR,
++        //        &#34;setShelfHeight()&#34;);
+         synchronized (mWindowMap) {
+             getDefaultDisplayContentLocked().getPinnedStackController().setAdjustedForShelf(visible,
+                     shelfHeight)
+
 </code></pre></div>
     </div>
 
@@ -203,8 +251,8 @@ fastboot flashall -w
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-08-30
-        <a href="/commit/cfb60e770aa8f20177d32299aa0c4c8d62b183ff" title="update">(cfb60e7)</a>
+        2020-09-02
+        <a href="/commit/3b67df047064f0d4e04f391d43030f150c618c53" title="update">(3b67df0)</a>
     </span>
   </p>
   
