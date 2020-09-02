@@ -226,17 +226,17 @@ UID 10056 has no location permission
 <li>或者<a href="https://c55jeremy-tech.blogspot.com/2019/04/aosppixel-2-romrom.html">参考</a>修改frameworks/base/services/core/java/com/android/server/wm/WindowManagerService.java
 删除权限检查的地方</li>
 </ul>
-<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">--- a/services/core/java/com/android/server/wm/WindowManagerService.java
-+++ b/services/core/java/com/android/server/wm/WindowManagerService.java
-@@ -6001,8 +6001,8 @@ public class WindowManagerService extends IWindowManager.Stub
- 
+<div class="highlight"><pre class="chroma"><code class="language-diff" data-lang="diff"><span class="gd">--- a/services/core/java/com/android/server/wm/WindowManagerService.java
+</span><span class="gd"></span><span class="gi">+++ b/services/core/java/com/android/server/wm/WindowManagerService.java
+</span><span class="gi"></span><span class="gu">@@ -6001,8 +6001,8 @@ public class WindowManagerService extends IWindowManager.Stub
+</span><span class="gu"></span> 
      @Override
      public void setShelfHeight(boolean visible, int shelfHeight) {
--        mAmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.STATUS_BAR,
--                &#34;setShelfHeight()&#34;);
-+        //mAmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.STATUS_BAR,
-+        //        &#34;setShelfHeight()&#34;);
-         synchronized (mWindowMap) {
+<span class="gd">-        mAmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.STATUS_BAR,
+</span><span class="gd">-                &#34;setShelfHeight()&#34;);
+</span><span class="gd"></span><span class="gi">+        //mAmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.STATUS_BAR,
+</span><span class="gi">+        //        &#34;setShelfHeight()&#34;);
+</span><span class="gi"></span>         synchronized (mWindowMap) {
              getDefaultDisplayContentLocked().getPinnedStackController().setAdjustedForShelf(visible,
                      shelfHeight)
 
@@ -252,7 +252,7 @@ UID 10056 has no location permission
     <span class="item-title">LastMod</span>
     <span class="item-content">
         2020-09-02
-        <a href="/commit/3b67df047064f0d4e04f391d43030f150c618c53" title="update">(3b67df0)</a>
+        <a href="/commit/9d89c07099aba668651afd31dfe4a4c60fc52054" title="update">(9d89c07)</a>
     </span>
   </p>
   
