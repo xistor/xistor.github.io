@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.72.0 with theme even" />
+<meta name="generator" content="Hugo 0.74.3 with theme even" />
 
 
 <link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s19/" />
@@ -43,16 +43,17 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s19/" />
 <meta property="article:published_time" content="2020-08-28T18:20:00+08:00" />
-<meta property="article:modified_time" content="2020-09-02T08:42:38+08:00" />
+<meta property="article:modified_time" content="2020-09-04T18:30:33+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记19.信号">
 <meta itemprop="description" content="信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软">
-<meta itemprop="datePublished" content="2020-08-28T18:20:00&#43;08:00" />
-<meta itemprop="dateModified" content="2020-09-02T08:42:38&#43;08:00" />
-<meta itemprop="wordCount" content="2805">
+<meta itemprop="datePublished" content="2020-08-28T18:20:00+08:00" />
+<meta itemprop="dateModified" content="2020-09-04T18:30:33+08:00" />
+<meta itemprop="wordCount" content="3581">
 
 
 
-<meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Linux," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux/Unix系统编程手册-笔记19.信号"/>
 <meta name="twitter:description" content="信号通常用来通知某个事件发生，一个进程(有合适的权限的话)可以给另外的进程发送信号，但大多数情况下信号是由kernel发送给进程的。 信号和软"/>
 
@@ -148,6 +149,9 @@
       </ul>
     </li>
     <li><a href="#在备选栈中处理信号">在备选栈中处理信号</a></li>
+    <li><a href="#sa_siginfo-flag">SA_SIGINFO Flag</a></li>
+    <li><a href="#中断和系统调用">中断和系统调用</a></li>
+    <li><a href="#传递处置及处理特殊情况">传递、处置及处理特殊情况</a></li>
   </ul>
 </nav>
   </div>
@@ -263,12 +267,72 @@ sa_restorer: 仅仅内部使用，用以恢复进程上下文</p>
 <span class="kt">int</span> <span class="nf">signalstack</span><span class="p">(</span><span class="k">const</span> <span class="n">stack_t</span> <span class="o">*</span><span class="n">sigstack</span><span class="p">,</span> <span class="n">stack_t</span> <span class="o">*</span><span class="n">old_sigstack</span><span class="p">);</span>
 
 <span class="c1">// sigstack为NULL时，仅通过old_sigstack返回上一备选栈的信息
-</span></code></pre></div><p>使用步骤：</p>
+</span></code></pre></div><p>其中<code>stack_t</code>结构体如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">ss_sp</span><span class="p">;</span> <span class="cm">/* Starting address of alternate stack */</span>
+    <span class="kt">int</span> <span class="n">ss_flags</span><span class="p">;</span> <span class="cm">/* Flags: SS_ONSTACK, SS_DISABLE */</span>
+    <span class="n">size_t</span> <span class="n">ss_size</span><span class="p">;</span> <span class="cm">/* Size of alternate stack */</span>
+<span class="p">}</span> <span class="n">stack_t</span><span class="p">;</span>
+</code></pre></div><p><code>SS_ONSTACK</code> :  如果从old_sigstack中此项被设置了，说明当前正运行在备选栈上。
+<code>SS_DISABLE</code> :  如果此项被设置了说明当前没有建立备选栈。</p>
+<p>使用步骤：</p>
 <ol>
 <li>分配一块内存作为备选栈。</li>
 <li>调用<code>signalstack()</code>告知内核备选栈的存在。</li>
 <li>创建信号处理函数时指定SA_ONSTACK标志，</li>
 </ol>
+<h2 id="sa_siginfo-flag">SA_SIGINFO Flag</h2>
+<p>在调用sigaction()时使用SA_SIGINFO可以获得额外的信息，当然handler也得相应的改成下面这个形式：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">handler</span><span class="p">(</span><span class="kt">int</span> <span class="n">sig</span><span class="p">,</span> <span class="n">siginfo_t</span> <span class="o">*</span><span class="n">siginfo</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">ucontext</span><span class="p">);</span>
+</code></pre></div><p><code>siginfo</code>参数里提供了额外信息,handler的函数原型变了，那么前面说的sigaction结构体中的handler函数原型也就不适用了，实际上，&lt;signal.h&gt;中定义的sigaction函数原型是下面这样的，</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">sigaction</span> <span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">sa_handler</span><span class="p">)(</span><span class="kt">int</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">sa_sigaction</span><span class="p">)(</span><span class="kt">int</span><span class="p">,</span> <span class="n">siginfo_t</span> <span class="o">*</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="p">);</span>
+    <span class="p">}</span> <span class="n">__sigaction_handler</span><span class="p">;</span>
+    <span class="n">sigset_t</span> <span class="n">sa_mask</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">sa_flags</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">sa_restorer</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div><p>这个siginfo_t长这样：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">si_signo</span><span class="p">;</span> <span class="cm">/* Signal number */</span>
+    <span class="kt">int</span> <span class="n">si_code</span><span class="p">;</span> <span class="cm">/* Signal code */</span>
+    <span class="kt">int</span> <span class="n">si_trapno</span><span class="p">;</span> <span class="cm">/* Trap number for hardware-generated signal
+</span><span class="cm">    (unused on most architectures) */</span>
+    <span class="k">union</span> <span class="n">sigval</span> <span class="n">si_value</span><span class="p">;</span> <span class="cm">/* Accompanying data from sigqueue() */</span>
+    <span class="n">pid_t</span> <span class="n">si_pid</span><span class="p">;</span> <span class="cm">/* Process ID of sending process */</span>
+    <span class="n">uid_t</span> <span class="n">si_uid</span><span class="p">;</span> <span class="cm">/* Real user ID of sender */</span>
+    <span class="kt">int</span> <span class="n">si_errno</span><span class="p">;</span> <span class="cm">/* Error number (generally unused) */</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">si_addr</span><span class="p">;</span> <span class="cm">/* Address that generated signal
+</span><span class="cm">    (hardware-generated signals only) */</span>
+    <span class="kt">int</span> <span class="n">si_overrun</span><span class="p">;</span> <span class="cm">/* Overrun count (Linux 2.6, POSIX timers) */</span>
+    <span class="kt">int</span> <span class="n">si_timerid</span><span class="p">;</span> <span class="cm">/* (Kernel-internal) Timer ID
+</span><span class="cm">    (Linux 2.6, POSIX timers) */</span>
+    <span class="kt">long</span> <span class="n">si_band</span><span class="p">;</span> <span class="cm">/* Band event (SIGPOLL/SIGIO) */</span>
+    <span class="kt">int</span> <span class="n">si_fd</span><span class="p">;</span> <span class="cm">/* File descriptor (SIGPOLL/SIGIO) */</span>
+    <span class="kt">int</span> <span class="n">si_status</span><span class="p">;</span> <span class="cm">/* Exit status or signal (SIGCHLD) */</span>
+    <span class="n">clock_t</span> <span class="n">si_utime</span><span class="p">;</span> <span class="cm">/* User CPU time (SIGCHLD) */</span>
+    <span class="n">clock_t</span> <span class="n">si_stime</span><span class="p">;</span> <span class="cm">/* System CPU time (SIGCHLD) */</span>
+<span class="p">}</span> <span class="n">siginfo_t</span><span class="p">;</span>
+
+</code></pre></div><p>要定义 _POSIX_C_SOURCE 大于等于199309才能使用</p>
+<blockquote>
+<p>关于_POSIX_C_SOURCE： _POSIX_C_SOURCE 1 makes the functionality from the POSIX.1 standart available _POSIX_C_SOURCE 2 makes the functionality from the POSIX.2 standart available _POSIX_C_SOURCE 199309L makes the functionality from the POSIX.1b standart available
+Higher values like 200809L make more features available. (man 7 feature_test_macros)</p>
+</blockquote>
+<h2 id="中断和系统调用">中断和系统调用</h2>
+<p>当一个阻塞的系统调用被信号打断，在信号处理函数返回后，默认操作是系统调用会报<code>EINTR</code>并失败，但大多数时候，我们希望系统调用继续执行，有两种方法：</p>
+<ol>
+<li>将系统调用卸载while循环中：</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">while</span> <span class="p">((</span><span class="n">cnt</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">BUF_SIZE</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span> <span class="o">==</span> <span class="n">EINTR</span><span class="p">)</span>
+ <span class="k">continue</span><span class="p">;</span>
+</code></pre></div><ol start="2">
+<li>在使用<code>sigaction()</code>建立信号处理函数时使用SA_RESTART标志，内核会自动帮忙重启系统调用（有些系统调用不支持）。</li>
+</ol>
+<h2 id="传递处置及处理特殊情况">传递、处置及处理特殊情况</h2>
+<p>SIGKILL 信号默认行为是终止一个进程。SIGSTOP信号默认行为是停止一个进程，二者的默认行为无法改变，也无法阻塞。</p>
 
     </div>
 
@@ -280,8 +344,8 @@ sa_restorer: 仅仅内部使用，用以恢复进程上下文</p>
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-09-02
-        <a href="/commit/5c652ab2722bde638f4fbcf198816ac97f68b338" title="update">(5c652ab)</a>
+        2020-09-04
+        <a href="/commit/cdaf9068813a71ca4a77f9443e8039769065b929" title="update">(cdaf906)</a>
     </span>
   </p>
   
@@ -294,7 +358,7 @@ sa_restorer: 仅仅内部使用，用以恢复进程上下文</p>
       <nav class="post-nav">
         <a class="prev" href="/post/add_opengapps_to_aosp/">
             <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">AOSP组入OpenGApps</span>
+            <span class="prev-text nav-default">AOSP组入Google Apps</span>
             <span class="prev-text nav-mobile">Prev</span>
           </a>
         <a class="next" href="/post/linux/the-linux-programming-interface-s18/">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Linux/Unix系统编程手册-笔记10.系统限制和选项 - xistor&#39;s note</title>
+  <title>Linux/Unix系统编程手册-笔记20.定时器与休眠 - xistor&#39;s note</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。 程序获取限制值有两种途径： 在编译程序时能获得一些限制和选项，例" />
+<meta name="author" content="xistor" /><meta name="description" content="间隔计时器 使用setitimer() #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：" />
 
 
 
@@ -26,7 +26,7 @@
 <meta name="generator" content="Hugo 0.74.3 with theme even" />
 
 
-<link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s10/" />
+<link rel="canonical" href="https://xistor.github.io/post/linux/the-linux-programming-interface-s20/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -38,24 +38,24 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记10.系统限制和选项" />
-<meta property="og:description" content="系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。 程序获取限制值有两种途径： 在编译程序时能获得一些限制和选项，例" />
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记20.定时器与休眠" />
+<meta property="og:description" content="间隔计时器 使用setitimer() #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s10/" />
-<meta property="article:published_time" content="2020-08-03T10:53:00+08:00" />
-<meta property="article:modified_time" content="2020-08-09T16:50:58+08:00" />
-<meta itemprop="name" content="Linux/Unix系统编程手册-笔记10.系统限制和选项">
-<meta itemprop="description" content="系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。 程序获取限制值有两种途径： 在编译程序时能获得一些限制和选项，例">
-<meta itemprop="datePublished" content="2020-08-03T10:53:00+08:00" />
-<meta itemprop="dateModified" content="2020-08-09T16:50:58+08:00" />
-<meta itemprop="wordCount" content="825">
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s20/" />
+<meta property="article:published_time" content="2020-09-02T18:21:00+08:00" />
+<meta property="article:modified_time" content="2020-09-04T18:30:33+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记20.定时器与休眠">
+<meta itemprop="description" content="间隔计时器 使用setitimer() #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：">
+<meta itemprop="datePublished" content="2020-09-02T18:21:00+08:00" />
+<meta itemprop="dateModified" content="2020-09-04T18:30:33+08:00" />
+<meta itemprop="wordCount" content="292">
 
 
 
 <meta itemprop="keywords" content="Linux," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记10.系统限制和选项"/>
-<meta name="twitter:description" content="系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。 程序获取限制值有两种途径： 在编译程序时能获得一些限制和选项，例"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记20.定时器与休眠"/>
+<meta name="twitter:description" content="间隔计时器 使用setitimer() #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL："/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -118,10 +118,10 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">Linux/Unix系统编程手册-笔记10.系统限制和选项</h1>
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记20.定时器与休眠</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2020-08-03 </span>
+        <span class="post-time"> 2020-09-02 </span>
         <div class="post-category">
             <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
             </div>
@@ -134,65 +134,34 @@
   <div class="post-toc-content always-active">
     <nav id="TableOfContents">
   <ul>
-    <li>
-      <ul>
-        <li><a href="#系统限制">系统限制</a></li>
-        <li><a href="#在运行时获取系统限制">在运行时获取系统限制</a></li>
-        <li><a href="#运行时获取和文件相关的限制">运行时获取和文件相关的限制</a></li>
-        <li><a href="#系统选项">系统选项</a></li>
-      </ul>
-    </li>
+    <li><a href="#间隔计时器">间隔计时器</a></li>
   </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
-      <p>系统限制和选项在不同系统实现、不同的运行环境、不同的文件系统之间可能存在不同。</p>
-<p>程序获取限制值有两种途径：</p>
+      <h2 id="间隔计时器">间隔计时器</h2>
+<p>使用setitimer()</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;sys/time.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">setitimer</span><span class="p">(</span><span class="kt">int</span> <span class="n">which</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">itimerval</span> <span class="o">*</span><span class="n">new_value</span><span class="p">,</span><span class="k">struct</span> <span class="n">itimerval</span> <span class="o">*</span><span class="n">old_value</span><span class="p">);</span>
+                    <span class="c1">// Returns 0 on success, or –1 on error
+</span></code></pre></div><p>参数<code>which</code>指定不同的timer类型：</p>
 <ul>
-<li>
-<p>在编译程序时能获得一些限制和选项，例如int类型的最大值，可以在头文件中定义。</p>
-</li>
-<li>
-<p>在程序运行时可能变化的限制和选项，可以通过sysconf()、pathconf()、fpathconf()函数在检查系统限制和选项。</p>
-</li>
+<li>ITIMER_REAL：计时器以真实时间计时</li>
+<li>ITIMER_VIRTUAL： 计时器以进程使用的用户态时间计时</li>
+<li>ITIMER_PROF： 计时器以进程使用的用户态和内核态时间计时</li>
 </ul>
-<h3 id="系统限制">系统限制</h3>
-<p>头文件limits.h中形如_POSIX_XXX_MAX为SUSv3标准所定义的的各类系统限制的最小值。每个限制有一个名称，形如XXX_MAX,该限制至少等同于标准所定义的值，即XXX_MAX &gt;= _POSIX_XXX_MAX。</p>
-<p>SUSv3将限制分为三类：运行时恒定值、路径名变量值和运行时可增加值。</p>
-<ul>
-<li>
-<p>运行时恒定值（可能不确定）<br>
-所谓运行时恒定值是指某一限制，若已然在limits.h文件中定义，则对于实现而言固定不变。然而该值可能是不确定的，因而在limits.h文件中会忽略对其定义。在这种情况下，即使limits.h文件中已定义，应用程序可以使用sysconf来获取运行时的值。</p>
-</li>
-<li>
-<p>路径名变量值<br>
-指与路径名(文件、目录、终端)相关的限制，应用程序可以通过pathconf()或fpathconf()来获取该值。</p>
-</li>
-<li>
-<p>运行时可增加值<br>
-运行时可增加值是指某一限制，相对于特定实现其值固定，且运行此实现的所有系统至少都应支持这一最小值。然而，特定系统在运行时可能会增加该值，应用程序可通过sysconf来获取系统所支持的实际值。</p>
-</li>
-</ul>
-<h3 id="在运行时获取系统限制">在运行时获取系统限制</h3>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
-</span><span class="cp"></span><span class="kt">long</span> <span class="nf">sysconf</span><span class="p">(</span><span class="kt">int</span> <span class="n">name</span><span class="p">);</span>
+<p><code>itimerval</code>结构体如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">itimerval</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">it_interval</span><span class="p">;</span> <span class="cm">/* Interval for periodic timer */</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">it_value</span><span class="p">;</span> <span class="cm">/* Current value (time until next expiration) */</span>
+<span class="p">};</span>
 
-</code></pre></div><p>参数name应为定义于&lt;unistd.h&gt;文件中的_SC_系列常量之一。</p>
-<h3 id="运行时获取和文件相关的限制">运行时获取和文件相关的限制</h3>
-<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
-</span><span class="cp"></span>
-<span class="kt">long</span> <span class="nf">pathconf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pathname</span><span class="p">,</span> <span class="kt">int</span> <span class="n">name</span><span class="p">);</span>
-<span class="kt">long</span> <span class="nf">fpathconf</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">name</span><span class="p">);</span>
-
-</code></pre></div><p>两个函数之间的区别在于其对于文件或目录的指定方式，参数name则是定义于&lt;unistd.h&gt;文件中的_PC_*常量之一。</p>
-<h3 id="系统选项">系统选项</h3>
-<p>定义在unistd.h中：</p>
-<ul>
-<li>值为-1, 表示实现不支持该选项。</li>
-<li>值为0, 表示实现可能支持该选项。</li>
-<li>值大于0, 表示实现支持该选项。</li>
-</ul>
+<span class="k">struct</span> <span class="n">timeval</span> <span class="p">{</span>
+ <span class="n">time_t</span> <span class="n">tv_sec</span><span class="p">;</span> <span class="cm">/* Seconds */</span>
+ <span class="n">suseconds_t</span> <span class="n">tv_usec</span><span class="p">;</span> <span class="cm">/* Microseconds (long int) */</span>
+<span class="p">};</span>
+</code></pre></div><p><code>new_value</code>中<code>it_value</code>指定计时器到期的延时，<code>it_interval</code>指定当前计时器是否是周期计时器，如果<code>it_interval</code>都为0则计时器只发生一次，否则就是一个周期计时器。</p>
 
     </div>
 
@@ -204,8 +173,8 @@
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-08-09
-        <a href="/commit/1a92d2d9b5d342c91d2f8435db5c00b271b3a422" title="new post">(1a92d2d)</a>
+        2020-09-04
+        <a href="/commit/cdaf9068813a71ca4a77f9443e8039769065b929" title="update">(cdaf906)</a>
     </span>
   </p>
   
@@ -216,13 +185,9 @@
           <a href="/tags/linux/">Linux</a>
           </div>
       <nav class="post-nav">
-        <a class="prev" href="/post/linux/the-linux-programming-interface-s11/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记11.系统和进程信息</span>
-            <span class="prev-text nav-mobile">Prev</span>
-          </a>
-        <a class="next" href="/post/linux/the-linux-programming-interface-s9/">
-            <span class="next-text nav-default">Linux/Unix系统编程手册-笔记9.时间</span>
+        
+        <a class="next" href="/post/add_opengapps_to_aosp/">
+            <span class="next-text nav-default">AOSP组入Google Apps</span>
             <span class="next-text nav-mobile">Next</span>
             <i class="iconfont icon-right"></i>
           </a>

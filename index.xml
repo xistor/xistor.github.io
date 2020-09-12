@@ -6,18 +6,27 @@
     <description>Recent content on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 30 Aug 2020 10:56:16 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 02 Sep 2020 18:21:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>AOSP组入OpenGApps</title>
+      <title>Linux/Unix系统编程手册-笔记20.定时器与休眠</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s20/</link>
+      <pubDate>Wed, 02 Sep 2020 18:21:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s20/</guid>
+      <description>间隔计时器 使用setitimer() #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：</description>
+    </item>
+    
+    <item>
+      <title>AOSP组入Google Apps</title>
       <link>https://xistor.github.io/post/add_opengapps_to_aosp/</link>
       <pubDate>Sun, 30 Aug 2020 10:56:16 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/add_opengapps_to_aosp/</guid>
-      <description>自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO</description>
+      <description>自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有OpenGApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO</description>
     </item>
     
     <item>

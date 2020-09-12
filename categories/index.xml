@@ -6,10 +6,19 @@
     <description>Recent content in Categories on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 30 Aug 2020 10:56:16 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 02 Sep 2020 18:21:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux系统编程手册阅读</title>
+      <link>https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/</link>
+      <pubDate>Wed, 02 Sep 2020 18:21:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Android</title>
@@ -17,15 +26,6 @@
       <pubDate>Sun, 30 Aug 2020 10:56:16 +0800</pubDate>
       
       <guid>https://xistor.github.io/categories/android/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Linux系统编程手册阅读</title>
-      <link>https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/</link>
-      <pubDate>Fri, 28 Aug 2020 18:20:00 +0800</pubDate>
-      
-      <guid>https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/</guid>
       <description></description>
     </item>
     

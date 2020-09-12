@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.72.0 with theme even" />
+<meta name="generator" content="Hugo 0.74.3 with theme even" />
 
 
 <link rel="canonical" href="https://xistor.github.io/" />
@@ -44,9 +44,10 @@
 <meta property="og:description" content="Don&#39;t Panic" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://xistor.github.io/" />
-<meta property="og:updated_time" content="2020-09-02T23:11:46+08:00" />
+<meta property="og:updated_time" content="2020-09-04T18:30:33+08:00" />
 <meta itemprop="name" content="xistor&#39;s note">
-<meta itemprop="description" content="Don&#39;t Panic"><meta name="twitter:card" content="summary"/>
+<meta itemprop="description" content="Don&#39;t Panic">
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="xistor&#39;s note"/>
 <meta name="twitter:description" content="Don&#39;t Panic"/>
 
@@ -111,7 +112,28 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/add_opengapps_to_aosp/">AOSP组入OpenGApps</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s20/">Linux/Unix系统编程手册-笔记20.定时器与休眠</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-09-02 </span>
+      <div class="post-category">
+          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      间隔计时器 使用setitimer() #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：
+    </div>
+    <div class="read-more">
+      <a href="/post/linux/the-linux-programming-interface-s20/" class="read-more-link">Read more...</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/add_opengapps_to_aosp/">AOSP组入Google Apps</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2020-08-30 </span>
       <div class="post-category">
@@ -122,7 +144,7 @@
   
   <div class="post-content">
     <div class="post-summary">
-      自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO
+      自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有OpenGApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO
     </div>
     <div class="read-more">
       <a href="/post/add_opengapps_to_aosp/" class="read-more-link">Read more...</a>
@@ -294,27 +316,6 @@
     </div>
     <div class="read-more">
       <a href="/post/linux/the-linux-programming-interface-s13/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/linux/the-linux-programming-interface-s12/">Linux/Unix系统编程手册-笔记12.文件I/O缓冲</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-08-10 </span>
-      <div class="post-category">
-          <a href="/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/"> Linux系统编程手册阅读 </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      Overview 首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： 由图所示I/O缓冲分两个层次 用户空间缓冲区，stdio的输入输出函数内部所使用的缓
-    </div>
-    <div class="read-more">
-      <a href="/post/linux/the-linux-programming-interface-s12/" class="read-more-link">Read more...</a>
     </div>
   </div>
 </article>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>AOSP组入OpenGApps - xistor&#39;s note</title>
+  <title>AOSP组入Google Apps - xistor&#39;s note</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,14 +16,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO" />
+<meta name="author" content="xistor" /><meta name="description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有OpenGApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.72.0 with theme even" />
+<meta name="generator" content="Hugo 0.74.3 with theme even" />
 
 
 <link rel="canonical" href="https://xistor.github.io/post/add_opengapps_to_aosp/" />
@@ -38,23 +38,24 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="AOSP组入OpenGApps" />
-<meta property="og:description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO" />
+<meta property="og:title" content="AOSP组入Google Apps" />
+<meta property="og:description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有OpenGApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/add_opengapps_to_aosp/" />
 <meta property="article:published_time" content="2020-08-30T10:56:16+08:00" />
-<meta property="article:modified_time" content="2020-09-02T23:11:46+08:00" />
-<meta itemprop="name" content="AOSP组入OpenGApps">
-<meta itemprop="description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO">
-<meta itemprop="datePublished" content="2020-08-30T10:56:16&#43;08:00" />
-<meta itemprop="dateModified" content="2020-09-02T23:11:46&#43;08:00" />
-<meta itemprop="wordCount" content="1119">
+<meta property="article:modified_time" content="2020-09-04T18:30:33+08:00" />
+<meta itemprop="name" content="AOSP组入Google Apps">
+<meta itemprop="description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有OpenGApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO">
+<meta itemprop="datePublished" content="2020-08-30T10:56:16+08:00" />
+<meta itemprop="dateModified" content="2020-09-04T18:30:33+08:00" />
+<meta itemprop="wordCount" content="1315">
 
 
 
-<meta itemprop="keywords" content="Android," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="AOSP组入OpenGApps"/>
-<meta name="twitter:description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO"/>
+<meta itemprop="keywords" content="Android," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="AOSP组入Google Apps"/>
+<meta name="twitter:description" content="自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有OpenGApps可以用。 官网： https://opengapps.org/ github: https://github.com/opengapps/aosp_build 环境： AO"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -117,7 +118,7 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">AOSP组入OpenGApps</h1>
+      <h1 class="post-title">AOSP组入Google Apps</h1>
 
       <div class="post-meta">
         <span class="post-time"> 2020-08-30 </span>
@@ -134,6 +135,7 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#环境">环境：</a></li>
+    <li><a href="#添加驱动">添加驱动</a></li>
     <li><a href="#安装lunzip--git-lfs">安装lunzip &amp; git lfs</a></li>
     <li><a href="#修改manifests">修改manifests</a></li>
     <li><a href="#拉取">拉取</a></li>
@@ -145,18 +147,20 @@
   </div>
 </div>
     <div class="post-content">
-      <p>自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有Open GApps可以用。<br>
+      <p>自己编译好的AOSP是不包括GMS(Google Mobile Services)的，不太方便玩耍，但是有OpenGApps可以用。<br>
 官网： <a href="https://opengapps.org/">https://opengapps.org/</a><br>
 github: <a href="https://github.com/opengapps/aosp_build">https://github.com/opengapps/aosp_build</a></p>
 <h2 id="环境">环境：</h2>
 <p>AOSP分支  ：android-10.0.0_r41<br>
 lunch选项 ：aosp_blueline-userdebug<br>
 实机      ：Pixel 3</p>
-<p>组入步骤按以下走就行。</p>
+<h2 id="添加驱动">添加驱动</h2>
+<p>首先注意一点，刷入Pixel中需要向AOSP中添加高通的驱动以及谷歌的Vendor image,否则会出现触屏无反应等情况。到<a href="https://developers.google.com/android/drivers">这里</a>根据设备和Android版本下载对应的二进制包。解压到AOSP源码根目录，并执行两个解压出来的sh文件，出现license时需要输入&quot;I ACCEPT&rdquo;。文件会被解压到vendor下。</p>
+<p>OpenGApps组入步骤按以下走就行。</p>
 <h2 id="安装lunzip--git-lfs">安装lunzip &amp; git lfs</h2>
 <div class="highlight"><pre class="chroma"><code class="language-sh" data-lang="sh">sudo apt-get install lunzip git-lfs
 </code></pre></div><h2 id="修改manifests">修改manifests</h2>
-<p>修改在AOSP源码根路径下的<code>.repo/manifest.xml</code>,在末尾前添加内容,添加后大概类似这样：</p>
+<p>修改在AOSP源码根路径下的<code>.repo/manifests/default.xml</code>,在末尾前添加内容,添加后大概类似这样：</p>
 <div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
 <span class="nt">&lt;manifest&gt;</span>
 
@@ -218,7 +222,7 @@ UID 10056 has no location permission
 03-25 18:04:17.891 8517 8517 E AndroidRuntime: java.lang.RuntimeException: Unable to resume activity
 </code></pre></div><p>由于PixelLauncher貌似没有申请<code>android.permission.STATUS_BAR</code>权限，所以给他重新签名也没效果，这个问题找到两种解决方式</p>
 <ul>
-<li>如果使用的是userdebug版本的话，可以执行<code>adb push packages.xml /data/system/packages.xml</code>，将package.xml拉到本地修改，在<code>com.google.android.apps.nexuslauncher</code>下的<code>perm</code>内添加下面两项, 然后再<code>adb push</code>回原位置。</li>
+<li>如果使用的是userdebug版本的话，可以执行<code>adb root</code>后<code>adb pull packages.xml /data/system/packages.xml</code>，将package.xml拉到本地修改，在<code>com.google.android.apps.nexuslauncher</code>下的<code>perm</code>内添加下面两项, 然后再<code>adb push</code>回原位置。</li>
 </ul>
 <div class="highlight"><pre class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">&#34;android.permission.STATUS_BAR&#34;</span> <span class="na">granted=</span><span class="s">&#34;true&#34;</span> <span class="na">flags=</span><span class="s">&#34;0&#34;</span><span class="nt">/&gt;</span>
 <span class="nt">&lt;item</span> <span class="na">name=</span><span class="s">&#34;android.permission.MANAGE_ACTIVITY_STACKS&#34;</span> <span class="na">granted=</span><span class="s">&#34;true&#34;</span> <span class="na">flags=</span><span class="s">&#34;0&#34;</span> <span class="nt">/&gt;</span>
@@ -251,8 +255,8 @@ UID 10056 has no location permission
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-09-02
-        <a href="/commit/f75f07cb887e23016229b03d91716be1ca25fdf6" title="update">(f75f07c)</a>
+        2020-09-04
+        <a href="/commit/cdaf9068813a71ca4a77f9443e8039769065b929" title="update">(cdaf906)</a>
     </span>
   </p>
   
@@ -263,7 +267,11 @@ UID 10056 has no location permission
           <a href="/tags/android/">Android</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/linux/the-linux-programming-interface-s20/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记20.定时器与休眠</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/linux/the-linux-programming-interface-s19/">
             <span class="next-text nav-default">Linux/Unix系统编程手册-笔记19.信号</span>
             <span class="next-text nav-mobile">Next</span>
