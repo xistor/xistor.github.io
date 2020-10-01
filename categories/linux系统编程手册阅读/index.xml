@@ -6,10 +6,19 @@
     <description>Recent content in Linux系统编程手册阅读 on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 02 Sep 2020 18:21:00 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 25 Sep 2020 18:21:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记21. 进程</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s21/</link>
+      <pubDate>Fri, 25 Sep 2020 18:21:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s21/</guid>
+      <description>进程这部分主要有几个点：进程的创建、进程的终止、父进程和子进程之间的关系等。开局先来一张图 图中把fork()、exec()、wait()、e</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记20.定时器与休眠</title>
@@ -17,7 +26,7 @@
       <pubDate>Wed, 02 Sep 2020 18:21:00 +0800</pubDate>
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s20/</guid>
-      <description>间隔计时器 使用setitimer() #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：</description>
+      <description>间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的</description>
     </item>
     
     <item>

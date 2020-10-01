@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="xistor" /><meta name="description" content="间隔计时器 使用setitimer() #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：" />
+<meta name="author" content="xistor" /><meta name="description" content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的" />
 
 
 
@@ -39,23 +39,23 @@
 
 
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记20.定时器与休眠" />
-<meta property="og:description" content="间隔计时器 使用setitimer() #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：" />
+<meta property="og:description" content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s20/" />
 <meta property="article:published_time" content="2020-09-02T18:21:00+08:00" />
-<meta property="article:modified_time" content="2020-09-04T18:30:33+08:00" />
+<meta property="article:modified_time" content="2020-09-25T18:09:20+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记20.定时器与休眠">
-<meta itemprop="description" content="间隔计时器 使用setitimer() #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL：">
+<meta itemprop="description" content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的">
 <meta itemprop="datePublished" content="2020-09-02T18:21:00+08:00" />
-<meta itemprop="dateModified" content="2020-09-04T18:30:33+08:00" />
-<meta itemprop="wordCount" content="292">
+<meta itemprop="dateModified" content="2020-09-25T18:09:20+08:00" />
+<meta itemprop="wordCount" content="2092">
 
 
 
 <meta itemprop="keywords" content="Linux," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux/Unix系统编程手册-笔记20.定时器与休眠"/>
-<meta name="twitter:description" content="间隔计时器 使用setitimer() #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的timer类型： ITIMER_REAL："/>
+<meta name="twitter:description" content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include &lt;sys/time.h&gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -135,13 +135,22 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#间隔计时器">间隔计时器</a></li>
+    <li><a href="#posix-interval-timers">POSIX Interval Timers</a>
+      <ul>
+        <li><a href="#创建定时器">创建定时器</a></li>
+        <li><a href="#设置定时器">设置定时器</a></li>
+        <li><a href="#删除定时器">删除定时器</a></li>
+        <li><a href="#timer-overruns">Timer Overruns</a></li>
+      </ul>
+    </li>
+    <li><a href="#timerfd定时器">timerfd定时器</a></li>
   </ul>
 </nav>
   </div>
 </div>
     <div class="post-content">
       <h2 id="间隔计时器">间隔计时器</h2>
-<p>使用setitimer()</p>
+<p>使用setitimer()，一个进程可以创建三种不同类型的定时器。</p>
 <div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;sys/time.h&gt;</span><span class="cp">
 </span><span class="cp"></span><span class="kt">int</span> <span class="nf">setitimer</span><span class="p">(</span><span class="kt">int</span> <span class="n">which</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">itimerval</span> <span class="o">*</span><span class="n">new_value</span><span class="p">,</span><span class="k">struct</span> <span class="n">itimerval</span> <span class="o">*</span><span class="n">old_value</span><span class="p">);</span>
                     <span class="c1">// Returns 0 on success, or –1 on error
@@ -161,7 +170,186 @@
  <span class="n">time_t</span> <span class="n">tv_sec</span><span class="p">;</span> <span class="cm">/* Seconds */</span>
  <span class="n">suseconds_t</span> <span class="n">tv_usec</span><span class="p">;</span> <span class="cm">/* Microseconds (long int) */</span>
 <span class="p">};</span>
-</code></pre></div><p><code>new_value</code>中<code>it_value</code>指定计时器到期的延时，<code>it_interval</code>指定当前计时器是否是周期计时器，如果<code>it_interval</code>都为0则计时器只发生一次，否则就是一个周期计时器。</p>
+</code></pre></div><p><code>new_value</code>中<code>it_value</code>指定计时器到期的延时，<code>it_interval</code>指定当前计时器是否是周期计时器，如果<code>it_interval</code>都为0则计时器只发生一次，否则就是一个周期计时器。<br>
+一个进程只能有三种计时器中的一种，第二次调用<code>setitimer()</code>会改变现有的计时器。<br>
+若<code>old_value</code>非<code>NULL</code>,那么它将返回之前一个计时器的的信息。</p>
+<p>计时器时间到了，进程会收到SIGALRM信号，在信号处理函数中做想做的操作。</p>
+<h2 id="posix-interval-timers">POSIX Interval Timers</h2>
+<p>前面提到的经典的UNIX间隔计时器，存在几个限制：</p>
+<ul>
+<li>只能设置三种类型</li>
+<li>获得定时时间到的通知的唯一方法就是接收信号。</li>
+<li>如果信号被屏蔽了，而这之间产生了几次定时器到期，在信号解除屏蔽后，只会收到一次通知</li>
+<li>精度只到微秒级</li>
+</ul>
+<p>使用POSIX定时器分三步：</p>
+<ol>
+<li>使用<code>timer_create()</code>创建定时器。</li>
+<li>使用<code>timer_settime()</code>来开始或停止一个定时器。</li>
+<li>使用<code>timer_delete()</code>删除定时器。</li>
+</ol>
+<h3 id="创建定时器">创建定时器</h3>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define _POSIX_C_SOURCE 199309
+</span><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">timer_create</span><span class="p">(</span><span class="n">clockid_t</span> <span class="n">clockid</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sigevent</span> <span class="o">*</span><span class="n">evp</span><span class="p">,</span> <span class="n">timer_t</span> <span class="o">*</span><span class="n">timerid</span><span class="p">);</span>
+<span class="c1">//  Returns 0 on success, or –1 on error
+</span></code></pre></div><p>clockid的取值如下表</p>
+<table>
+<thead>
+<tr>
+<th>Clock ID</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLOCK_REALTIME</td>
+<td>系统级的实时时钟，可以通过改变系统时间而改变</td>
+</tr>
+<tr>
+<td>CLOCK_MONOTONIC</td>
+<td>系统启动后到现在的时间</td>
+</tr>
+<tr>
+<td>CLOCK_PROCESS_CPUTIME_ID</td>
+<td>进程消耗的用户和系统CPU时间</td>
+</tr>
+<tr>
+<td>CLOCK_THREAD_CPUTIME_ID</td>
+<td>线程消耗的CPU时间</td>
+</tr>
+</tbody>
+</table>
+<p>sigevent这个结构体还挺TM复杂，描述如下：</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">union</span> <span class="nc">sigval</span> <span class="p">{</span>
+ <span class="kt">int</span> <span class="n">sival_int</span><span class="p">;</span> <span class="cm">/* Integer value for accompanying data */</span>
+ <span class="kt">void</span> <span class="o">*</span><span class="n">sival_ptr</span><span class="p">;</span> <span class="cm">/* Pointer value for accompanying data */</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="nc">sigevent</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">sigev_notify</span><span class="p">;</span> <span class="cm">/* Notification method */</span>
+    <span class="kt">int</span> <span class="n">sigev_signo</span><span class="p">;</span> <span class="cm">/* Timer expiration signal */</span>
+    <span class="k">union</span> <span class="nc">sigval</span> <span class="n">sigev_value</span><span class="p">;</span> <span class="cm">/* Value accompanying signal or
+</span><span class="cm">    passed to thread function */</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="n">pid_t</span> <span class="n">_tid</span><span class="p">;</span> <span class="cm">/* ID of thread to be signaled */</span>
+        <span class="k">struct</span> <span class="p">{</span>
+        <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">_function</span><span class="p">)</span> <span class="p">(</span><span class="k">union</span> <span class="nc">sigval</span><span class="p">);</span>
+                        <span class="cm">/* Thread notification function */</span>
+        <span class="kt">void</span> <span class="o">*</span><span class="n">_attribute</span><span class="p">;</span> <span class="cm">/* Really &#39;pthread_attr_t *&#39; */</span>
+        <span class="p">}</span> <span class="n">_sigev_thread</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">_sigev_un</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="cp">#define sigev_notify_function _sigev_un._sigev_thread._function
+</span><span class="cp">#define sigev_notify_attributes _sigev_un._sigev_thread._attribute
+</span><span class="cp">#define sigev_notify_thread_id _sigev_un._tid
+</span></code></pre></div><p>sigev_notify指定通知方法，
+|sigev_notify value| Notification method|
+|&mdash;&mdash;&mdash;&mdash;&mdash;|&mdash;&mdash;-|
+|SIGEV_NONE|No notification; monitor timer using timer_gettime()|
+|SIGEV_SIGNAL|Send signal sigev_signo to process|
+|SIGEV_THREAD|Call sigev_notify_function as start function of new thread|
+|SIGEV_THREAD_ID|Send signal sigev_signo to thread sigev_notify_thread_id|</p>
+<p>前两种比较好理解，第三种SIGEV_THREAD，当定时器到期时，会启动一个新线程调用sigev_notify_function指定的函数来处理信号，sigev_value 保存了传入 sigev_notify_function 的参数。sigev_notify_attributes 如果非空，则应该是一个指向 pthread_attr_t 的指针，用来设置线程的属性（比如 stack 大小,detach 状态等）。<br>
+SIGEV_THREAD_ID和SIGEV_SIGNAL类似，定时器到期将会向指定的sigev_notify_thread_id线程发送信号。</p>
+<h3 id="设置定时器">设置定时器</h3>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define _POSIX_C_SOURCE 199309
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">timer_settime</span><span class="p">(</span><span class="n">timer_t</span> <span class="n">timerid</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">itimerspec</span> <span class="o">*</span><span class="n">value</span><span class="p">,</span>
+ <span class="k">struct</span> <span class="n">itimerspec</span> <span class="o">*</span><span class="n">old_value</span><span class="p">);</span>
+<span class="c1">// Returns 0 on success, or –1 on error
+</span></code></pre></div><p>timerid 是前一步timer_create时返回的那个，flag指定为0则参数value.it_value value理解为相对timer_settime调用时的时间，flag指定为TIMER_ABSTIME，则将参数value.it_value value理解为绝对时间（从时钟0点开始。和old_value分别上新旧定时器设置值。想要停止定时器，就把value.it_value设为0即可。</p>
+<h3 id="删除定时器">删除定时器</h3>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define _POSIX_C_SOURCE 199309
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">timer_delete</span><span class="p">(</span><span class="n">timer_t</span> <span class="n">timerid</span><span class="p">);</span>
+<span class="c1">// Returns 0 on success, or –1 on error
+</span></code></pre></div><p>下面是一个使用timer的例子，通知方法使用SIGEV_THREAD：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;  /* for puts() */</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt; /* for memset() */</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt; /* for sleep() */</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt; /* for EXIT_SUCCESS */</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt; /* for `struct sigevent` and SIGEV_THREAD */</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;   /* for timer_create(), `struct itimerspec`,</span><span class="cp">
+</span><span class="cp"></span>                     <span class="o">*</span> <span class="n">timer_t</span> <span class="n">and</span> <span class="n">CLOCK_REALTIME</span> 
+                     <span class="err">*/</span>
+
+<span class="kt">void</span> <span class="n">thread_handler</span><span class="p">(</span><span class="k">union</span> <span class="n">sigval</span> <span class="n">sv</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">sv</span><span class="p">.</span><span class="n">sival_ptr</span><span class="p">;</span>
+
+        <span class="cm">/* Will print &#34;5 seconds elapsed.&#34; */</span>
+        <span class="n">puts</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">char</span> <span class="n">info</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;5 seconds elapsed.&#34;</span><span class="p">;</span>
+        <span class="n">timer_t</span> <span class="n">timerid</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">sigevent</span> <span class="n">sev</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">itimerspec</span> <span class="n">trigger</span><span class="p">;</span>
+
+        <span class="cm">/* Set all `sev` and `trigger` memory to 0 */</span>
+        <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sev</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sigevent</span><span class="p">));</span>
+        <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">trigger</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">itimerspec</span><span class="p">));</span>
+
+        <span class="cm">/* 
+</span><span class="cm">         * Set the notification method as SIGEV_THREAD:
+</span><span class="cm">         *
+</span><span class="cm">         * Upon timer expiration, `sigev_notify_function` (thread_handler()),
+</span><span class="cm">         * will be invoked as if it were the start function of a new thread.
+</span><span class="cm">         *
+</span><span class="cm">         */</span>
+        <span class="n">sev</span><span class="p">.</span><span class="n">sigev_notify</span> <span class="o">=</span> <span class="n">SIGEV_THREAD</span><span class="p">;</span>
+        <span class="n">sev</span><span class="p">.</span><span class="n">sigev_notify_function</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">thread_handler</span><span class="p">;</span>
+        <span class="n">sev</span><span class="p">.</span><span class="n">sigev_value</span><span class="p">.</span><span class="n">sival_ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">info</span><span class="p">;</span>
+
+        <span class="cm">/* Create the timer. In this example, CLOCK_REALTIME is used as the
+</span><span class="cm">         * clock, meaning that we&#39;re using a system-wide real-time clock for
+</span><span class="cm">         * this timer.
+</span><span class="cm">         */</span>
+        <span class="n">timer_create</span><span class="p">(</span><span class="n">CLOCK_REALTIME</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sev</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">timerid</span><span class="p">);</span>
+
+        <span class="cm">/* Timer expiration will occur withing 5 seconds after being armed
+</span><span class="cm">         * by timer_settime().
+</span><span class="cm">         */</span>
+        <span class="n">trigger</span><span class="p">.</span><span class="n">it_value</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+
+        <span class="cm">/* Arm the timer. No flags are set and no old_value will be retrieved.
+</span><span class="cm">         */</span>
+        <span class="n">timer_settime</span><span class="p">(</span><span class="n">timerid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">trigger</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+
+        <span class="cm">/* Wait 10 seconds under the main thread. In 5 seconds (when the
+</span><span class="cm">         * timer expires), a message will be printed to the standard output
+</span><span class="cm">         * by the newly created notification thread.
+</span><span class="cm">         */</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+
+        <span class="cm">/* Delete (destroy) the timer */</span>
+        <span class="n">timer_delete</span><span class="p">(</span><span class="n">timerid</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div><h3 id="timer-overruns">Timer Overruns</h3>
+<p>使用信号来获取定时器到期信息存在一个问题：标准信号在信号阻塞期间，多次到达也只会通知一次，无法知道定时器到期了几次，而实时信号会把信号队列化，我的理解是在信号不再阻塞后，这些阻塞序列中的定时器到期信号也就没用了，因为它们已经是过去式了。我们只需要知道在阻塞期间定时器到期了几次即可。可以使用下面两种方式获取到期次数：</p>
+<ul>
+<li>调用 timer_getoverrun()</li>
+<li>使用siginfo_t结构体中的si_overrun字段获取。</li>
+</ul>
+<p>overrun次数在每次收到计时器信号时会重置。</p>
+<h2 id="timerfd定时器">timerfd定时器</h2>
+<p>timerfd是Linux为用户程序提供的一个定时器接口。这个接口基于文件描述符，通过文件描述符的可读事件进行超时通知，一般是被用于select/poll/epoll的应用场景。</p>
+<p>使用的API和前面的类似</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;sys/timerfd.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">timerfd_create</span><span class="p">(</span><span class="kt">int</span> <span class="n">clockid</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+ 
+<span class="kt">int</span> <span class="nf">timerfd_settime</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">itimerspec</span> <span class="o">*</span><span class="n">new_value</span><span class="p">,</span> <span class="k">struct</span> <span class="n">itimerspec</span> <span class="o">*</span><span class="n">old_value</span><span class="p">);</span>
+ 
+<span class="kt">int</span> <span class="nf">timerfd_gettime</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="k">struct</span> <span class="n">itimerspec</span> <span class="o">*</span><span class="n">curr_value</span><span class="p">);</span>
+</code></pre></div><p>timerfd_settime()调用之后，我们就可以使用<code> read(fd, &amp;numExp, sizeof(uint64_t))</code>去读定时器是否到期,读出的是一个64位无符号数，代表的是到期次数。</p>
 
     </div>
 
@@ -173,8 +361,8 @@
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-09-04
-        <a href="/commit/cdaf9068813a71ca4a77f9443e8039769065b929" title="update">(cdaf906)</a>
+        2020-09-25
+        <a href="/commit/517d82d739f85310ffb4fd4628ab5e58b995690f" title="update">(517d82d)</a>
     </span>
   </p>
   
