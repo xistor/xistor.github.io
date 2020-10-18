@@ -6,10 +6,19 @@
     <description>Recent content in Linux on xistor&#39;s note</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 12 Oct 2020 23:30:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 18 Oct 2020 18:30:00 +0800</lastBuildDate>
     
 	<atom:link href="https://xistor.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux/Unix系统编程手册-笔记23. 线程</title>
+      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s23/</link>
+      <pubDate>Sun, 18 Oct 2020 18:30:00 +0800</pubDate>
+      
+      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s23/</guid>
+      <description>本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单</description>
+    </item>
     
     <item>
       <title>Linux/Unix系统编程手册-笔记22. 程序的执行</title>
@@ -18,15 +27,6 @@
       
       <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s22/</guid>
       <description>exec() 系统调用execve()将新程序加载到某一进程的内存空间。 #include &amp;lt;unistd.h&amp;gt; int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行参数 e</description>
-    </item>
-    
-    <item>
-      <title>Linux/Unix系统编程手册-笔记23. 线程</title>
-      <link>https://xistor.github.io/post/linux/the-linux-programming-interface-s23/</link>
-      <pubDate>Mon, 12 Oct 2020 18:30:00 +0800</pubDate>
-      
-      <guid>https://xistor.github.io/post/linux/the-linux-programming-interface-s23/</guid>
-      <description>本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单</description>
     </item>
     
     <item>
