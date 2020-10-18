@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Linux/Unix系统编程手册-笔记21. 进程 - xistor&#39;s note</title>
+  <title>Linux/Unix系统编程手册-笔记21. 进程的创建、终止 - xistor&#39;s note</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -38,23 +38,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记21. 进程" />
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记21. 进程的创建、终止" />
 <meta property="og:description" content="进程这部分主要有几个点：进程的创建、进程的终止、父进程和子进程之间的关系等。开局先来一张图 图中把fork()、exec()、wait()、e" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s21/" />
 <meta property="article:published_time" content="2020-09-25T18:21:00+08:00" />
-<meta property="article:modified_time" content="2020-09-30T18:27:51+08:00" />
-<meta itemprop="name" content="Linux/Unix系统编程手册-笔记21. 进程">
+<meta property="article:modified_time" content="2020-10-14T11:22:52+08:00" />
+<meta itemprop="name" content="Linux/Unix系统编程手册-笔记21. 进程的创建、终止">
 <meta itemprop="description" content="进程这部分主要有几个点：进程的创建、进程的终止、父进程和子进程之间的关系等。开局先来一张图 图中把fork()、exec()、wait()、e">
 <meta itemprop="datePublished" content="2020-09-25T18:21:00+08:00" />
-<meta itemprop="dateModified" content="2020-09-30T18:27:51+08:00" />
-<meta itemprop="wordCount" content="1750">
+<meta itemprop="dateModified" content="2020-10-14T11:22:52+08:00" />
+<meta itemprop="wordCount" content="1978">
 
 
 
 <meta itemprop="keywords" content="Linux," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记21. 进程"/>
+<meta name="twitter:title" content="Linux/Unix系统编程手册-笔记21. 进程的创建、终止"/>
 <meta name="twitter:description" content="进程这部分主要有几个点：进程的创建、进程的终止、父进程和子进程之间的关系等。开局先来一张图 图中把fork()、exec()、wait()、e"/>
 
 <!--[if lte IE 9]>
@@ -118,7 +118,7 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">Linux/Unix系统编程手册-笔记21. 进程</h1>
+      <h1 class="post-title">Linux/Unix系统编程手册-笔记21. 进程的创建、终止</h1>
 
       <div class="post-meta">
         <span class="post-time"> 2020-09-25 </span>
@@ -139,6 +139,7 @@
     <li><a href="#wait">wait()</a></li>
     <li><a href="#孤儿进程和僵尸进程">孤儿进程和僵尸进程</a></li>
     <li><a href="#sigchld">SIGCHLD</a></li>
+    <li><a href="#exercise">Exercise</a></li>
   </ul>
 </nav>
   </div>
@@ -244,7 +245,89 @@
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">while</span> <span class="p">(</span><span class="n">waitpid</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">WNOHANG</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">continue</span><span class="p">;</span>
 </code></pre></div><p>父进程将SIGCHLD设置为SIG_IGN,会使子进程立即终止，而不是转为僵尸进程。类似的在sigaction()中使用SA_NOCLDWAIT flag也可以实现同样的效果。</p>
+<h2 id="exercise">Exercise</h2>
+<ol start="2">
+<li>
+<p>在父进程终止之后。</p>
+</li>
+<li>
+<p>make_zombie.c 使用信号替代sleep()</p>
+</li>
+</ol>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;signal.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;libgen.h&gt;             /* For basename() declaration */</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;tlpi_hdr.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#define CMD_SIZE 200
+</span><span class="cp">#define SYNC_SIG SIGUSR1                </span><span class="cm">/* Synchronization signal */</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">static</span> <span class="kt">void</span>             <span class="cm">/* Signal handler - does nothing but return */</span>
+<span class="n">handler</span><span class="p">(</span><span class="kt">int</span> <span class="n">sig</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
 
+<span class="kt">int</span>
+<span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">cmd</span><span class="p">[</span><span class="n">CMD_SIZE</span><span class="p">];</span>
+    <span class="n">pid_t</span> <span class="n">childPid</span><span class="p">;</span>
+    <span class="n">sigset_t</span> <span class="n">blockMask</span><span class="p">,</span> <span class="n">origMask</span><span class="p">,</span> <span class="n">emptyMask</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sigaction</span> <span class="n">sa</span><span class="p">;</span>
+
+    <span class="n">setbuf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>       <span class="cm">/* Disable buffering of stdout */</span>
+
+    <span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">blockMask</span><span class="p">);</span>
+    <span class="n">sigaddset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">blockMask</span><span class="p">,</span> <span class="n">SYNC_SIG</span><span class="p">);</span>    <span class="cm">/* Block signal */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_BLOCK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">blockMask</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">origMask</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;sigprocmask&#34;</span><span class="p">);</span>
+
+    <span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sa</span><span class="p">.</span><span class="n">sa_mask</span><span class="p">);</span>
+    <span class="n">sa</span><span class="p">.</span><span class="n">sa_flags</span> <span class="o">=</span> <span class="n">SA_RESTART</span><span class="p">;</span>
+    <span class="n">sa</span><span class="p">.</span><span class="n">sa_handler</span> <span class="o">=</span> <span class="n">handler</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sigaction</span><span class="p">(</span><span class="n">SYNC_SIG</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sa</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;sigaction&#34;</span><span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Parent PID=%ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">getpid</span><span class="p">());</span>
+
+    <span class="k">switch</span> <span class="p">(</span><span class="n">childPid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">())</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="o">-</span><span class="mi">1</span><span class="o">:</span>
+        <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;fork&#34;</span><span class="p">);</span>
+
+    <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>     <span class="cm">/* Child: immediately exits to become zombie */</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Child (PID=%ld) exiting!!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">getpid</span><span class="p">());</span>
+
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">kill</span><span class="p">(</span><span class="n">getppid</span><span class="p">(),</span> <span class="n">SYNC_SIG</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;kill&#34;</span><span class="p">);</span>
+
+        <span class="n">_exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+
+    <span class="k">default</span><span class="o">:</span>    <span class="cm">/* Parent */</span>
+
+        <span class="n">sigemptyset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">emptyMask</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sigsuspend</span><span class="p">(</span><span class="o">&amp;</span><span class="n">emptyMask</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span> <span class="o">!=</span> <span class="n">EINTR</span><span class="p">)</span>
+            <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;sigsuspend&#34;</span><span class="p">);</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;got signal</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">sigprocmask</span><span class="p">(</span><span class="n">SIG_SETMASK</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">origMask</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">errExit</span><span class="p">(</span><span class="s">&#34;sigprocmask&#34;</span><span class="p">);</span>
+
+        <span class="n">snprintf</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">CMD_SIZE</span><span class="p">,</span> <span class="s">&#34;ps | grep %s&#34;</span><span class="p">,</span> <span class="n">basename</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]));</span>
+        <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">);</span>            <span class="cm">/* View zombie child */</span>
+
+        <span class="cm">/* Now send the &#34;sure kill&#34; signal to the zombie */</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">kill</span><span class="p">(</span><span class="n">childPid</span><span class="p">,</span> <span class="n">SIGKILL</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">errMsg</span><span class="p">(</span><span class="s">&#34;kill&#34;</span><span class="p">);</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>               <span class="cm">/* Give child a chance to react to signal */</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;After sending SIGKILL to zombie (PID=%ld):</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">long</span><span class="p">)</span> <span class="n">childPid</span><span class="p">);</span>
+        <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">);</span>            <span class="cm">/* View zombie child again */</span>
+
+        <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
     </div>
 
     <div class="post-copyright">
@@ -255,8 +338,8 @@
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-09-30
-        <a href="/commit/0aa823645e954d0919036d82d4f6b5561100acca" title="update">(0aa8236)</a>
+        2020-10-14
+        <a href="/commit/2ab43655a9fd54703ac8bde7126dd76e5768c6df" title="update">(2ab4365)</a>
     </span>
   </p>
   
@@ -267,7 +350,11 @@
           <a href="/tags/linux/">Linux</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/linux/the-linux-programming-interface-s23/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记23. 线程</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/neteasy-music-in-hdpi/">
             <span class="next-text nav-default">网易云音乐在高分辨率下缩放问题</span>
             <span class="next-text nav-mobile">Next</span>
