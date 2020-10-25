@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s23/" />
 <meta property="article:published_time" content="2020-10-18T18:30:00+08:00" />
-<meta property="article:modified_time" content="2020-10-18T23:06:49+08:00" />
+<meta property="article:modified_time" content="2020-10-23T18:33:14+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记23. 线程">
 <meta itemprop="description" content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单">
 <meta itemprop="datePublished" content="2020-10-18T18:30:00+08:00" />
-<meta itemprop="dateModified" content="2020-10-18T23:06:49+08:00" />
-<meta itemprop="wordCount" content="1089">
+<meta itemprop="dateModified" content="2020-10-23T18:33:14+08:00" />
+<meta itemprop="wordCount" content="2770">
 
 
 
@@ -138,6 +138,12 @@
     <li><a href="#终止进程">终止进程</a></li>
     <li><a href="#pthread_join">pthread_join()</a></li>
     <li><a href="#线程的分离">线程的分离</a></li>
+    <li><a href="#线程的同步">线程的同步</a>
+      <ul>
+        <li><a href="#互斥量">互斥量</a></li>
+        <li><a href="#条件变量">条件变量</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
   </div>
@@ -235,7 +241,128 @@ pthread_join()和waitpid()之间的区别：</p>
 
 <span class="c1">// Return 0 on sucess, or a positive error number on error
 </span></code></pre></div><p>但是当其他线程调用了exit(), 或主进程执行return时，即使分离的线程也会收到影响，进程的所有线程将会立即停止。</p>
+<h2 id="线程的同步">线程的同步</h2>
+<p>因为线程之间能够共享全局变量，所以就存在竞争问题，为了安全的共享变量，不同线程之间需要同步操作。</p>
+<h3 id="互斥量">互斥量</h3>
+<p>互斥量pthread_mutex_t使用前必须初始化</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;pthrad.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="c1">// 静态互斥量的初始化
+</span><span class="c1"></span><span class="k">static</span> <span class="n">pthread_mutex_t</span> <span class="n">mtx</span> <span class="o">=</span> <span class="n">PTHREAD_MUTEX_INITIALIZER</span><span class="p">;</span>
 
+
+<span class="c1">// 动态互斥量的初始化
+</span><span class="c1"></span>
+<span class="kt">int</span> <span class="nf">func</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">pthread_mutex_t</span> <span class="n">mtx</span><span class="p">;</span>
+  <span class="n">pthread_mutexattr_t</span> <span class="n">mtxAttr</span><span class="p">;</span>
+
+  <span class="kt">int</span> <span class="n">s</span><span class="p">,</span> <span class="n">type</span><span class="p">;</span>
+
+  <span class="n">s</span> <span class="o">=</span> <span class="n">pthread_mutexattr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mtxAttr</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="c1">// 设置属性
+</span><span class="c1"></span>  <span class="n">s</span> <span class="o">=</span> <span class="n">pthread_mutexattr_settype</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mtxAttr</span><span class="p">,</span> <span class="n">PTHREAD_MUTEX_ERRORCHECK</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="err">！</span><span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="n">s</span> <span class="o">=</span> <span class="n">pthread_mutex_init</span><span class="p">(</span><span class="n">mtx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mtxAttr</span><span class="p">);</span>
+
+  <span class="n">pthread_mutex_init</span><span class="p">(</span><span class="n">mtx</span><span class="p">,</span> <span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div><p>对互斥量加锁和解锁</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthrad.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">pthread_mutex_lock</span><span class="p">(</span><span class="n">pthread_mutex_t</span> <span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">pthread_mutex_unlock</span><span class="p">(</span><span class="n">pthread_mutex_t</span> <span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+
+<span class="c1">// Return 0 on success, or a positive error number on error
+</span></code></pre></div><p>如果互斥量之前未锁定，执行锁定操作将会立即返回，否则将会一直阻塞到互斥量被解锁。</p>
+<p>当不再需要互斥量时，应使用pthread_mutex_destory()将其销毁。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">pthread_mutex_destory</span><span class="p">(</span><span class="n">pthread_mutex_t</span> <span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+
+<span class="c1">// Return 0 on success, or a positive error number on error
+</span></code></pre></div><p>互斥量的属性之一 类型：</p>
+<ul>
+<li>PTHREAD_MUTEX_NORMAL: 该互斥量不具有死锁自检功能，对与已经锁住的互斥量，再次加锁会导致不确定结果。（linux下会成功）</li>
+<li>PTHREAD_MUTEX_ERRORCHECK: 会对加解锁过程做检查。</li>
+<li>PTHREAD_MUTEX_RECURSIVE: 递归维护一个锁计数器，每次加锁会+1，每次解锁会-1，当计数为0时才会释放该互斥量。解锁时和上一个类型一样，若互斥量处于未锁定状态或已由其他线程锁定， 操作都会失败。<br>
+还有其他类型，不赘述。</li>
+</ul>
+<h3 id="条件变量">条件变量</h3>
+<p>条件变量可以在共享变量状态改变的时候通知其他线程，其他线程可以等待通知。</p>
+<p>条件变量初始化</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="c1">// 静态条件变量初始化
+</span><span class="c1"></span><span class="k">static</span> <span class="n">pthread_cond_t</span> <span class="n">cond</span> <span class="o">=</span> <span class="n">PTHREAD_COND_INITIALIZER</span><span class="p">;</span>
+
+<span class="c1">// 动态条件变量初始化
+</span><span class="c1"></span>
+<span class="kt">int</span> <span class="nf">pthread_cond_init</span><span class="p">(</span><span class="n">pthread_cond_t</span> <span class="o">*</span><span class="n">cond</span><span class="p">,</span> <span class="k">const</span> <span class="n">pthread_condattr_t</span> <span class="o">*</span><span class="n">attr</span><span class="p">);</span>
+<span class="c1">// Returns 0 on success, or a positive error number on error
+</span></code></pre></div><p>通知和等待条件变量操作</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">pthread_cond_signal</span><span class="p">(</span><span class="n">pthread_cond_t</span> <span class="o">*</span><span class="n">cond</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">pthread_cond_broadcast</span><span class="p">(</span><span class="n">pthread_cond_t</span> <span class="o">*</span><span class="n">cond</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">pthread_cond_wait</span><span class="p">(</span><span class="n">pthread_cond_t</span> <span class="o">*</span><span class="n">cond</span><span class="p">,</span> <span class="n">pthread_mutex_t</span> <span class="o">*</span><span class="n">mutex</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">pthread_cond_timedwait</span><span class="p">(</span><span class="n">pthread_cond_t</span> <span class="o">*</span><span class="n">cond</span><span class="p">,</span> <span class="n">pthread_mutex_t</span> <span class="o">*</span><span class="n">mutex</span><span class="p">,</span>
+  <span class="k">const</span> <span class="k">struct</span> <span class="n">timespec</span> <span class="o">*</span><span class="n">abstime</span><span class="p">);</span>
+<span class="c1">// All return 0 on success, or a positive error number on error
+</span></code></pre></div><p><code>pthread_cond_signal()</code>和<code>pthread_cond_broadcast()</code>区别在于前者只保证通知至少一个阻塞在<code>pthread_cond_wait()</code>的线程，后者会通知所有阻塞的线程。除非只有一个阻塞线程需要唤醒，比如所有线程都执行同一操作，只需要唤醒一个线程做就行。使用<code>pthread_cond_broadcast()</code>一般会得到正确结果。<strong><code>pthread_cond_signal()</code>通知的时候若没有线程在等待，就会被忽略。</strong></p>
+<p>从<code>pthread_cond_wait()</code>的参数就能看出，它需要和mutex配合使用，在其内部对mutex会按顺序做如下操作：</p>
+<ol>
+<li>释放mutex;</li>
+<li>阻塞当前调用线程，直到其他线程通知条件变量改变</li>
+<li>再次获取mutex</li>
+</ol>
+<p><code>pthread_cond_wait()</code>传入的mutex就是用于控制共享变量访问时用到的mutex, 为什么需要这个mutex呢？ 这个mutex就是为了保护共享变量的，这个共享变量的作用类似“状态(state)”或“标志(flag)”，比如下面这段程序中的<code>avail</code>。在检查或修改共享变量之前都需要拥有mutex。这样设计的原因是因为条件变量和互斥量之间存在着天然的关系：</p>
+<ol>
+<li>线程在准备检查共享变量状态时锁定互斥量。</li>
+<li>检查共享变量状态</li>
+<li>如果共享变量未处于预期状态，线程应在等待条件变量并进入休眠前解锁互斥量（以便其他线程能访问该共享变量）</li>
+<li>当线程因为条件变量的通知而被再度唤醒时，必须对互斥量再次加锁，因为在典型情况下，线程会立即访问共享变量。</li>
+</ol>
+<p>pthread_cond_wait()会自动执行最后两步中对互斥量的解锁和加锁动作，并且第3步的互斥量释放和陷入休眠属于一个原子操作。在这个地方一开始我还存在困扰，我想如果在生产者发条件变量信号之后，消费者才陷入等待，岂不是会丢掉信号。其实我看错了，因为消费者陷入等待之前会首先判断共享变量也就是状态是否满足，不满足要求才会陷入等待。而前述情况既然发了条件变量信号，就说明<code>avail</code>已经<code>++</code>了，是不会等待的。所以是我之前看的太局部，没有考虑到条件变量是为线程间访问临界资源服务的。</p>
+<p>使用<code>while()</code>而不是<code>if()</code>来检查判断条件是因为从pthread_cond_wait()返回后需要重新检查判断条件，这是因为：</p>
+<ul>
+<li>其他线程可能会率先醒来，改变了判断条件的状态。</li>
+<li>条件变量信号意味着“可能有事情去做”，而不是“一定有事情去做”，接收信号的线程可以通过再次检查条件来确定是否真的需要做什么。</li>
+<li>可能出现虚假唤醒的情况</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c">
+<span class="k">static</span> <span class="n">pthread_mutex_t</span> <span class="n">mtx</span> <span class="o">=</span> <span class="n">PTHREAD_MUTEX_INITIALIZER</span><span class="p">;</span>
+<span class="k">static</span> <span class="n">pthread_cond_t</span> <span class="n">cond</span> <span class="o">=</span> <span class="n">PTHREAD_COND_INITIALIZER</span><span class="p">;</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">avail</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="c1">// 生产者
+</span><span class="c1"></span><span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mtx</span><span class="p">);</span>
+
+<span class="n">avail</span><span class="o">++</span><span class="p">;</span>
+
+<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mtx</span><span class="p">);</span>
+
+<span class="n">pthread_cond_signal</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cond</span><span class="p">);</span>
+
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// 消费者
+</span><span class="c1"></span><span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mtx</span><span class="p">);</span>
+
+<span class="k">while</span> <span class="p">(</span><span class="n">avail</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* Wait for something to consume */</span>
+  <span class="n">pthread_cond_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cond</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mtx</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">while</span> <span class="p">(</span><span class="n">avail</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* Consume all available units */</span>
+<span class="cm">/* Do something with produced unit */</span>
+  <span class="n">avail</span><span class="o">--</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mtx</span><span class="p">);</span>
+</code></pre></div>
     </div>
 
     <div class="post-copyright">
@@ -246,8 +373,8 @@ pthread_join()和waitpid()之间的区别：</p>
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-10-18
-        <a href="/commit/3f74bc769dcb7199cb04c0dc5049de16e4961d54" title="update">(3f74bc7)</a>
+        2020-10-23
+        <a href="/commit/6d514a2cf0691de9afca343622e5bd4be2886b0c" title="update">(6d514a2)</a>
     </span>
   </p>
   
