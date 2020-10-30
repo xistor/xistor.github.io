@@ -43,12 +43,12 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s23/" />
 <meta property="article:published_time" content="2020-10-18T18:30:00+08:00" />
-<meta property="article:modified_time" content="2020-10-23T18:33:14+08:00" />
+<meta property="article:modified_time" content="2020-10-30T16:50:50+08:00" />
 <meta itemprop="name" content="Linux/Unix系统编程手册-笔记23. 线程">
 <meta itemprop="description" content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单">
 <meta itemprop="datePublished" content="2020-10-18T18:30:00+08:00" />
-<meta itemprop="dateModified" content="2020-10-23T18:33:14+08:00" />
-<meta itemprop="wordCount" content="2770">
+<meta itemprop="dateModified" content="2020-10-30T16:50:50+08:00" />
+<meta itemprop="wordCount" content="6471">
 
 
 
@@ -142,6 +142,28 @@
       <ul>
         <li><a href="#互斥量">互斥量</a></li>
         <li><a href="#条件变量">条件变量</a></li>
+      </ul>
+    </li>
+    <li><a href="#线程安全">线程安全</a>
+      <ul>
+        <li><a href="#one-time-初始化">One-time 初始化</a></li>
+        <li><a href="#线程特有数据">线程特有数据</a></li>
+        <li><a href="#线程局部存储thread-local-storage">线程局部存储(thread-local Storage)</a></li>
+      </ul>
+    </li>
+    <li><a href="#线程取消">线程取消</a>
+      <ul>
+        <li><a href="#线程取消状态">线程取消状态</a></li>
+        <li><a href="#取消点">取消点</a></li>
+        <li><a href="#cleanup-handlers">cleanup handlers</a></li>
+        <li><a href="#异步取消">异步取消</a></li>
+      </ul>
+    </li>
+    <li><a href="#线程细节">线程细节</a>
+      <ul>
+        <li><a href="#栈">栈</a></li>
+        <li><a href="#线程和信号">线程和信号</a></li>
+        <li><a href="#线程和进程控制">线程和进程控制</a></li>
       </ul>
     </li>
   </ul>
@@ -362,7 +384,438 @@ pthread_join()和waitpid()之间的区别：</p>
 <span class="p">}</span>
 
 <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mtx</span><span class="p">);</span>
-</code></pre></div>
+</code></pre></div><h2 id="线程安全">线程安全</h2>
+<p>一个线程安全的函数允许同时被多个线程调用，若一个函数中使用了全局变量，通常需要互斥量来同步以保证线程安全。不用互斥量就可以被多线程安全调用的函数称为可重入函数，可重入函数中不会用到全局和静态变量。</p>
+<h3 id="one-time-初始化">One-time 初始化</h3>
+<p>有时候，可能有一个函数会被每一个线程调用，但只希望第一次调用的时候执行。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="n">pthread_once_t</span> <span class="n">once_control</span> <span class="o">=</span> <span class="n">PTHREAD_ONCE_INIT</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">pthread_once</span><span class="p">(</span><span class="n">pthread_once_t</span> <span class="o">*</span><span class="n">once_control</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">init</span><span class="p">)(</span><span class="kt">void</span><span class="p">));</span>
+
+<span class="c1">// return 0 on success, or a positive error number on error
+</span></code></pre></div><p>使用栗子：</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;                                                              </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;errno.h&gt;                                                              </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;                                                            </span><span class="cp">
+</span><span class="cp"></span>                                                                                
+<span class="cp">#define threads 3                                                               
+</span><span class="cp"></span>                                                                                
+<span class="kt">int</span>             <span class="n">once_counter</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>                                                 
+<span class="n">pthread_once_t</span>  <span class="n">once_control</span> <span class="o">=</span> <span class="n">PTHREAD_ONCE_INIT</span><span class="p">;</span>                               
+                                                                                
+<span class="kt">void</span>  <span class="nf">once_fn</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>                                                             
+<span class="p">{</span>                                                                               
+  <span class="n">puts</span><span class="p">(</span><span class="s">&#34;in once_fn&#34;</span><span class="p">);</span>                                                            
+  <span class="n">once_counter</span><span class="o">++</span><span class="p">;</span>                                                                
+<span class="p">}</span>                                                                               
+                                                                                
+<span class="kt">void</span> <span class="o">*</span><span class="nf">threadfunc</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">parm</span><span class="p">)</span>                                         
+<span class="p">{</span>                                                                               
+  <span class="kt">int</span>        <span class="n">status</span><span class="p">;</span>                                                             
+  <span class="kt">int</span>        <span class="n">threadnum</span><span class="p">;</span>                                                          
+  <span class="kt">int</span>        <span class="o">*</span><span class="n">tnum</span><span class="p">;</span>                                                              
+                                                                                
+  <span class="n">tnum</span> <span class="o">=</span> <span class="n">parm</span><span class="p">;</span>                                                                   
+  <span class="n">threadnum</span> <span class="o">=</span> <span class="o">*</span><span class="n">tnum</span><span class="p">;</span>                                                             
+                                                                                
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Thread %d executing</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">threadnum</span><span class="p">);</span>                                    
+                                                                                
+  <span class="n">status</span> <span class="o">=</span> <span class="n">pthread_once</span><span class="p">(</span><span class="o">&amp;</span><span class="n">once_control</span><span class="p">,</span> <span class="n">once_fn</span><span class="p">);</span>                                 
+  <span class="k">if</span> <span class="p">(</span> <span class="n">status</span> <span class="o">&lt;</span>  <span class="mi">0</span><span class="p">)</span>                                                              
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;pthread_once failed, thread %d, errno=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">threadnum</span><span class="p">,</span>             
+                                                            <span class="n">errno</span><span class="p">);</span>             
+                                                                                
+  <span class="n">pthread_exit</span><span class="p">((</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>                                                     
+<span class="p">}</span>                                                                               
+                                                                                
+<span class="n">main</span><span class="p">()</span> <span class="p">{</span>                                                                        
+  <span class="kt">int</span>          <span class="n">status</span><span class="p">;</span>                                                           
+  <span class="kt">int</span>          <span class="n">i</span><span class="p">;</span>                                                                
+  <span class="kt">int</span>          <span class="n">threadparm</span><span class="p">[</span><span class="n">threads</span><span class="p">];</span>                                              
+  <span class="n">pthread_t</span>    <span class="n">threadid</span><span class="p">[</span><span class="n">threads</span><span class="p">];</span>                                                
+  <span class="kt">int</span>          <span class="n">thread_stat</span><span class="p">[</span><span class="n">threads</span><span class="p">];</span>                                             
+                                                                                
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">threads</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>                                                    
+    <span class="n">threadparm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>                                                        
+    <span class="n">status</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">threadid</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>                                      
+                              <span class="nb">NULL</span><span class="p">,</span>                                              
+                              <span class="n">threadfunc</span><span class="p">,</span>                                        
+                              <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">threadparm</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>                           
+    <span class="k">if</span> <span class="p">(</span> <span class="n">status</span> <span class="o">&lt;</span>  <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>                                                         
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;pthread_create failed, errno=%d&#34;</span><span class="p">,</span> <span class="n">errno</span><span class="p">);</span>                        
+        <span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>                                                                 
+    <span class="p">}</span>                                                                           
+  <span class="p">}</span>                                                                             
+                                                                                
+  <span class="k">for</span> <span class="p">(</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">threads</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>                                                   
+    <span class="n">status</span> <span class="o">=</span> <span class="n">pthread_join</span><span class="p">(</span> <span class="n">threadid</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">thread_stat</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>               
+    <span class="k">if</span> <span class="p">(</span> <span class="n">status</span> <span class="o">&lt;</span>  <span class="mi">0</span><span class="p">)</span>                                                           
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;pthread_join failed, thread %d, errno=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">errno</span><span class="p">);</span>        
+                                                                                
+    <span class="k">if</span> <span class="p">(</span><span class="n">thread_stat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>                                                    
+      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;bad thread status, thread %d, status=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>                
+                                                    <span class="n">thread_stat</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>             
+  <span class="p">}</span>                                                                             
+                                                                                
+  <span class="k">if</span> <span class="p">(</span><span class="n">once_counter</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span>                                                         
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;once_fn did not get control once, counter=%d&#34;</span><span class="p">,</span><span class="n">once_counter</span><span class="p">);</span>         
+  <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>                                                                       
+<span class="p">}</span>                                                                               
+
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">执行结果：
+
+Thread 1 executing
+in once_fn
+Thread 2 executing
+Thread 3 executing
+</code></pre></div><h3 id="线程特有数据">线程特有数据</h3>
+<p>线程特有数据允许每个调用函数的线程持有一份变量的拷贝。</p>
+<p>为了区分不同函数之间的线程特有数据，需要创建一个key来区分它们。记住，这个key是用来区分函数的，而不是线程的。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">pthread_key_create</span><span class="p">(</span><span class="n">pthread_key_t</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destructor</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="p">));</span>
+<span class="c1">// Returns 0 on success, or a positive error number on error
+</span></code></pre></div><p>也正是因为key是用来区分函数的，所以返回的key可以被进程中的所有线程使用，指向的是一个由我们事先声明的全局变量。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">pthread_setspecific</span><span class="p">(</span><span class="n">pthread_key_t</span> <span class="n">key</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">);</span>
+<span class="c1">// return 0 on success, or a positive error number on error
+</span><span class="c1"></span><span class="kt">void</span> <span class="o">*</span><span class="nf">pthread_getspecific</span><span class="p">(</span><span class="n">pthread_key_t</span> <span class="n">key</span><span class="p">);</span>
+<span class="c1">// return pointer, or a NULL if no thread-specific data is associated with key
+</span></code></pre></div><p><code>pthread_setspecific()</code>的参数<code>key</code>是调用<code>pthread_key_create()</code>分配的key,<code>value</code>通常指向一块由调用者分配的内存，线程终止时，会自动调用<code>create</code>时指定的<code>destructor()</code>去释放<code>value</code>指向的内存。<br>
+下图是线程特有数据的实现结构，如图，Pthread为每个线程维护一个指针数组，指针数组内每一个成员都指向一个函数的特有数据。key1所对应的函数的特有数据数据保存在tsd[1]指向的内存中。<br>
+<img src="/img/the-linux-programming-interface-s23/tsd.png" alt="线程特有数据的实现结构">
+其实根据上面这个图，之前对key的总结有点补充，key是用来区分函数的，但并不代表一个函数内只能用一个key，一个函数中可以创建和指定多个key。但上限有限，linux中key最多可以1024个。通常只用一个key就可以了，将函数要用的多个特有数据值放到一个结构中。</p>
+<h3 id="线程局部存储thread-local-storage">线程局部存储(thread-local Storage)</h3>
+<p>线程局部存储比线程特有数据使用起来更加简单,只要在声明全局或静态变量的时候加上__thread说明符，每个线程就会持有一份此变量的拷贝：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="k">static</span> <span class="n">__thread</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAX_ERROR_LEN</span><span class="p">];</span>
+</code></pre></div><h2 id="线程取消">线程取消</h2>
+<p>调用下面系统调用可以请求取消掉指定线程(在其他线程中调用)。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">pthread_cancel</span><span class="p">(</span><span class="n">pthread_t</span> <span class="kr">thread</span><span class="p">);</span>
+<span class="c1">// Returns 0 on success, or a positive error number on error
+</span></code></pre></div><h3 id="线程取消状态">线程取消状态</h3>
+<p>调用如下接口，可以控制本线程对取消请求的应对方式。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">pthread_setcancelstate</span><span class="p">(</span><span class="kt">int</span> <span class="n">state</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">oldstate</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">pthread_setcanceltype</span><span class="p">(</span><span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">oldtype</span><span class="p">);</span>
+<span class="c1">// Both return 0 on success, or a positive error number on error
+</span></code></pre></div><p>pthread_setcancelstate()参数state可选状态如下：</p>
+<ul>
+<li>PTHREAD_CANCEL_DISABLE: 线程不可取消，取消状态被挂起，直到状态改为enable</li>
+<li>PTHREAD_CANCEL_ENABLE: 线程可取消</li>
+</ul>
+<p>如果线程是可取消的，那线程取消的请求结果由可取消类型决定</p>
+<ul>
+<li>PTHREAD_CANCEL_ASYNCHRONOUS：线程可以在任何时间被取消（不一定是马上被取消）。</li>
+<li>PTHREAD_CANCEL_DEFERRED：请求被挂起，直到下一个取消点。</li>
+</ul>
+<h3 id="取消点">取消点</h3>
+<p>仅当取消操作安全时才应取消线程。pthreads 标准指定了几个取消点，其中包括：</p>
+<ul>
+<li>通过 pthread_testcancel 调用以编程方式建立线程取消点。如果当前有一个取消请求在等待，线程就会取消。</li>
+<li>线程等待 pthread_cond_wait 或 pthread_cond_timedwait(3C) 中的特定条件出现。</li>
+<li>线程在 pthread_join()等待其他线程结束。</li>
+<li>被 sigwait(2) 阻塞的线程。</li>
+<li>一些标准的库调用。通常这些调用可使其线程阻塞。有关列表，请参见 cancellation(5) 手册页。</li>
+</ul>
+<p>线程取消的危险性主要与未释放共享资源有关，取消时须十分注意，否则可能导致死锁。为了避免这些，取消点因此选在线程阻塞的时候，减小持有资源的可能，除此之外还可以使用cleanup handler</p>
+<h3 id="cleanup-handlers">cleanup handlers</h3>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">void</span> <span class="nf">pthread_cleanup_push</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">routine</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">),</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">pthread_cleanup_pop</span><span class="p">(</span><span class="kt">int</span> <span class="n">execute</span><span class="p">);</span>
+</code></pre></div><p>清理函数是以栈的形式来管理的，这两个函数很明显用来添加和删除handler，每个push都应该有一个对应的pop。当线程执行到最后退出的话，是不需要调用清理函数的，所以要在适当的时候将handler从栈中pop出来。若<code>pthread_cleanup_pop()</code>参数<code>execute</code>不为0，弹出的栈顶处理函数的同时会执行清理函数。线程因调用pthread_exit()终止的时候，会自动执行尚未从清理函数栈中弹出的清理函数，线程正常返回(return)时不会执行s清理函数。</p>
+<h3 id="异步取消">异步取消</h3>
+<p>如果设定线程可异步取消时，可以在任何时点将其取消，取消动作不会拖延到下一个取消点才执行。异步取消时虽然清理函数可以执行，但是无法得知线程当前执行到哪一步。所以原则上可异步取消的线程不应该分配资源。</p>
+<h2 id="线程细节">线程细节</h2>
+<h3 id="栈">栈</h3>
+<p>每个线程有自己的固定大小的栈，以下函数可以修改：</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="c1">// 可以更改栈大小
+</span><span class="c1"></span><span class="kt">int</span> <span class="nf">pthread_attr_setstacksize</span><span class="p">(</span><span class="n">pthread_attr_t</span> <span class="o">*</span><span class="n">attr</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">stacksize</span><span class="p">);</span>
+<span class="c1">// 可以更该栈地址和栈大小
+</span><span class="c1"></span><span class="kt">int</span> <span class="nf">pthread_attr_setstack</span><span class="p">(</span><span class="n">pthread_attr_t</span> <span class="o">*</span><span class="n">attr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">stackaddr</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">stacksize</span><span class="p">);</span>
+</code></pre></div><p>使用栗子如下，可见上面两个函数是将栈size或地址写到属性中，在创建线程的时候再使用指定属性创建线程。</p>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;                                                              </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;                                                            </span><span class="cp">
+</span><span class="cp"></span>                                                                                
+<span class="kt">void</span> <span class="o">*</span><span class="nf">thread1</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>                                                        
+<span class="p">{</span>                                                                               
+   <span class="n">printf</span><span class="p">(</span><span class="s">&#34;hello from the thread</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>                                           
+   <span class="n">pthread_exit</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>                                                          
+<span class="p">}</span>                                                                               
+                                                                                
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>                                                                      
+<span class="p">{</span>                                                                               
+   <span class="kt">int</span>            <span class="n">rc</span><span class="p">,</span> <span class="n">stat</span><span class="p">;</span>                                                     
+   <span class="n">size_t</span>         <span class="n">s1</span><span class="p">;</span>                                                           
+   <span class="n">pthread_attr_t</span> <span class="n">attr</span><span class="p">;</span>                                                         
+   <span class="n">pthread_t</span>      <span class="n">thid</span><span class="p">;</span>                                                         
+                                                                                
+   <span class="n">rc</span> <span class="o">=</span> <span class="n">pthread_attr_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">);</span>                                               
+   <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>                                                              
+      <span class="n">perror</span><span class="p">(</span><span class="s">&#34;error in pthread_attr_init&#34;</span><span class="p">);</span>                                     
+      <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>                                                                  
+   <span class="p">}</span>                                                                            
+                                                                                
+   <span class="n">s1</span> <span class="o">=</span> <span class="mi">4096</span><span class="p">;</span>                                                                   
+   <span class="n">rc</span> <span class="o">=</span> <span class="n">pthread_attr_setstacksize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">s1</span><span class="p">);</span>                                   
+   <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>                                                              
+      <span class="n">perror</span><span class="p">(</span><span class="s">&#34;error in pthread_attr_setstacksize&#34;</span><span class="p">);</span>                             
+      <span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>                                                                  
+   <span class="p">}</span>                                                                            
+                                                                                
+   <span class="n">rc</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attr</span><span class="p">,</span> <span class="n">thread1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>                            
+   <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>                                                              
+      <span class="n">perror</span><span class="p">(</span><span class="s">&#34;error in pthread_create&#34;</span><span class="p">);</span>                                        
+      <span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>                                                                  
+   <span class="p">}</span>                                                                            
+                                                                                
+   <span class="n">rc</span> <span class="o">=</span> <span class="n">pthread_join</span><span class="p">(</span><span class="n">thid</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">stat</span><span class="p">);</span>                                      
+   <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>                                                                     
+<span class="p">}</span>
+
+</code></pre></div><h3 id="线程和信号">线程和信号</h3>
+<p>信号的接收：</p>
+<ul>
+<li>信号动作（signal action）是进程级的，如果一个默认动作是<code>stop</code>或<code>terminate</code>的信号送达任意一个线程，那么进程中的所有线程都会<code>stop</code>或<code>terminate</code>。</li>
+<li>信号处置是进程级的，进程中所有线程对于一个信号共享同样的处置，如果一个线程使用<code>sigaction()</code>为信号创建了信号处理函数，当信号到达时，信号处理函数可能在任一进程中执行。</li>
+<li>在以下情况下信号会被发给特定的线程：
+<ol>
+<li>由于线程执行的硬件指令异常产生的信号(SIGBUS, SIGFPE, SIGILL, and SIGSEGV),只有产生异常的线程收到并处理。</li>
+<li>写一个被破坏的管道时产生的SIGPIPE信号。</li>
+<li>pthread_kill() or pthread_sigqueue()发送给指定线程。</li>
+</ol>
+</li>
+<li>当信号被发送到一个多线程进程时，内核会任意选择一个线程，把信号发给它，并在那个线程中调用线程处理函数。</li>
+<li>signal mask是线程级的，线程的信号掩码继承自创建它的线程，每个线程可以使用<code>pthread_sigmask()</code>单独block或unblock某个信号。</li>
+<li>内核为进程维护一个挂起信号表，也为每个线程维护一个挂起信号表，sigpending()返回的线程正在挂起的信号和进程正在挂起的信号的并集。</li>
+<li>当信号处理函数打断了pthread_mutex_lock()和pthread_cond_wait()的调用，会自动重新执行调用。</li>
+<li>备用信号栈是线程级的。</li>
+</ul>
+<h3 id="线程和进程控制">线程和进程控制</h3>
+<ul>
+<li>当某一个线程调用<code>exec()</code>后，调用程序会被完全替换掉。线程的特有数据析构函数和清理处理函数都不会被调用。</li>
+<li>当多线程程序调用<code>fork()</code>后，只有调用线程会被复制到子进程中。其他线程都会消失，它们的清理函数也不会被调用，这就带来一些问题：
+<ol>
+<li>除了调用线程，全局变量包括互斥量等也会被复制进子进程，这就导致如果在<code>fork()</code>的时候，其他线程锁了一个互斥量，<code>fork()</code>完毕后，它消失了..那个互斥量就会被永远的锁住。</li>
+<li>因为清理函数不会被调用，所以还有可能导致内存泄漏。<br>
+基于以上原因，在多线程程序中使用<code>fork()</code>最好马上调用<code>exec()</code>。如果不能，Pthread提供了pthread_atfork()接口</li>
+</ol>
+</li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">pthread_atfork</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">prepare_func</span><span class="p">)(</span><span class="kt">void</span><span class="p">),</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">parent_func</span><span class="p">)(</span><span class="kt">void</span><span class="p">),</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">child_func</span><span class="p">)(</span><span class="kt">void</span><span class="p">));</span>
+</code></pre></div><p>prepare_func会被加入一个函数列表中，在子进程创建之前，自动按照注册顺序反序执行。parent_func和child_func在fork()返回之前，分别在父进程和子进程中按注册顺序执行。
+下面是栗子:</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#define _UNIX03_THREADS 1                                                       
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;                                                            </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;                                                              </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;   </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;fcntl.h&gt;   </span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/wait.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;errno.h&gt;                                                              </span><span class="cp">
+</span><span class="cp"></span>                                                                                
+<span class="kt">char</span> <span class="n">fn_c</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;childq.out&#34;</span><span class="p">;</span>
+<span class="kt">char</span> <span class="n">fn_p</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;parentside.out&#34;</span><span class="p">;</span>
+<span class="kt">int</span>  <span class="n">fd_c</span><span class="p">;</span>
+<span class="kt">int</span>  <span class="n">fd_p</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">prep1</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;prep1</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;prep1</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">prep2</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;prep2</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;prep2</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">prep3</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;prep3</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;prep3</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+                                                                               
+<span class="kt">void</span> <span class="nf">parent1</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;parent1</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;parent1</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">parent2</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;parent2</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;parent2</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">parent3</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;parent3</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;parent3</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+
+<span class="kt">void</span> <span class="nf">child1</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;child1</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;child1</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">child2</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;child2</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;child2</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">child3</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>  <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buff</span><span class="p">[</span><span class="mi">80</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;child3</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;child3</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">buff</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">buff</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">thread1</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+                                                                                
+  <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Thread1: Hello from the thread.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+
+<span class="p">}</span> 
+                                                                                
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>                                                                        
+  <span class="n">pthread_t</span> <span class="n">thid</span><span class="p">;</span>
+  <span class="kt">int</span>       <span class="n">rc</span><span class="p">,</span> <span class="n">ret</span><span class="p">;</span>
+  <span class="n">pid_t</span>     <span class="n">pid</span><span class="p">;</span>
+  <span class="kt">int</span>       <span class="n">status</span><span class="p">;</span>
+  <span class="kt">char</span>   <span class="n">header</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;Called Child Handlers</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">thread1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;pthread_create() error&#34;</span><span class="p">);</span>                                           
+    <span class="n">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>                                                                    
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">pthread_join</span><span class="p">(</span><span class="n">thid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;pthread_join() error&#34;</span><span class="p">);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>                                                                    
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IPT: pthread_join success!  Thread 1 should be finished now.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;IPT: Prepare to fork!!!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+  <span class="p">}</span>
+ 
+
+  <span class="cm">/*-----------------------------------------*/</span>
+  <span class="cm">/*|  Start atfork handler calls in parent  */</span>
+  <span class="cm">/*-----------------------------------------*/</span>
+  <span class="cm">/* Register call 1 */</span>
+  <span class="n">rc</span> <span class="o">=</span> <span class="n">pthread_atfork</span><span class="p">(</span><span class="o">&amp;</span><span class="n">prep1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">parent2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">child3</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">perror</span><span class="p">(</span><span class="s">&#34;IPT: pthread_atfork() error [Call #1]&#34;</span><span class="p">);</span> 
+     <span class="n">printf</span><span class="p">(</span><span class="s">&#34;  rc= %d, errno: %d&#34;</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">errno</span><span class="p">);</span> 
+  <span class="p">}</span>
+ 
+
+  <span class="cm">/* Register call 2 */</span>
+  <span class="n">rc</span> <span class="o">=</span> <span class="n">pthread_atfork</span><span class="p">(</span><span class="o">&amp;</span><span class="n">prep2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">parent3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">child1</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">perror</span><span class="p">(</span><span class="s">&#34;IPT: pthread_atfork() error [Call #2]&#34;</span><span class="p">);</span> 
+     <span class="n">printf</span><span class="p">(</span><span class="s">&#34;  rc= %d, errno: %d&#34;</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">errno</span><span class="p">);</span> 
+  <span class="p">}</span>
+  
+
+  <span class="cm">/* Register call 3 */</span>
+  <span class="n">rc</span> <span class="o">=</span> <span class="n">pthread_atfork</span><span class="p">(</span><span class="o">&amp;</span><span class="n">prep3</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">parent1</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">perror</span><span class="p">(</span><span class="s">&#34;IPT: pthread_atfork() error [Call #3]&#34;</span><span class="p">);</span> 
+     <span class="n">printf</span><span class="p">(</span><span class="s">&#34;  rc= %d, errno: %d&#34;</span><span class="p">,</span> <span class="n">rc</span><span class="p">,</span> <span class="n">errno</span><span class="p">);</span> 
+  <span class="p">}</span>
+
+  <span class="cm">/* Create output files to expose the execution of fork handlers. */</span>
+  <span class="k">if</span> <span class="p">((</span><span class="n">fd_c</span> <span class="o">=</span> <span class="n">creat</span><span class="p">(</span><span class="n">fn_c</span><span class="p">,</span> <span class="n">S_IWUSR</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;creat() error&#34;</span><span class="p">);</span>
+  <span class="k">else</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Created %s and assigned fd= %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fn_c</span><span class="p">,</span> <span class="n">fd_c</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">((</span><span class="n">ret</span> <span class="o">=</span> <span class="n">write</span><span class="p">(</span><span class="n">fd_c</span><span class="p">,</span><span class="n">header</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;write() error&#34;</span><span class="p">);</span>
+  <span class="k">else</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Write() wrote %d bytes in %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">fn_c</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">((</span><span class="n">fd_p</span> <span class="o">=</span> <span class="n">creat</span><span class="p">(</span><span class="n">fn_p</span><span class="p">,</span> <span class="n">S_IWUSR</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;creat() error&#34;</span><span class="p">);</span>
+  <span class="k">else</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Created %s and assigned fd= %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fn_p</span><span class="p">,</span> <span class="n">fd_p</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">((</span><span class="n">ret</span> <span class="o">=</span> <span class="n">write</span><span class="p">(</span><span class="n">fd_p</span><span class="p">,</span><span class="n">header</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;write() error&#34;</span><span class="p">);</span>
+  <span class="k">else</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Write() wrote %d bytes in %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">fn_p</span><span class="p">);</span>
+
+  <span class="n">pid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">();</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> 
+    <span class="n">perror</span><span class="p">(</span><span class="s">&#34;IPT: fork() error&#34;</span><span class="p">);</span> 
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Child: I am the child!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Child: My PID= %d, parent= %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">getpid</span><span class="p">(),</span> 
+              <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">getppid</span><span class="p">());</span>
+      <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Parent: I am the parent!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Parent: My PID= %d, child PID= %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">getpid</span><span class="p">(),</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">pid</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">status</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>  
+        <span class="n">perror</span><span class="p">(</span><span class="s">&#34;Parent: wait() error&#34;</span><span class="p">);</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">WIFEXITED</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+             <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Child exited with status: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">WEXITSTATUS</span><span class="p">(</span><span class="n">status</span><span class="p">));</span> 
+           <span class="k">else</span>
+             <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Child did not exit successfully</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+
+    <span class="n">close</span><span class="p">(</span><span class="n">fd_c</span><span class="p">);</span>
+    <span class="n">close</span><span class="p">(</span><span class="n">fd_p</span><span class="p">);</span>
+
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div><div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">终端输出：
+Thread1: Hello from the thread.
+IPT: pthread_join success!  Thread 1 should be finished now.
+IPT: Prepare to fork!!!
+Created childq.out and assigned fd= 3
+Write() wrote 30 bytes in childq.out
+Created parentside.out and assigned fd= 4
+Write() wrote 30 bytes in parentside.out
+Parent: I am the parent!
+Parent: My PID= 42349, child PID= 42351
+Child: I am the child!
+Child: My PID= 42351, parent= 42349
+Child exited with status: 0
+
+文件内容：
+$ cat parentside.out 
+Called Child Handlers
+prep3
+prep2
+prep1
+parent2
+parent3
+parent1
+
+$ cat childq.out 
+Called Child Handlers
+child3
+child1
+
+</code></pre></div><p>从输出中能看出子进程中调用的处理函数可以通过文件描述符<code>3</code>往<code>childq.out</code>文件写内容，父进程可以通过文件描述符<code>4</code>往<code>parentside.out</code>文件中写内容。根据文件内容可以看出函数执行顺序。</p>
+
     </div>
 
     <div class="post-copyright">
@@ -373,8 +826,8 @@ pthread_join()和waitpid()之间的区别：</p>
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2020-10-23
-        <a href="/commit/6d514a2cf0691de9afca343622e5bd4be2886b0c" title="update">(6d514a2)</a>
+        2020-10-30
+        <a href="/commit/32d347f756801cd9914bb85c7324d67526f6a992" title="update">(32d347f)</a>
     </span>
   </p>
   
