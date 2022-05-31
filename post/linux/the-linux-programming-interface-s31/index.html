@@ -43,7 +43,8 @@ the system.)</li><li>SEM_INFO ：和IPC_INFO一样</li><li>SEM_STAT ： 所给se
 <code>sem_flg</code>， IPC_NOWAIT不阻塞，SEM_UNDO在进程退出后自动复归此进程对信号量的操作。但这个SEM_UNDO是存在局限的，第一点是即使信号量可以复归，和它对应的共享资源并不一定被恢复至之前状态。第二点是信号量复归也可能不能操作成功，这期间若其他进程操作过信号量，那么复归后的信号量就可能小于0，这个时候正在退出的进程是不是要阻塞住？在Linux上只会尽可能将信号量减到0就退出了，SUSv3标准并没有规定此种情况。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
 <span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
 <span class=item-content>2020-12-22
-<a href=/commit/ee7cffe1e5997eb65ab3aa8dc276519a15b9f921 title=update>(ee7cffe)</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s32/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记32. System V 共享内存</span>
+<a href=https://github.com/xistor/My-blog-source/commit/ee7cffe1e5997eb65ab3aa8dc276519a15b9f921 title=update>(ee7cffe)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=http://www.wtfpl.net/txt/copying/ target=_blank>WTFPL</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s32/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记32. System V 共享内存</span>
 <span class="prev-text nav-mobile">Prev</span></a>
 <a class=next href=/post/linux/the-linux-programming-interface-s30/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记30. System V 消息队列</span>
 <span class="next-text nav-mobile">Next</span>

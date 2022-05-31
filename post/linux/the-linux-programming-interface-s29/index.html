@@ -23,7 +23,8 @@
 </code></pre></div><p>那在写一个System V IPC 服务端时，<code>ftok()</code>的<code>pathname</code>该指定为什么呢，毕竟客户端想要链接，需要同样使用<code>ftok()</code>来产生一个同样的key。一般来说指定一个由服务端程序自己创建的文件比较好，因为可以保证文件存在且能避免和其他程序产生冲突。如果程序没有自己创建文件，可以使用程序可执行文件本身，也就是<code>argv[0]</code>，如果创建了多个IPC，就通过<code>ftok()</code>的<code>proj</code>参数来区分。客户端连接服务端时，只要知道服务端的可执行文件所在路径，以及对应的<code>proj</code>，这需要两端协商好。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
 <span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
 <span class=item-content>2020-12-16
-<a href=/commit/fe3b2f8eaff194629186a1adbd76c2bee274b61f title=update>(fe3b2f8)</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s30/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记30. System V 消息队列</span>
+<a href=https://github.com/xistor/My-blog-source/commit/fe3b2f8eaff194629186a1adbd76c2bee274b61f title=update>(fe3b2f8)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=http://www.wtfpl.net/txt/copying/ target=_blank>WTFPL</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s30/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记30. System V 消息队列</span>
 <span class="prev-text nav-mobile">Prev</span></a>
 <a class=next href=/post/linux/the-linux-programming-interface-s28/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记28. 管道</span>
 <span class="next-text nav-mobile">Next</span>

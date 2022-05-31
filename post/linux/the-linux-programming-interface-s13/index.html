@@ -40,7 +40,8 @@ brw-rw—- 1      root disk   7, 6        8月 10 10:07 loop6
 </code></pre></div><ul><li>绝大多数Linux文件系统上f_bsize和f_frsize是相同的，但有些文件系统支持块片段的概念，，在无需使用完整数据块的情况下，可在文件尾部分配较小的存储单元，从而避免因分配完整块而导致的空间浪费。在此类文件系统上f_frsize和f_bsize分别为块片段和整个块的大小。</li><li>一般文件系统都会给root预留一部分空间，ext3、ext4一般默认预留5%</li></ul><h2 id=exercises>Exercises</h2><ol><li>个人认为区别不大，文件删除只删除i-node信息，i-node信息直接通过i-number可以随机访问，所以随机删除和按顺序删除的耗时应该区别不大。</li></ol></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
 <span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
 <span class=item-content>2021-03-05
-<a href=/commit/4f0d5a29d04988be5d01540402d87c9d07772c7d title=update>(4f0d5a2)</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/unlock-the-pixel3-bootloader/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Pixel3 解锁bootloader</span>
+<a href=https://github.com/xistor/My-blog-source/commit/4f0d5a29d04988be5d01540402d87c9d07772c7d title=update>(4f0d5a2)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=http://www.wtfpl.net/txt/copying/ target=_blank>WTFPL</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/unlock-the-pixel3-bootloader/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Pixel3 解锁bootloader</span>
 <span class="prev-text nav-mobile">Prev</span></a>
 <a class=next href=/post/linux/the-linux-programming-interface-s12/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记12.文件I/O缓冲</span>
 <span class="next-text nav-mobile">Next</span>

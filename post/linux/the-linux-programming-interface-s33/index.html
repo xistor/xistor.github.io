@@ -35,7 +35,8 @@ total_swap: swap空间的大小
 </code></pre></div><p>超额检测只有在以下两种情况下起作用：</p><ul><li>私有可写映射（无论是文件还是匿名），swap空间使用的大小和每个进程的内存映射大小相同。</li><li>共享匿名映射，swap空间使用和内存映射大小相同。</li></ul><p>给一个只读的私有映射保留swap是没有必要的，因为映射的内容是不能被更改的。共享文件映射也没必要使用swap,因为修改会被反应到映射的文件上，这个文件就和swap的作用相同。</p><h2 id=map_fixed>MAP_FIXED</h2><p>若<code>mmap()</code>不指定MAP_FIXED，参数addr仅作为参考值，内核会在其周围选一个页对齐的地址作为映射地址，当指定了MAP_FIXED后，addr就是映射地址了，此时addr必须是页对齐的。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
 <span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
 <span class=item-content>2021-03-01
-<a href=/commit/930498e9e2c1eecfe902a99fa74c39d690718fe3 title=typo>(930498e)</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s34/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记34. POSIX IPC</span>
+<a href=https://github.com/xistor/My-blog-source/commit/930498e9e2c1eecfe902a99fa74c39d690718fe3 title=typo>(930498e)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=http://www.wtfpl.net/txt/copying/ target=_blank>WTFPL</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s34/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记34. POSIX IPC</span>
 <span class="prev-text nav-mobile">Prev</span></a>
 <a class=next href=/post/linux/the-linux-programming-interface-s32/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记32. System V 共享内存</span>
 <span class="next-text nav-mobile">Next</span>

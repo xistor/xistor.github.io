@@ -108,7 +108,8 @@
 </code></pre></div><p>解释：fd1和fd2指向同一个打开的文件句柄，所以共享文件偏移量，fd3重新打开了文件，所以是一个单独的文件句柄，写入从文件头部开始。<br>7. 考虑原子性，writev()需要先分配一块大内存，将各数组copy过去后，调用一次write()写入文件。readv()按顺序读入即可。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
 <span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
 <span class=item-content>2020-11-18
-<a href=/commit/e3adaded0fd56dabe41291e4cee44c1ac9b17157 title=update>(e3adade)</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s5/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记5.进程</span>
+<a href=https://github.com/xistor/My-blog-source/commit/e3adaded0fd56dabe41291e4cee44c1ac9b17157 title=update>(e3adade)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=http://www.wtfpl.net/txt/copying/ target=_blank>WTFPL</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s5/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记5.进程</span>
 <span class="prev-text nav-mobile">Prev</span></a>
 <a class=next href=/post/linux/the-linux-programming-interface-s3/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记3.通用文件I/O</span>
 <span class="next-text nav-mobile">Next</span>
