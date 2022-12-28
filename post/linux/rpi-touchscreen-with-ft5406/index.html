@@ -1,0 +1,317 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>适配树梅派4.3寸LCD屏幕的触摸 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="Board： d1s-mq SDK： Tina SDK 屏幕： 树莓派4.3寸触摸屏 缘由 因为有一块d1s-mq的板子， 板载了树梅派15pin的DSI屏幕插座，所以淘了一块树"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/rpi-touchscreen-with-ft5406/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/dist/even.a8191bf8.min.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="适配树梅派4.3寸LCD屏幕的触摸"><meta property="og:description" content="Board： d1s-mq SDK： Tina SDK 屏幕： 树莓派4.3寸触摸屏 缘由 因为有一块d1s-mq的板子， 板载了树梅派15pin的DSI屏幕插座，所以淘了一块树"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/rpi-touchscreen-with-ft5406/"><meta property="article:published_time" content="2022-12-25T21:33:00+08:00"><meta property="article:modified_time" content="2022-12-29T00:18:29+08:00"><meta itemprop=name content="适配树梅派4.3寸LCD屏幕的触摸"><meta itemprop=description content="Board： d1s-mq SDK： Tina SDK 屏幕： 树莓派4.3寸触摸屏 缘由 因为有一块d1s-mq的板子， 板载了树梅派15pin的DSI屏幕插座，所以淘了一块树"><meta itemprop=datePublished content="2022-12-25T21:33:00+08:00"><meta itemprop=dateModified content="2022-12-29T00:18:29+08:00"><meta itemprop=wordCount content="1260"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="适配树梅派4.3寸LCD屏幕的触摸"><meta name=twitter:description content="Board： d1s-mq SDK： Tina SDK 屏幕： 树莓派4.3寸触摸屏 缘由 因为有一块d1s-mq的板子， 板载了树梅派15pin的DSI屏幕插座，所以淘了一块树"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>适配树梅派4.3寸LCD屏幕的触摸</h1><div class=post-meta><span class=post-time>2022-12-25</span><div class=post-category><a href=/categories/linux-driver/>Linux Driver</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#缘由>缘由</a></li><li><a href=#实现>实现</a></li><li><a href=#效果>效果</a></li></ul></li></ul></nav></div></div><div class=post-content><p>Board： d1s-mq<br>SDK： Tina SDK<br>屏幕： 树莓派4.3寸触摸屏</p><h3 id=缘由>缘由</h3><p>因为有一块d1s-mq的板子， 板载了树梅派15pin的DSI屏幕插座，所以淘了一块树梅派4.3寸的屏幕。</p><p><img src=/img/rpi-touchscreen-with-ft5406/rpi-4.3-lcd.jpg alt="rpi lcd"></p><p>点亮屏幕，按照这个帖子 <a href="https://bbs.aw-ol.com/topic/808/%E5%B0%8F%E9%BA%BB%E9%9B%80%E7%9B%B4%E6%8E%A5%E9%A9%B1%E5%8A%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9A%84dsi%E5%B1%8F?lang=zh-CN">https://bbs.aw-ol.com/topic/808/%E5%B0%8F%E9%BA%BB%E9%9B%80%E7%9B%B4%E6%8E%A5%E9%A9%B1%E5%8A%A8%E6%A0%91%E8%8E%93%E6%B4%BE%E7%9A%84dsi%E5%B1%8F?lang=zh-CN</a> 中的dts配置就可以了。</p><p>然而这样屏幕的触摸还没有用起来。本着树莓派能用，那别的板子一定也可以用的心态，查了下树莓派的硬件原理图，看到排线里有SCL0和SDA0，
+<img src=/img/rpi-touchscreen-with-ft5406/rpi-mipi.png alt="mq mipi"></p><p>这应该就是读取触摸数据的I2C接口了，本来想移植一个现成的驱动就好了，结果背面芯片磨的啥都没有，找来了树莓派的驱动翻了下，看来应该是FT5406 （https://github.com/Ysurac/raspberry_kernel_mptcp/blob/master/drivers/input/touchscreen/rpi-ft5406.c）。 因为15pin的排线中并没有中断引脚，所以EDT官方的驱动也用不了, 树莓派的驱动是使用轮询的方式以60fps的速度去读取触摸数据。那需要做的就是把树梅派的驱动改一下，用在mq上。mq的引脚是这么连的：</p><p><img src=/img/rpi-touchscreen-with-ft5406/mq-mipi.png alt="mq mipi"></p><p>是连到TWI2的。</p><p>目的仅仅是用起来，所以只简单实现了。</p><h3 id=实现>实现</h3><p>先把 dts配置下， 在twi2里添加：</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>
+ft5406: ft5406@38 {
+		compatible = &#34;rpi,rpi-ft5406&#34;;
+		reg = &lt;0x38&gt;;
+		pinctrl-names = &#34;default&#34;;
+		touchscreen-size-x = &lt;800&gt;;
+		touchscreen-size-y = &lt;480&gt;;
+		status = &#34;okay&#34;;
+	};
+
+</code></pre></div><p>驱动代码：</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;linux/module.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/ratelimit.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/irq.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/interrupt.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/input.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/i2c.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/kernel.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/uaccess.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/delay.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/debugfs.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/slab.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/gpio/consumer.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/input.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/input/mt.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/input/touchscreen.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;linux/kthread.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;asm/unaligned.h&gt;</span><span class=cp>
+</span><span class=cp></span>
+
+
+<span class=cp>#define MAXIMUM_SUPPORTED_POINTS 10
+</span><span class=cp></span>
+<span class=cp>#define SCREEN_WIDTH  800
+</span><span class=cp>#define SCREEN_HEIGHT 480
+</span><span class=cp></span>
+<span class=k>enum</span> <span class=n>edt_ver</span> <span class=p>{</span>
+	<span class=n>EDT_M06</span><span class=p>,</span>
+	<span class=n>EDT_M09</span><span class=p>,</span>
+	<span class=n>EDT_M12</span><span class=p>,</span>
+	<span class=n>EV_FT</span><span class=p>,</span>
+	<span class=n>GENERIC_FT</span><span class=p>,</span>
+<span class=p>};</span>
+
+<span class=k>struct</span> <span class=n>edt_reg_addr</span> <span class=p>{</span>
+	<span class=kt>int</span> <span class=n>reg_threshold</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>reg_report_rate</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>reg_gain</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>reg_offset</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>reg_offset_x</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>reg_offset_y</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>reg_num_x</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>reg_num_y</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>struct</span> <span class=n>edt_i2c_chip_data</span> <span class=p>{</span>
+	<span class=kt>int</span>  <span class=n>max_support_points</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>struct</span> <span class=n>ft5406_regs</span> <span class=p>{</span>
+	<span class=n>uint8_t</span> <span class=n>device_mode</span><span class=p>;</span>
+	<span class=n>uint8_t</span> <span class=n>gesture_id</span><span class=p>;</span>
+	<span class=n>uint8_t</span> <span class=n>num_points</span><span class=p>;</span>
+	<span class=k>struct</span> <span class=n>ft5406_touch</span> <span class=p>{</span>
+		<span class=n>uint8_t</span> <span class=n>xh</span><span class=p>;</span>
+		<span class=n>uint8_t</span> <span class=n>xl</span><span class=p>;</span>
+		<span class=n>uint8_t</span> <span class=n>yh</span><span class=p>;</span>
+		<span class=n>uint8_t</span> <span class=n>yl</span><span class=p>;</span>
+		<span class=n>uint8_t</span> <span class=n>res1</span><span class=p>;</span>
+		<span class=n>uint8_t</span> <span class=n>res2</span><span class=p>;</span>
+	<span class=p>}</span> <span class=n>point</span><span class=p>[</span><span class=n>MAXIMUM_SUPPORTED_POINTS</span><span class=p>];</span>
+<span class=p>};</span>
+
+
+<span class=k>struct</span> <span class=n>ft5406</span> <span class=p>{</span>
+	<span class=k>struct</span> <span class=n>i2c_client</span> 	 	<span class=o>*</span><span class=n>client</span><span class=p>;</span>
+	<span class=k>struct</span> <span class=n>input_dev</span>       	<span class=o>*</span><span class=n>input_dev</span><span class=p>;</span>
+	<span class=kt>void</span> <span class=n>__iomem</span>           	<span class=o>*</span><span class=n>ts_base</span><span class=p>;</span>
+	<span class=n>dma_addr_t</span>		 		 <span class=n>bus_addr</span><span class=p>;</span>
+	<span class=k>struct</span> <span class=n>task_struct</span>     	<span class=o>*</span><span class=kr>thread</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>static</span> <span class=kt>int</span> <span class=nf>edt_ft5x06_ts_readwrite</span><span class=p>(</span><span class=k>struct</span> <span class=n>i2c_client</span> <span class=o>*</span><span class=n>client</span><span class=p>,</span>
+				   <span class=n>u16</span> <span class=n>wr_len</span><span class=p>,</span> <span class=n>u8</span> <span class=o>*</span><span class=n>wr_buf</span><span class=p>,</span>
+				   <span class=n>u16</span> <span class=n>rd_len</span><span class=p>,</span> <span class=n>u8</span> <span class=o>*</span><span class=n>rd_buf</span><span class=p>)</span>
+<span class=p>{</span>
+	<span class=k>struct</span> <span class=n>i2c_msg</span> <span class=n>wrmsg</span><span class=p>[</span><span class=mi>2</span><span class=p>];</span>
+	<span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>ret</span><span class=p>;</span>
+
+	<span class=k>if</span> <span class=p>(</span><span class=n>wr_len</span><span class=p>)</span> <span class=p>{</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>addr</span>  <span class=o>=</span> <span class=n>client</span><span class=o>-&gt;</span><span class=n>addr</span><span class=p>;</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>flags</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>len</span> <span class=o>=</span> <span class=n>wr_len</span><span class=p>;</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>buf</span> <span class=o>=</span> <span class=n>wr_buf</span><span class=p>;</span>
+		<span class=n>i</span><span class=o>++</span><span class=p>;</span>
+	<span class=p>}</span>
+	<span class=k>if</span> <span class=p>(</span><span class=n>rd_len</span><span class=p>)</span> <span class=p>{</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>addr</span>  <span class=o>=</span> <span class=n>client</span><span class=o>-&gt;</span><span class=n>addr</span><span class=p>;</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>flags</span> <span class=o>=</span> <span class=n>I2C_M_RD</span><span class=p>;</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>len</span> <span class=o>=</span> <span class=n>rd_len</span><span class=p>;</span>
+		<span class=n>wrmsg</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>buf</span> <span class=o>=</span> <span class=n>rd_buf</span><span class=p>;</span>
+		<span class=n>i</span><span class=o>++</span><span class=p>;</span>
+	<span class=p>}</span>
+
+	<span class=n>ret</span> <span class=o>=</span> <span class=n>i2c_transfer</span><span class=p>(</span><span class=n>client</span><span class=o>-&gt;</span><span class=n>adapter</span><span class=p>,</span> <span class=n>wrmsg</span><span class=p>,</span> <span class=n>i</span><span class=p>);</span>
+	<span class=k>if</span> <span class=p>(</span><span class=n>ret</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span>
+		<span class=k>return</span> <span class=n>ret</span><span class=p>;</span>
+	<span class=k>if</span> <span class=p>(</span><span class=n>ret</span> <span class=o>!=</span> <span class=n>i</span><span class=p>)</span>
+		<span class=k>return</span> <span class=o>-</span><span class=n>EIO</span><span class=p>;</span>
+
+	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>u_char</span> <span class=nf>read_reg</span><span class=p>(</span><span class=k>struct</span> <span class=n>i2c_client</span> <span class=o>*</span><span class=n>client</span><span class=p>,</span> <span class=n>u_char</span> <span class=n>addr</span><span class=p>)</span> <span class=p>{</span>
+
+	<span class=n>u_char</span> <span class=n>wbuf</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span><span class=n>addr</span><span class=p>},</span> <span class=n>rbuf</span><span class=p>[</span><span class=mi>1</span><span class=p>];</span>
+
+	<span class=n>edt_ft5x06_ts_readwrite</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=n>wbuf</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=n>rbuf</span><span class=p>);</span>
+	<span class=k>return</span> <span class=n>rbuf</span><span class=p>[</span><span class=mi>0</span><span class=p>];</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=nf>write_reg</span><span class=p>(</span><span class=k>struct</span> <span class=n>i2c_client</span> <span class=o>*</span><span class=n>client</span><span class=p>,</span> <span class=n>u_char</span> <span class=n>addr</span><span class=p>,</span> <span class=n>u_char</span> <span class=n>val</span><span class=p>)</span> <span class=p>{</span>
+
+	<span class=n>u_char</span> <span class=n>wbuf</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span><span class=n>addr</span><span class=p>,</span> <span class=n>val</span><span class=p>};</span>
+
+	<span class=n>edt_ft5x06_ts_readwrite</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=n>wbuf</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=nf>read_touch_regs</span><span class=p>(</span><span class=k>struct</span> <span class=n>i2c_client</span> <span class=o>*</span><span class=n>client</span><span class=p>,</span> <span class=k>struct</span> <span class=n>ft5406_regs</span> <span class=o>*</span><span class=n>regs</span><span class=p>){</span>
+
+	<span class=k>if</span><span class=p>(</span><span class=n>regs</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>){</span>
+		<span class=n>dev_err</span><span class=p>(</span><span class=o>&amp;</span><span class=p>(</span><span class=n>client</span><span class=o>-&gt;</span><span class=n>dev</span><span class=p>),</span> <span class=s>&#34;regs is NULL&#34;</span><span class=p>);</span>
+		<span class=k>return</span><span class=p>;</span>
+	<span class=p>}</span>
+	<span class=n>u_char</span> <span class=n>cmd</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+	<span class=n>edt_ft5x06_ts_readwrite</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>cmd</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=k>struct</span> <span class=n>ft5406_regs</span><span class=p>),</span> <span class=p>(</span><span class=n>u8</span> <span class=o>*</span><span class=p>)</span> <span class=n>regs</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=cm>/* Thread to poll for touchscreen events
+</span><span class=cm> * 
+</span><span class=cm> */</span>
+<span class=k>static</span> <span class=kt>int</span> <span class=nf>ft5406_thread</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span> <span class=p>{</span>
+
+	<span class=k>struct</span> <span class=n>ft5406</span> <span class=o>*</span><span class=n>ts</span> <span class=o>=</span> <span class=p>(</span><span class=k>struct</span> <span class=n>ft5406</span> <span class=o>*</span><span class=p>)</span> <span class=n>arg</span><span class=p>;</span>
+	<span class=k>struct</span> <span class=n>ft5406_regs</span> <span class=n>regs</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>x</span> <span class=o>=</span> <span class=mi>0</span><span class=p>,</span> <span class=n>y</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+	<span class=kt>int</span> <span class=n>known_ids</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+	<span class=k>while</span><span class=p>(</span><span class=o>!</span><span class=n>kthread_should_stop</span><span class=p>())</span>
+	<span class=p>{</span>
+		<span class=n>msleep_interruptible</span><span class=p>(</span><span class=mi>17</span><span class=p>);</span>
+
+		<span class=n>read_touch_regs</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>client</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>regs</span><span class=p>);</span>
+		<span class=kt>int</span> <span class=n>i</span><span class=p>;</span>
+		<span class=kt>int</span> <span class=n>modified_ids</span> <span class=o>=</span> <span class=mi>0</span><span class=p>,</span> <span class=n>released_ids</span><span class=p>;</span>
+		<span class=k>for</span><span class=p>(</span><span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>regs</span><span class=p>.</span><span class=n>num_points</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+
+			<span class=n>x</span> <span class=o>=</span> <span class=p>(((</span><span class=kt>int</span><span class=p>)</span><span class=n>regs</span><span class=p>.</span><span class=n>point</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>xh</span> <span class=o>&amp;</span> <span class=mh>0xf</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=mi>8</span><span class=p>)</span> <span class=o>+</span> <span class=n>regs</span><span class=p>.</span><span class=n>point</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>xl</span><span class=p>;</span>
+			<span class=n>y</span> <span class=o>=</span> <span class=p>(((</span><span class=kt>int</span><span class=p>)</span><span class=n>regs</span><span class=p>.</span><span class=n>point</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>yh</span> <span class=o>&amp;</span> <span class=mh>0xf</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=mi>8</span><span class=p>)</span> <span class=o>+</span> <span class=n>regs</span><span class=p>.</span><span class=n>point</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>yl</span><span class=p>;</span>
+			<span class=kt>int</span> <span class=n>touchid</span> <span class=o>=</span> <span class=p>(</span><span class=n>regs</span><span class=p>.</span><span class=n>point</span><span class=p>[</span><span class=n>i</span><span class=p>].</span><span class=n>yh</span> <span class=o>&gt;&gt;</span> <span class=mi>4</span><span class=p>)</span> <span class=o>&amp;</span> <span class=mh>0xf</span><span class=p>;</span>
+
+			<span class=n>modified_ids</span> <span class=o>|=</span> <span class=mi>1</span> <span class=o>&lt;&lt;</span> <span class=n>touchid</span><span class=p>;</span>
+			<span class=n>input_mt_slot</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>touchid</span><span class=p>);</span>
+			<span class=n>input_mt_report_slot_state</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>MT_TOOL_FINGER</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+
+			<span class=n>input_report_abs</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>ABS_MT_POSITION_X</span><span class=p>,</span>  <span class=mi>800</span> <span class=o>-</span> <span class=n>x</span><span class=p>);</span>
+			<span class=n>input_report_abs</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>ABS_MT_POSITION_Y</span><span class=p>,</span>  <span class=mi>480</span> <span class=o>-</span> <span class=n>y</span><span class=p>);</span>
+
+		<span class=p>}</span>
+
+		<span class=n>released_ids</span> <span class=o>=</span> <span class=n>known_ids</span> <span class=o>&amp;</span> <span class=o>~</span><span class=n>modified_ids</span><span class=p>;</span>
+
+		<span class=k>for</span><span class=p>(</span><span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>released_ids</span> <span class=o>&amp;&amp;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>MAXIMUM_SUPPORTED_POINTS</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+		<span class=p>{</span>
+			<span class=k>if</span><span class=p>(</span><span class=n>released_ids</span> <span class=o>&amp;</span> <span class=p>(</span><span class=mi>1</span><span class=o>&lt;&lt;</span><span class=n>i</span><span class=p>))</span>
+			<span class=p>{</span>
+				<span class=n>input_mt_slot</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>i</span><span class=p>);</span>
+				<span class=n>input_mt_report_slot_state</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>MT_TOOL_FINGER</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+				<span class=n>modified_ids</span> <span class=o>&amp;=</span> <span class=o>~</span><span class=p>(</span><span class=mi>1</span> <span class=o>&lt;&lt;</span> <span class=n>i</span><span class=p>);</span>
+			<span class=p>}</span>
+		<span class=p>}</span>
+		<span class=n>known_ids</span> <span class=o>=</span> <span class=n>modified_ids</span><span class=p>;</span>
+
+		<span class=n>input_mt_report_pointer_emulation</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=nb>true</span><span class=p>);</span>
+		<span class=n>input_sync</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>);</span>
+
+	<span class=p>}</span>
+	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+
+<span class=k>static</span> <span class=kt>int</span> <span class=nf>rpi_ft5406_ts_probe</span><span class=p>(</span><span class=k>struct</span> <span class=n>i2c_client</span> <span class=o>*</span><span class=n>client</span><span class=p>,</span>
+					 <span class=k>const</span> <span class=k>struct</span> <span class=n>i2c_device_id</span> <span class=o>*</span><span class=n>id</span><span class=p>)</span>
+<span class=p>{</span>
+
+	<span class=kt>int</span> <span class=n>err</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+	<span class=k>struct</span> <span class=n>device</span> <span class=o>*</span><span class=n>dev</span> <span class=o>=</span> <span class=o>&amp;</span><span class=p>(</span><span class=n>client</span><span class=o>-&gt;</span><span class=n>dev</span><span class=p>);</span>
+	<span class=k>struct</span> <span class=n>ft5406</span> <span class=o>*</span> <span class=n>ts</span><span class=p>;</span>
+
+	<span class=n>ts</span> <span class=o>=</span> <span class=n>devm_kzalloc</span><span class=p>(</span><span class=n>dev</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=k>struct</span> <span class=n>ft5406</span><span class=p>),</span> <span class=n>GFP_KERNEL</span><span class=p>);</span>
+	<span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>ts</span><span class=p>)</span> <span class=p>{</span>
+			<span class=n>dev_err</span><span class=p>(</span><span class=n>dev</span><span class=p>,</span> <span class=s>&#34;Failed to allocate memory</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+			<span class=k>return</span> <span class=o>-</span><span class=n>ENOMEM</span><span class=p>;</span>
+	<span class=p>}</span>
+
+	<span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span> <span class=o>=</span> <span class=n>input_allocate_device</span><span class=p>();</span>
+	<span class=n>ts</span><span class=o>-&gt;</span><span class=n>client</span>    <span class=o>=</span> <span class=n>client</span><span class=p>;</span>
+	
+	<span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=o>-&gt;</span><span class=n>name</span> <span class=o>=</span> <span class=s>&#34;FT5406 i2c driver&#34;</span><span class=p>;</span>
+	<span class=n>__set_bit</span><span class=p>(</span><span class=n>EV_KEY</span><span class=p>,</span> <span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=o>-&gt;</span><span class=n>evbit</span><span class=p>);</span>
+	<span class=n>__set_bit</span><span class=p>(</span><span class=n>EV_SYN</span><span class=p>,</span> <span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=o>-&gt;</span><span class=n>evbit</span><span class=p>);</span>
+	<span class=n>__set_bit</span><span class=p>(</span><span class=n>EV_ABS</span><span class=p>,</span> <span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=o>-&gt;</span><span class=n>evbit</span><span class=p>);</span>
+
+
+	<span class=n>input_set_abs_params</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span><span class=n>ABS_X</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=n>SCREEN_WIDTH</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+    <span class=n>input_set_abs_params</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span><span class=n>ABS_Y</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=n>SCREEN_HEIGHT</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+
+	<span class=c1>// mt
+</span><span class=c1></span>	<span class=n>input_set_abs_params</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>ABS_MT_POSITION_X</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span>
+			     <span class=n>SCREEN_WIDTH</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+	<span class=n>input_set_abs_params</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>ABS_MT_POSITION_Y</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span>
+			     <span class=n>SCREEN_HEIGHT</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+
+	<span class=n>input_mt_init_slots</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span> <span class=n>MAXIMUM_SUPPORTED_POINTS</span><span class=p>,</span> <span class=n>INPUT_MT_DIRECT</span><span class=p>);</span>
+	<span class=n>i2c_set_clientdata</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=n>ts</span><span class=p>);</span>
+	<span class=n>err</span> <span class=o>=</span> <span class=n>input_register_device</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>);</span>
+	<span class=k>if</span> <span class=p>(</span><span class=n>err</span><span class=p>)</span> <span class=p>{</span>
+		<span class=n>dev_err</span><span class=p>(</span><span class=n>dev</span><span class=p>,</span> <span class=s>&#34;could not register input device, %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
+			<span class=n>err</span><span class=p>);</span>
+		<span class=k>goto</span> <span class=n>out</span><span class=p>;</span>
+	<span class=p>}</span>
+
+	<span class=c1>// create thread to poll the touch events
+</span><span class=c1></span>	<span class=n>ts</span><span class=o>-&gt;</span><span class=kr>thread</span> <span class=o>=</span> <span class=n>kthread_run</span><span class=p>(</span><span class=n>ft5406_thread</span><span class=p>,</span> <span class=n>ts</span><span class=p>,</span> <span class=s>&#34;ft5406&#34;</span><span class=p>);</span>
+	<span class=k>if</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=kr>thread</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
+	<span class=p>{</span>
+		<span class=n>dev_err</span><span class=p>(</span><span class=n>dev</span><span class=p>,</span> <span class=s>&#34;Failed to create kernel thread&#34;</span><span class=p>);</span>
+		<span class=n>err</span> <span class=o>=</span> <span class=o>-</span><span class=n>ENOMEM</span><span class=p>;</span>
+		<span class=k>goto</span> <span class=n>out</span><span class=p>;</span>
+	<span class=p>}</span>
+	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+
+<span class=nl>out</span><span class=p>:</span>
+	<span class=k>if</span> <span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>)</span> <span class=p>{</span>
+		<span class=n>input_unregister_device</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>);</span>
+		<span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+	<span class=p>}</span>
+
+	<span class=k>return</span> <span class=n>err</span><span class=p>;</span>
+<span class=p>}</span>
+
+
+<span class=k>static</span> <span class=kt>int</span> <span class=nf>rpi_ft5406_ts_remove</span><span class=p>(</span><span class=k>struct</span> <span class=n>i2c_client</span> <span class=o>*</span><span class=n>client</span><span class=p>)</span>
+<span class=p>{</span>
+	<span class=k>struct</span> <span class=n>ft5406</span> <span class=o>*</span><span class=n>ts</span> <span class=o>=</span> <span class=p>(</span><span class=k>struct</span> <span class=n>ft5406</span> <span class=o>*</span><span class=p>)</span> <span class=n>i2c_get_clientdata</span><span class=p>(</span><span class=n>client</span><span class=p>);</span>
+	
+	<span class=n>kthread_stop</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=kr>thread</span><span class=p>);</span>
+
+	<span class=k>if</span> <span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>)</span>
+		<span class=n>input_unregister_device</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>);</span>
+	
+	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=k>static</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>edt_i2c_chip_data</span> <span class=n>rpi_ft5406_data</span> <span class=o>=</span> <span class=p>{</span>
+	<span class=p>.</span><span class=n>max_support_points</span> <span class=o>=</span> <span class=n>MAXIMUM_SUPPORTED_POINTS</span><span class=p>,</span>
+<span class=p>};</span>
+
+<span class=k>static</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>i2c_device_id</span> <span class=n>rpi_ft5406_ts_id</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span>
+	<span class=p>{</span> <span class=p>.</span><span class=n>name</span> <span class=o>=</span> <span class=s>&#34;rpi-ft5406&#34;</span><span class=p>,</span> <span class=p>.</span><span class=n>driver_data</span> <span class=o>=</span> <span class=p>(</span><span class=kt>long</span><span class=p>)</span><span class=o>&amp;</span><span class=n>rpi_ft5406_data</span> <span class=p>},</span>
+	<span class=p>{</span> <span class=cm>/* sentinel */</span> <span class=p>}</span>
+<span class=p>};</span>
+<span class=n>MODULE_DEVICE_TABLE</span><span class=p>(</span><span class=n>i2c</span><span class=p>,</span> <span class=n>rpi_ft5406_ts_id</span><span class=p>);</span>
+
+<span class=k>static</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>of_device_id</span> <span class=n>rpi_ft5406_of_match</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span>
+	<span class=p>{</span> <span class=p>.</span><span class=n>compatible</span> <span class=o>=</span> <span class=s>&#34;rpi,rpi-ft5406&#34;</span><span class=p>,</span> <span class=p>.</span><span class=n>data</span> <span class=o>=</span> <span class=o>&amp;</span><span class=n>rpi_ft5406_data</span> <span class=p>},</span>
+	<span class=p>{</span> <span class=cm>/* sentinel */</span> <span class=p>}</span>
+<span class=p>};</span>
+<span class=n>MODULE_DEVICE_TABLE</span><span class=p>(</span><span class=n>of</span><span class=p>,</span> <span class=n>rpi_ft5406_of_match</span><span class=p>);</span>
+
+<span class=k>static</span> <span class=k>struct</span> <span class=n>i2c_driver</span> <span class=n>rpi_ft5406_ts_driver</span> <span class=o>=</span> <span class=p>{</span>
+	<span class=p>.</span><span class=n>driver</span> <span class=o>=</span> <span class=p>{</span>
+		<span class=p>.</span><span class=n>owner</span> <span class=o>=</span> <span class=n>THIS_MODULE</span><span class=p>,</span>
+		<span class=p>.</span><span class=n>name</span> <span class=o>=</span> <span class=s>&#34;rpi_ft5406&#34;</span><span class=p>,</span>
+		<span class=p>.</span><span class=n>of_match_table</span> <span class=o>=</span> <span class=n>rpi_ft5406_of_match</span><span class=p>,</span>
+	<span class=p>},</span>
+	<span class=p>.</span><span class=n>id_table</span> <span class=o>=</span> <span class=n>rpi_ft5406_ts_id</span><span class=p>,</span>
+	<span class=p>.</span><span class=n>probe</span>    <span class=o>=</span> <span class=n>rpi_ft5406_ts_probe</span><span class=p>,</span>
+	<span class=p>.</span><span class=n>remove</span>   <span class=o>=</span> <span class=n>rpi_ft5406_ts_remove</span><span class=p>,</span>
+<span class=p>};</span>
+
+<span class=n>module_i2c_driver</span><span class=p>(</span><span class=n>rpi_ft5406_ts_driver</span><span class=p>);</span>
+
+<span class=n>MODULE_AUTHOR</span><span class=p>(</span><span class=s>&#34;xlq &#34;</span><span class=p>);</span>
+<span class=n>MODULE_DESCRIPTION</span><span class=p>(</span><span class=s>&#34;rpi FT5x06 I2C Touchscreen Driver&#34;</span><span class=p>);</span>
+<span class=n>MODULE_LICENSE</span><span class=p>(</span><span class=s>&#34;GPL v2&#34;</span><span class=p>);</span>
+</code></pre></div><p>编译好，就可以烧进板子了，有个坑就是lvgl不支持多点触摸，要用lvgl的话所以驱动里得加上这个：</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c>
+	<span class=n>input_set_abs_params</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span><span class=n>ABS_X</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=n>SCREEN_WIDTH</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+    <span class=n>input_set_abs_params</span><span class=p>(</span><span class=n>ts</span><span class=o>-&gt;</span><span class=n>input_dev</span><span class=p>,</span><span class=n>ABS_Y</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=n>SCREEN_HEIGHT</span><span class=p>,</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+
+</code></pre></div><h3 id=效果>效果</h3><p>但实际这个驱动也是只是单点触摸&mldr;有空再改。</p><p>参考：
+<a href=https://github.com/Ysurac/raspberry_kernel_mptcp/blob/master/drivers/input/touchscreen/rpi-ft5406.c>https://github.com/Ysurac/raspberry_kernel_mptcp/blob/master/drivers/input/touchscreen/rpi-ft5406.c</a><br><a href=https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-reduced-schematics.pdf>https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-reduced-schematics.pdf</a><br><a href=https://github.com/mangopi-sbc/MQ>https://github.com/mangopi-sbc/MQ</a><br><a href=https://www.cnblogs.com/yinsedeyinse/p/16663771.html>https://www.cnblogs.com/yinsedeyinse/p/16663771.html</a></p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2022-12-29
+<a href=https://github.com/xistor/My-blog-source/commit/2456c52633640143a7bc9e291d61499c374f09b0 title="new post: d1s-mp use rpi touchscreen">(2456c52)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=next href=/post/ieee-754/><span class="next-text nav-default">IEEE 浮点数表示</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=division>|</span>
+<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+2018 -
+2022
+<span class=heart><i class="iconfont icon-heart"></i></span><span class=author>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/dist/even.26188efa.min.js></script><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[['$','$'],['\\(','\\)']]},showProcessingMessages:false,messageStyle:'none'};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin=anonymous></script></body></html>
