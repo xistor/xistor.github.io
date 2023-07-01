@@ -1,4 +1,117 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记9.时间 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &amp;lt;locale.h&amp;gt;#include &amp;lt;time.h&amp;gt;#include &amp;lt;sys/time.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s9/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记9.时间"><meta property="og:description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include <locale.h>#include <time.h>#include <sys/time.h>#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s9/"><meta property="article:published_time" content="2020-07-30T10:53:00+08:00"><meta property="article:modified_time" content="2020-08-19T21:45:53+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记9.时间"><meta itemprop=description content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include <locale.h>#include <time.h>#include <sys/time.h>#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display"><meta itemprop=datePublished content="2020-07-30T10:53:00+08:00"><meta itemprop=dateModified content="2020-08-19T21:45:53+08:00"><meta itemprop=wordCount content="1690"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记9.时间"><meta name=twitter:description content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include <locale.h>#include <time.h>#include <sys/time.h>#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记9.时间</h1><div class=post-meta><span class=post-time>2020-07-30</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#时区>时区</a></li><li><a href=#软件时钟-jiffies>软件时钟 (jiffies)</a></li><li><a href=#进程时间>进程时间</a></li></ul></li></ul></nav></div></div><div class=post-content><p>直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;locale.h&gt;</span><span class=cp>
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>Linux/Unix系统编程手册-笔记9.时间 - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include &amp;lt;locale.h&amp;gt;#include &amp;lt;time.h&amp;gt;#include &amp;lt;sys/time.h&amp;gt;#include &amp;#34;tlpi_hdr.h&amp;#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s9/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记9.时间">
+<meta property="og:description" content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include <locale.h>#include <time.h>#include <sys/time.h>#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s9/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2020-07-30T10:53:00+08:00">
+<meta property="article:modified_time" content="2020-08-19T21:45:53+08:00">
+<meta itemprop=name content="Linux/Unix系统编程手册-笔记9.时间">
+<meta itemprop=description content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include <locale.h>#include <time.h>#include <sys/time.h>#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display"><meta itemprop=datePublished content="2020-07-30T10:53:00+08:00">
+<meta itemprop=dateModified content="2020-08-19T21:45:53+08:00">
+<meta itemprop=wordCount content="1690">
+<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Linux/Unix系统编程手册-笔记9.时间">
+<meta name=twitter:description content="直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。 #include <locale.h>#include <time.h>#include <sys/time.h>#include &#34;tlpi_hdr.h&#34; #define SECONDS_IN_TROPICAL_YEAR (365.24219 * 24 * 60 * 60) int main(int argc, char *argv[]) { time_t t; struct tm *gmp, *locp; struct tm gm, loc; struct timeval tv; /* Retrieve time, convert and display"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Linux/Unix系统编程手册-笔记9.时间</h1>
+<div class=post-meta>
+<span class=post-time> 2020-07-30 </span>
+<div class=post-category>
+<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#时区>时区</a></li>
+<li><a href=#软件时钟-jiffies>软件时钟 (jiffies)</a></li>
+<li><a href=#进程时间>进程时间</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>直接看书上的例子吧：获取时间并转换成多种形式显示。加了些注释。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;locale.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;time.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/time.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&#34;tlpi_hdr.h&#34;</span><span class=cp>
@@ -96,9 +209,22 @@
     <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><h3 id=时区>时区</h3><p>时区信息保存在文件中，位于/usr/share/zoneinfo中。为运行中的程序指定一个时区，需要设置TZ环境变量。设置方法：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh><span class=nv>TZ</span><span class=o>=</span><span class=s2>&#34;:Pacific/Aukland&#34;</span> ./show_time
-</code></pre></div><h3 id=软件时钟-jiffies>软件时钟 (jiffies)</h3><p>在本书中所描述的时间相关的各种系统调用的精度是受限于系统软件时钟的分辨率，他的度量单位被称为jiffies。jiffies的大小是定义在内核源代码的常量HZ。这是内核按照round-robin的分时调度算法分配CPU进程的单位。</p><p>更高的软件时钟速率意味着定时器可以有更高的操作精度和时间精度，然而因为每个时钟中断会消耗少量的CPU时间，，这部分时间CPU无法执行任何操作。</p><p>最终，软件时钟频率成为一个可配置的内核选项。内核可以设置为100、250（默认）、1000、300。</p><h3 id=进程时间>进程时间</h3><p>进程时间是进程创建后使用的CPU时间数量。内核把CPU时间分以下两部分：</p><ul><li>用户CPU时间：在用户模式下执行所花费的时间数量</li><li>系统CPU时间：在内核模式中执行所花费的时间数量。
-有时候，进程时间是指出现处理过程中所消耗的总CPU时间。</li></ul><p>还是直接看例程：</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp>
+</code></pre></div><h3 id=时区>时区</h3>
+<p>时区信息保存在文件中，位于/usr/share/zoneinfo中。为运行中的程序指定一个时区，需要设置TZ环境变量。设置方法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=nv>TZ</span><span class=o>=</span><span class=s2>&#34;:Pacific/Aukland&#34;</span> ./show_time
+</code></pre></div><h3 id=软件时钟-jiffies>软件时钟 (jiffies)</h3>
+<p>在本书中所描述的时间相关的各种系统调用的精度是受限于系统软件时钟的分辨率，他的度量单位被称为jiffies。jiffies的大小是定义在内核源代码的常量HZ。这是内核按照round-robin的分时调度算法分配CPU进程的单位。</p>
+<p>更高的软件时钟速率意味着定时器可以有更高的操作精度和时间精度，然而因为每个时钟中断会消耗少量的CPU时间，，这部分时间CPU无法执行任何操作。</p>
+<p>最终，软件时钟频率成为一个可配置的内核选项。内核可以设置为100、250（默认）、1000、300。</p>
+<h3 id=进程时间>进程时间</h3>
+<p>进程时间是进程创建后使用的CPU时间数量。内核把CPU时间分以下两部分：</p>
+<ul>
+<li>用户CPU时间：在用户模式下执行所花费的时间数量</li>
+<li>系统CPU时间：在内核模式中执行所花费的时间数量。
+有时候，进程时间是指出现处理过程中所消耗的总CPU时间。</li>
+</ul>
+<p>还是直接看例程：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp>
 <span class=cp>#include</span> <span class=cpf>&lt;sys/times.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;time.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&#34;tlpi_hdr.h&#34;</span><span class=cp>
@@ -169,7 +295,8 @@
     <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><p>需要注意的是，有时候我们在程序中需要记录程序某个操作的运行时间，会使用类似下面的代码</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=kt>double</span> <span class=n>dur</span><span class=p>;</span>
+</code></pre></div><p>需要注意的是，有时候我们在程序中需要记录程序某个操作的运行时间，会使用类似下面的代码</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=kt>double</span> <span class=n>dur</span><span class=p>;</span>
 <span class=n>clock_t</span> <span class=n>start</span><span class=p>,</span><span class=n>end</span><span class=p>;</span>
 <span class=n>start</span> <span class=o>=</span> <span class=n>clock</span><span class=p>();</span>
 
@@ -178,7 +305,8 @@
 <span class=n>end</span> <span class=o>=</span> <span class=n>clock</span><span class=p>();</span>
 <span class=n>dur</span> <span class=o>=</span> <span class=p>(</span><span class=kt>double</span><span class=p>)(</span><span class=n>end</span> <span class=o>-</span> <span class=n>start</span><span class=p>);</span>
 <span class=n>printf</span><span class=p>(</span><span class=s>&#34;Use Time:%f</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,(</span><span class=n>dur</span><span class=o>/</span><span class=n>CLOCKS_PER_SEC</span><span class=p>));</span>
-</code></pre></div><p>但是clock()内统计的是本进程占用cpu的时间，如果在两次clock()调用之间调用了sleep()或者跨进程调用等,由于不计算在本进程占用的cpu时间内，所以我们实际感觉的程序运行时间会比使用上述方式统计的时间长。最好使用下面这种方式来计算运行时间：</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp>
+</code></pre></div><p>但是clock()内统计的是本进程占用cpu的时间，如果在两次clock()调用之间调用了sleep()或者跨进程调用等,由于不计算在本进程占用的cpu时间内，所以我们实际感觉的程序运行时间会比使用上述方式统计的时间长。最好使用下面这种方式来计算运行时间：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp>
 <span class=n>time_t</span> <span class=n>t1</span><span class=p>,</span> <span class=n>t2</span><span class=p>;</span>
 <span class=kt>float</span> <span class=n>diff_time</span><span class=p>;</span>
 
@@ -188,19 +316,87 @@
 </span><span class=c1></span>
 <span class=n>time</span><span class=p>(</span><span class=o>&amp;</span><span class=n>t2</span><span class=p>);</span>
 <span class=n>diff_time</span> <span class=o>=</span> <span class=n>difftime</span><span class=p>(</span><span class=n>t2</span><span class=p>,</span> <span class=n>t1</span><span class=p>);</span>
-</code></pre></div><p>这个时间一般才是我们想要运行时间。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2020-08-19
-<a href=https://github.com/xistor/My-blog-source/commit/775c0e883a2a6aa4d4dbd2a3de761412d3b3fdb1 title="fix typo">(775c0e8)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s10/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记10.系统限制和选项</span>
-<span class="prev-text nav-mobile">Prev</span></a>
-<a class=next href=/post/linux/the-linux-programming-interface-s8/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记8.进程信任状态</span>
+</code></pre></div><p>这个时间一般才是我们想要运行时间。</p>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2020-08-19
+<a href=https://github.com/xistor/My-blog-source/commit/775c0e883a2a6aa4d4dbd2a3de761412d3b3fdb1 title="fix typo">(775c0e8)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/linux/>Linux</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/linux/the-linux-programming-interface-s10/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Linux/Unix系统编程手册-笔记10.系统限制和选项</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/linux/the-linux-programming-interface-s8/>
+<span class="next-text nav-default">Linux/Unix系统编程手册-笔记8.进程信任状态</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>

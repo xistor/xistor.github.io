@@ -1,18 +1,185 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记3.通用文件I/O - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s3/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记3.通用文件I/O"><meta property="og:description" content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s3/"><meta property="article:published_time" content="2020-07-05T16:01:00+08:00"><meta property="article:modified_time" content="2020-11-18T19:36:36+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记3.通用文件I/O"><meta itemprop=description content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO"><meta itemprop=datePublished content="2020-07-05T16:01:00+08:00"><meta itemprop=dateModified content="2020-11-18T19:36:36+08:00"><meta itemprop=wordCount content="982"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记3.通用文件I/O"><meta name=twitter:description content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记3.通用文件I/O</h1><div class=post-meta><span class=post-time>2020-07-05</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#文件io操作的四个主要系统调用>文件I/O操作的四个主要系统调用：</a></li><li><a href=#改变文件偏移量>改变文件偏移量：</a></li><li><a href=#文件空洞>文件空洞</a></li><li><a href=#exercises>Exercises</a></li></ul></li></ul></nav></div></div><div class=post-content><p>文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符:</p><table><thead><tr><th>File descriptor</th><th>Purpose</th><th>POSIX name</th><th>stdio stream</th></tr></thead><tbody><tr><td>0</td><td>standard input</td><td>STDIN_FILENO</td><td>stdin</td></tr><tr><td>1</td><td>standard output</td><td>STDOUT_FILENO</td><td>stdout</td></tr><tr><td>2</td><td>standard error</td><td>STDERR_FILENO</td><td>stderr</td></tr></tbody></table><h3 id=文件io操作的四个主要系统调用>文件I/O操作的四个主要系统调用：</h3><ul><li>fd = open(pathname, flags, mode), 函数打开pathname所标识的文件，并返回文件描述符， flags指定文件的打开方式。mode 指定创建文件的访问权限
-如果open函数并未创建文件，则忽略mode参数。</li><li>numread = read(fd, bnuffer, count), 从fd所指代的文件中读取count个字节到buffer中，numread为实际读取的字节数。</li><li>numwritten = write(fd, buffer, count), 将buffer中的count个字节写入到fd所指代的文件中，numwritten为实际写入的字节数。</li><li>status = close(fd), 释放文件描述符，以及与之相关的内核资源。</li></ul><h3 id=改变文件偏移量>改变文件偏移量：</h3><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span><span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>Linux/Unix系统编程手册-笔记3.通用文件I/O - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s3/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记3.通用文件I/O">
+<meta property="og:description" content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s3/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2020-07-05T16:01:00+08:00">
+<meta property="article:modified_time" content="2020-11-18T19:36:36+08:00">
+<meta itemprop=name content="Linux/Unix系统编程手册-笔记3.通用文件I/O">
+<meta itemprop=description content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO"><meta itemprop=datePublished content="2020-07-05T16:01:00+08:00">
+<meta itemprop=dateModified content="2020-11-18T19:36:36+08:00">
+<meta itemprop=wordCount content="982">
+<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Linux/Unix系统编程手册-笔记3.通用文件I/O">
+<meta name=twitter:description content="文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符: File descriptor Purpose POSIX name stdio stream 0 standard input STDIN_FILENO stdin 1 standard output STDOUT_FILENO stdout 2 standard error STDERR_FILENO"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Linux/Unix系统编程手册-笔记3.通用文件I/O</h1>
+<div class=post-meta>
+<span class=post-time> 2020-07-05 </span>
+<div class=post-category>
+<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li>
+<ul>
+<li><a href=#文件io操作的四个主要系统调用>文件I/O操作的四个主要系统调用：</a></li>
+<li><a href=#改变文件偏移量>改变文件偏移量：</a></li>
+<li><a href=#文件空洞>文件空洞</a></li>
+<li><a href=#exercises>Exercises</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>文件描述符：通常是一个小的非负整数，可以用来表示所有打开的文件。每个程序都会有三个标准文件描述符:</p>
+<table>
+<thead>
+<tr>
+<th>File descriptor</th>
+<th>Purpose</th>
+<th>POSIX name</th>
+<th>stdio stream</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>standard input</td>
+<td>STDIN_FILENO</td>
+<td>stdin</td>
+</tr>
+<tr>
+<td>1</td>
+<td>standard output</td>
+<td>STDOUT_FILENO</td>
+<td>stdout</td>
+</tr>
+<tr>
+<td>2</td>
+<td>standard error</td>
+<td>STDERR_FILENO</td>
+<td>stderr</td>
+</tr>
+</tbody>
+</table>
+<h3 id=文件io操作的四个主要系统调用>文件I/O操作的四个主要系统调用：</h3>
+<ul>
+<li>fd = open(pathname, flags, mode), 函数打开pathname所标识的文件，并返回文件描述符， flags指定文件的打开方式。mode 指定创建文件的访问权限
+如果open函数并未创建文件，则忽略mode参数。</li>
+<li>numread = read(fd, bnuffer, count), 从fd所指代的文件中读取count个字节到buffer中，numread为实际读取的字节数。</li>
+<li>numwritten = write(fd, buffer, count), 将buffer中的count个字节写入到fd所指代的文件中，numwritten为实际写入的字节数。</li>
+<li>status = close(fd), 释放文件描述符，以及与之相关的内核资源。</li>
+</ul>
+<h3 id=改变文件偏移量>改变文件偏移量：</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span><span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=n>off_t</span> <span class=nf>lseek</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=n>off_t</span> <span class=n>offset</span><span class=p>,</span> <span class=kt>int</span> <span class=n>whence</span><span class=p>);</span>
-</code></pre></div><p>whence参数表明应参照哪个基点来解释offset参数：</p><ul><li>SEEK_SET 将文件偏移量设置为从文件头部起始点开始的offset个字节。</li><li>SEEK_CUR 相对于当前文件偏移量，将文件偏移量调整offset个字节。</li><li>SEEK_END 将文件偏移量设置为起始于文件尾部的offset个字节</li></ul><p>除了SEEK_SET情况下，offset必须为非负数，其他两种情况offset可正可负。
-lseek调用例子</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=n>lseek</span><span class=p>(</span><span class=n>fd</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>SEEK_SET</span><span class=p>);</span> <span class=c1>// start of file
+</code></pre></div><p>whence参数表明应参照哪个基点来解释offset参数：</p>
+<ul>
+<li>SEEK_SET 将文件偏移量设置为从文件头部起始点开始的offset个字节。</li>
+<li>SEEK_CUR 相对于当前文件偏移量，将文件偏移量调整offset个字节。</li>
+<li>SEEK_END 将文件偏移量设置为起始于文件尾部的offset个字节</li>
+</ul>
+<p>除了SEEK_SET情况下，offset必须为非负数，其他两种情况offset可正可负。
+lseek调用例子</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=n>lseek</span><span class=p>(</span><span class=n>fd</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>SEEK_SET</span><span class=p>);</span> <span class=c1>// start of file
 </span><span class=c1></span><span class=n>lseek</span><span class=p>(</span><span class=n>fd</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>SEEK_END</span><span class=p>);</span> <span class=c1>// Next byte after the end of the file
 </span><span class=c1></span><span class=n>lssek</span><span class=p>(</span><span class=n>fd</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=n>SEEK_END</span><span class=p>);</span> <span class=c1>// Last byte after the end
 </span><span class=c1></span><span class=n>lseek</span><span class=p>(</span><span class=n>fd</span><span class=p>,</span> <span class=o>-</span><span class=mi>10</span><span class=p>,</span> <span class=n>SEEK_CUR</span><span class=p>);</span> <span class=c1>//Ten bytes prior to current location
 </span><span class=c1></span><span class=n>lseek</span><span class=p>(</span><span class=n>fd</span><span class=p>,</span> <span class=mi>10000</span><span class=p>,</span> <span class=n>SEEK_END</span><span class=p>);</span> <span class=c1>//10001 bytes past last byte of file
-</span></code></pre></div><h3 id=文件空洞>文件空洞</h3><p>看过之前的操作，会有一个疑问，文件偏移量跨越了文件末尾，再执行I/O操作，会发生什么？
+</span></code></pre></div><h3 id=文件空洞>文件空洞</h3>
+<p>看过之前的操作，会有一个疑问，文件偏移量跨越了文件末尾，再执行I/O操作，会发生什么？
 read()将会返回0，write()函数可以在文件末尾写入数据。从原文件末尾到新写入数据之间的这段空间称为文件空洞。
-读取空洞将会返回0填充的缓冲区。但是文件空洞不占用磁盘空间（对于大多数系统而言）。</p><p>通用I/O模型以外的操作： ioctl()</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span><span class=cpf>&lt;sys/ioctl.h&gt;</span><span class=cp>
+读取空洞将会返回0填充的缓冲区。但是文件空洞不占用磁盘空间（对于大多数系统而言）。</p>
+<p>通用I/O模型以外的操作： ioctl()</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span><span class=cpf>&lt;sys/ioctl.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>ioctl</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=kt>int</span> <span class=n>request</span><span class=p>,</span> <span class=p>...</span><span class=cm>/* argp */</span><span class=p>);</span>
 
-</code></pre></div><p>fd 参数为某个设备或文件已打开的描述符， request参数指定了将在fd上执行的控制操作。ioctl根据request的参数值来确定argp所期望的类型。通常情况下，argp是指向整数或结构的指针。对于未纳入标准I/O模型的所有设备和操作而言，ioctl()系统调用是个百宝箱。</p><h3 id=exercises>Exercises</h3><ol><li>实现 tee -a file:</li></ol><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;fcntl.h&gt;</span><span class=cp>
+</code></pre></div><p>fd 参数为某个设备或文件已打开的描述符， request参数指定了将在fd上执行的控制操作。ioctl根据request的参数值来确定argp所期望的类型。通常情况下，argp是指向整数或结构的指针。对于未纳入标准I/O模型的所有设备和操作而言，ioctl()系统调用是个百宝箱。</p>
+<h3 id=exercises>Exercises</h3>
+<ol>
+<li>实现 tee -a file:</li>
+</ol>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;fcntl.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;string.h&gt;</span><span class=cp>
@@ -68,19 +235,87 @@ read()将会返回0，write()函数可以在文件末尾写入数据。从原文
     
 <span class=p>}</span>
 
-</code></pre></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2020-11-18
-<a href=https://github.com/xistor/My-blog-source/commit/e3adaded0fd56dabe41291e4cee44c1ac9b17157 title=update>(e3adade)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s4/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记4.深入探究文件I/O</span>
-<span class="prev-text nav-mobile">Prev</span></a>
-<a class=next href=/post/linux/the-linux-programming-interface-s2/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记2.系统调用</span>
+</code></pre></div>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2020-11-18
+<a href=https://github.com/xistor/My-blog-source/commit/e3adaded0fd56dabe41291e4cee44c1ac9b17157 title=update>(e3adade)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/linux/>Linux</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/linux/the-linux-programming-interface-s4/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Linux/Unix系统编程手册-笔记4.深入探究文件I/O</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/linux/the-linux-programming-interface-s2/>
+<span class="next-text nav-default">Linux/Unix系统编程手册-笔记2.系统调用</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>

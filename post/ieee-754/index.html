@@ -1,22 +1,246 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>IEEE 浮点数表示 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &amp;hellip; $ 即对于一个"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/ieee-754/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="IEEE 浮点数表示"><meta property="og:description" content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $ 即对于一个"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/ieee-754/"><meta property="article:published_time" content="2022-05-30T23:30:16+08:00"><meta property="article:modified_time" content="2023-07-01T13:16:34+08:00"><meta itemprop=name content="IEEE 浮点数表示"><meta itemprop=description content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $ 即对于一个"><meta itemprop=datePublished content="2022-05-30T23:30:16+08:00"><meta itemprop=dateModified content="2023-07-01T13:16:34+08:00"><meta itemprop=wordCount content="1203"><meta itemprop=keywords content="CSAPP,"><meta name=twitter:card content="summary"><meta name=twitter:title content="IEEE 浮点数表示"><meta name=twitter:description content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $ 即对于一个"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>IEEE 浮点数表示</h1><div class=post-meta><span class=post-time>2022-05-30</span><div class=post-category><a href=/categories/csapp/>CSAPP</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#二进制小数>二进制小数</a></li><li><a href=#ieee-754>IEEE 754</a></li><li><a href=#参考>参考</a></li></ul></nav></div></div><div class=post-content><h2 id=二进制小数>二进制小数</h2><p>对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $</p><p>即对于一个二进制数 $b_3 b_2b_1b_0.b_{-1}b_{-2}$
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>IEEE 浮点数表示 - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &amp;hellip; $ 即对于一个">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/ieee-754/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="IEEE 浮点数表示">
+<meta property="og:description" content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $ 即对于一个">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/ieee-754/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2022-05-30T23:30:16+08:00">
+<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
+<meta itemprop=name content="IEEE 浮点数表示">
+<meta itemprop=description content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $ 即对于一个"><meta itemprop=datePublished content="2022-05-30T23:30:16+08:00">
+<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
+<meta itemprop=wordCount content="1203">
+<meta itemprop=keywords content="CSAPP,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="IEEE 浮点数表示">
+<meta name=twitter:description content="二进制小数 对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $ 即对于一个"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>IEEE 浮点数表示</h1>
+<div class=post-meta>
+<span class=post-time> 2022-05-30 </span>
+<div class=post-category>
+<a href=/categories/csapp/> CSAPP </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#二进制小数>二进制小数</a></li>
+<li><a href=#ieee-754>IEEE 754</a></li>
+<li><a href=#参考>参考</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h2 id=二进制小数>二进制小数</h2>
+<p>对于二进制小数的表示方法，按照十进制的表示方法，比较容易想到： 按每位的权值表示，小数部分依次表示$2^{-1}, 2^{-2}, 2^{-3} &mldr; $</p>
+<p>即对于一个二进制数 $b_3 b_2b_1b_0.b_{-1}b_{-2}$
 ,其十进制值为$$b_3 * 2^3 + b_2 * 2^2 + b_1 * 2^1 + b_0 * 2^0 . b_{-1} * 2^{-1} + b_{-2} * 2^{-2}$$
-比如123.45 可表示为 1111011.0111001100110011001100110011001100110011001101，当然这样并不能表示所有小数，只能近似，上述二进制实际转换回来是 123.45000000000027285。</p><h2 id=ieee-754>IEEE 754</h2><p>为了表示更大的数，十进制可以采用科学计数法$ a * 10^b$的形式，同样的
-IEEE浮点数标准用下面的方式来表示浮点数</p><p>$$V = (-1)^s * M * 2^E$$</p><p>在实际的32bit float的存储格式为下图：</p><figure class=center><img src=/img/IEEE-754/float-format.png><figcaption><h4>32-bit floating point</h4></figcaption></figure><p>肉眼可见的分三部分，对应IEEE浮点数中的s 、E 、M。</p><ul><li>第一部分：sign 1bit 符号位，0表示正数，1表示负数。</li><li>第二部分：exponent 8bits (简称e) 表示 E， 具体怎么表示的见后面</li><li>第三部分： fraction 23bits (简称f) 表示 M， 具体怎么表示的见后面</li></ul><p>一个浮点数如何用IEEE浮点数表示？ 还以123.45为例子：</p><p>其二进制表示为</p><p>$$1111011.0111001100110011001100110011001100110011001101$$</p><p>按照科学计数法的表示习惯为可以表示为：
+比如123.45 可表示为 1111011.0111001100110011001100110011001100110011001101，当然这样并不能表示所有小数，只能近似，上述二进制实际转换回来是 123.45000000000027285。</p>
+<h2 id=ieee-754>IEEE 754</h2>
+<p>为了表示更大的数，十进制可以采用科学计数法$ a * 10^b$的形式，同样的
+IEEE浮点数标准用下面的方式来表示浮点数</p>
+<p>$$V = (-1)^s * M * 2^E$$</p>
+<p>在实际的32bit float的存储格式为下图：</p>
+<figure class=center><img src=/img/IEEE-754/float-format.png><figcaption>
+<h4>32-bit floating point</h4>
+</figcaption>
+</figure>
+<p>肉眼可见的分三部分，对应IEEE浮点数中的s 、E 、M。</p>
+<ul>
+<li>第一部分：sign 1bit 符号位，0表示正数，1表示负数。</li>
+<li>第二部分：exponent 8bits (简称e) 表示 E， 具体怎么表示的见后面</li>
+<li>第三部分： fraction 23bits (简称f) 表示 M， 具体怎么表示的见后面</li>
+</ul>
+<p>一个浮点数如何用IEEE浮点数表示？ 还以123.45为例子：</p>
+<p>其二进制表示为</p>
+<p>$$1111011.0111001100110011001100110011001100110011001101$$</p>
+<p>按照科学计数法的表示习惯为可以表示为：
 $$1.1110110111001100110011001100110011001100110011001101 * 2^6 $$
-看这个就是前面的式子$M * 2^E$。</p><p>但实际存储的时候，IEEE浮点数标准还规定：</p><ul><li>在这种情况下, M 的总是1.几，实际存储时候整数1可以省略,所以M定义为1+f (即此处， f = 1110110111001100110011001100110011001100110011001101)。</li><li>在这种情况下, e = E + Bias, 其中$Bias = 2^{k-1} - 1$, $k$为exponent的位数，对于float而言， $Bias = 2^{8 - 1} - 1 = 127$。（此处E=6，可得 $e = 6 + 127 = 133 = (10000101)_2$）</li></ul><p>所以对于123.45的IEEE浮点数按照格式填入，fraction省略23bit之后的，可得：</p><p>  0 10000101 11101101110011001100110<br>  s  e       f</p><p>找一个<a href=https://www.h-schmidt.net/FloatConverter/IEEE754.html>IEEE 754在线转换网站</a>,输入123.45，得到的值和计算的一致。</p><figure class=center><img src=/img/IEEE-754/IEEE-754-Converter.png><figcaption><h4>123.45</h4></figcaption></figure><p>在IEEE浮点数标准中，以上属于“规格化数”情况，如果按这种方式计算M最小取1，E最小取-127，则我们最小能表示的最接近0的浮点数为$\pm2^{-127}$。<br>所以IEEE规定当一个数字的绝对值小于$2^{-126}$时 使用“非规格化数”表示：</p><ul><li>exponent(e)全为0，定义$E = 1 - Bias$，且M=f，即只有小数。
-这样就可以表示0，以及那些非常接近与0.0的数。（此处float的 E = 1 - 127 = -126， 即非规格化数$&lt;\pm2^{-126}$和规格化数最小为$\pm2^{1 - 127} = \pm2^{-126}$刚好衔接）</li></ul><p>以$2^{-128}$为例， $2^{-128} = M * 2^E = 2^{-2} * 2^{-126} $ ,即$ M = 2^{-2}$ ,实际存储的值为：</p><p>  0 00000000 01000000000000000000000<br>  s  e       f</p><p>除此之外的情况就是无穷大和NaN:</p><ul><li>exponent(e)全为1， fraction(f)全为0时，表示无穷，f为非零时表示NaN(不是一个数)。</li></ul><h2 id=参考>参考</h2><p><a href=https://zh.m.wikipedia.org/zh/IEEE_754>https://zh.m.wikipedia.org/zh/IEEE_754</a><br><a href=https://www.bilibili.com/video/BV1cr4y1n7Ps>https://www.bilibili.com/video/BV1cr4y1n7Ps</a></p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/csapp/>CSAPP</a></div><nav class=post-nav><a class=prev href=/post/linux/rpi-touchscreen-with-ft5406/><i class="iconfont icon-left"></i><span class="prev-text nav-default">适配树梅派4.3寸LCD屏幕的触摸</span>
-<span class="prev-text nav-mobile">Prev</span></a>
-<a class=next href=/post/6.s081/xv6-gdb/><span class="next-text nav-default">qemu xv6 使用GDB调试</span>
+看这个就是前面的式子$M * 2^E$。</p>
+<p>但实际存储的时候，IEEE浮点数标准还规定：</p>
+<ul>
+<li>在这种情况下, M 的总是1.几，实际存储时候整数1可以省略,所以M定义为1+f (即此处， f = 1110110111001100110011001100110011001100110011001101)。</li>
+<li>在这种情况下, e = E + Bias, 其中$Bias = 2^{k-1} - 1$, $k$为exponent的位数，对于float而言， $Bias = 2^{8 - 1} - 1 = 127$。（此处E=6，可得 $e = 6 + 127 = 133 = (10000101)_2$）</li>
+</ul>
+<p>所以对于123.45的IEEE浮点数按照格式填入，fraction省略23bit之后的，可得：</p>
+<p>  0 10000101 11101101110011001100110<br>
+  s  e       f</p>
+<p>找一个<a href=https://www.h-schmidt.net/FloatConverter/IEEE754.html>IEEE 754在线转换网站</a>,输入123.45，得到的值和计算的一致。</p>
+<figure class=center><img src=/img/IEEE-754/IEEE-754-Converter.png><figcaption>
+<h4>123.45</h4>
+</figcaption>
+</figure>
+<p>在IEEE浮点数标准中，以上属于“规格化数”情况，如果按这种方式计算M最小取1，E最小取-127，则我们最小能表示的最接近0的浮点数为$\pm2^{-127}$。<br>
+所以IEEE规定当一个数字的绝对值小于$2^{-126}$时 使用“非规格化数”表示：</p>
+<ul>
+<li>exponent(e)全为0，定义$E = 1 - Bias$，且M=f，即只有小数。
+这样就可以表示0，以及那些非常接近与0.0的数。（此处float的 E = 1 - 127 = -126， 即非规格化数$&lt;\pm2^{-126}$和规格化数最小为$\pm2^{1 - 127} = \pm2^{-126}$刚好衔接）</li>
+</ul>
+<p>以$2^{-128}$为例， $2^{-128} = M * 2^E = 2^{-2} * 2^{-126} $ ,即$ M = 2^{-2}$ ,实际存储的值为：</p>
+<p>  0 00000000 01000000000000000000000<br>
+  s  e       f</p>
+<p>除此之外的情况就是无穷大和NaN:</p>
+<ul>
+<li>exponent(e)全为1， fraction(f)全为0时，表示无穷，f为非零时表示NaN(不是一个数)。</li>
+</ul>
+<h2 id=参考>参考</h2>
+<p><a href=https://zh.m.wikipedia.org/zh/IEEE_754>https://zh.m.wikipedia.org/zh/IEEE_754</a><br>
+<a href=https://www.bilibili.com/video/BV1cr4y1n7Ps>https://www.bilibili.com/video/BV1cr4y1n7Ps</a></p>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2023-07-01
+<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/csapp/>CSAPP</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/linux/rpi-touchscreen-with-ft5406/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">适配树梅派4.3寸LCD屏幕的触摸</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/6.s081/xv6-gdb/>
+<span class="next-text nav-default">qemu xv6 使用GDB调试</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>

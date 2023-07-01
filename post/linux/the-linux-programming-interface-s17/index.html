@@ -1,9 +1,149 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记17.目录和链接 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&amp;quot;目录&amp;quot; 目"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s17/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记17.目录和链接"><meta property="og:description" content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&#34;目录&#34; 目"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s17/"><meta property="article:published_time" content="2020-08-20T18:25:00+08:00"><meta property="article:modified_time" content="2023-07-01T13:16:34+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记17.目录和链接"><meta itemprop=description content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&#34;目录&#34; 目"><meta itemprop=datePublished content="2020-08-20T18:25:00+08:00"><meta itemprop=dateModified content="2023-07-01T13:16:34+08:00"><meta itemprop=wordCount content="5539"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记17.目录和链接"><meta name=twitter:description content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&#34;目录&#34; 目"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记17.目录和链接</h1><div class=post-meta><span class=post-time>2020-08-20</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#目录和硬链接>目录和硬链接</a></li><li><a href=#符号链接symbolic-link软连接>符号链接Symbolic link（软连接）</a></li><li><a href=#创建和移除硬链接>创建和移除硬链接</a><ul><li><a href=#一个打开的文件只有在所有文件描述符关闭后才会被删除>一个打开的文件只有在所有文件描述符关闭后才会被删除</a></li></ul></li><li><a href=#rename>rename()</a></li><li><a href=#使用符号链接>使用符号链接</a></li><li><a href=#创建和移除目录>创建和移除目录</a></li><li><a href=#移除一个文件或目录>移除一个文件或目录</a></li><li><a href=#读目录>读目录</a></li><li><a href=#文件树遍历>文件树遍历</a></li><li><a href=#进程的当前工作目录>进程的当前工作目录</a><ul><li><a href=#改变当前工作目录>改变当前工作目录</a></li></ul></li><li><a href=#针对目录文件描述的相关操作>针对目录文件描述的相关操作</a></li><li><a href=#改变进程的根目录>改变进程的根目录</a></li><li><a href=#解析路径名>解析路径名</a></li><li><a href=#解析路径名字字符串>解析路径名字字符串</a></li><li><a href=#exercises>Exercises</a></li></ul></nav></div></div><div class=post-content><h2 id=目录和硬链接>目录和硬链接</h2><p>目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点：</p><ul><li>目录在i-node信息中会被标注成"目录"</li><li>目录是一个包含文件名和i-node号的表。</li></ul><figure class=center><img src=/img/the-linux-programming-interface-s17/relationship_of_dir_inode.png width=500><figcaption><h4>目录和i-node之间的关系</h4></figcaption></figure><p>由图可见以及文件系统章节关于i-node的内容可知，文件名并不存在于i-node中，而是保存在目录文件中。这样就允许不同的文件名映射到同一个i-node。使用<code>ln</code>创建硬链接就是如此。</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ touch abc
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>Linux/Unix系统编程手册-笔记17.目录和链接 - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&amp;quot;目录&amp;quot; 目">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s17/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记17.目录和链接">
+<meta property="og:description" content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&#34;目录&#34; 目">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s17/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2020-08-20T18:25:00+08:00">
+<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
+<meta itemprop=name content="Linux/Unix系统编程手册-笔记17.目录和链接">
+<meta itemprop=description content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&#34;目录&#34; 目"><meta itemprop=datePublished content="2020-08-20T18:25:00+08:00">
+<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
+<meta itemprop=wordCount content="5539">
+<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Linux/Unix系统编程手册-笔记17.目录和链接">
+<meta name=twitter:description content="目录和硬链接 目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点： 目录在i-node信息中会被标注成&#34;目录&#34; 目"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Linux/Unix系统编程手册-笔记17.目录和链接</h1>
+<div class=post-meta>
+<span class=post-time> 2020-08-20 </span>
+<div class=post-category>
+<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#目录和硬链接>目录和硬链接</a></li>
+<li><a href=#符号链接symbolic-link软连接>符号链接Symbolic link（软连接）</a></li>
+<li><a href=#创建和移除硬链接>创建和移除硬链接</a>
+<ul>
+<li><a href=#一个打开的文件只有在所有文件描述符关闭后才会被删除>一个打开的文件只有在所有文件描述符关闭后才会被删除</a></li>
+</ul>
+</li>
+<li><a href=#rename>rename()</a></li>
+<li><a href=#使用符号链接>使用符号链接</a></li>
+<li><a href=#创建和移除目录>创建和移除目录</a></li>
+<li><a href=#移除一个文件或目录>移除一个文件或目录</a></li>
+<li><a href=#读目录>读目录</a></li>
+<li><a href=#文件树遍历>文件树遍历</a></li>
+<li><a href=#进程的当前工作目录>进程的当前工作目录</a>
+<ul>
+<li><a href=#改变当前工作目录>改变当前工作目录</a></li>
+</ul>
+</li>
+<li><a href=#针对目录文件描述的相关操作>针对目录文件描述的相关操作</a></li>
+<li><a href=#改变进程的根目录>改变进程的根目录</a></li>
+<li><a href=#解析路径名>解析路径名</a></li>
+<li><a href=#解析路径名字字符串>解析路径名字字符串</a></li>
+<li><a href=#exercises>Exercises</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h2 id=目录和硬链接>目录和硬链接</h2>
+<p>目录和文件在文件系统中大抵按照相同的方式存储，主要有两个不同点：</p>
+<ul>
+<li>目录在i-node信息中会被标注成"目录"</li>
+<li>目录是一个包含文件名和i-node号的表。</li>
+</ul>
+<figure class=center><img src=/img/the-linux-programming-interface-s17/relationship_of_dir_inode.png width=500><figcaption>
+<h4>目录和i-node之间的关系</h4>
+</figcaption>
+</figure>
+<p>由图可见以及文件系统章节关于i-node的内容可知，文件名并不存在于i-node中，而是保存在目录文件中。这样就允许不同的文件名映射到同一个i-node。使用<code>ln</code>创建硬链接就是如此。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ touch abc
 $ ln  abc xyz
 $ ls -li abc xyz
 <span class=m>2814749767789161</span> -rw-rw-rw- <span class=m>2</span> wsl wsl <span class=m>29</span> Aug <span class=m>20</span> 16:39 abc
 <span class=m>2814749767789161</span> -rw-rw-rw- <span class=m>2</span> wsl wsl <span class=m>29</span> Aug <span class=m>20</span> 16:39 xyz
-</code></pre></div><p><code>ls -i</code> 可以显示文件的i-node。如上，两个文件的i-node号是一样的，因此它们对应的是同一个文件。i-node信息中还有一条记录了硬链接数，此时它的数目为2。<code>stat abc</code>命令可看</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>$ stat abc
+</code></pre></div><p><code>ls -i</code> 可以显示文件的i-node。如上，两个文件的i-node号是一样的，因此它们对应的是同一个文件。i-node信息中还有一条记录了硬链接数，此时它的数目为2。<code>stat abc</code>命令可看</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>$ stat abc
   File: &#39;abc&#39;
   Size: 29              Blocks: 0          IO Block: 4096   regular file
 Device: 2h/2d   Inode: 2814749767789161  Links: 2
@@ -11,7 +151,8 @@ Access: (0666/-rw-rw-rw-)  Uid: ( 1000/     wsl)   Gid: ( 1000/     wsl)
 Access: 2020-08-20 16:39:05.415709000 +0800
 Modify: 2020-08-20 16:39:05.415709000 +0800
 Change: 2020-08-20 16:43:03.445908500 +0800
-</code></pre></div><p>使用<code>rm</code>命令删除abc文件后，再使用<code>stat xyz</code>看下, <code>Links</code>已变成了1。</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>k$ stat xyz
+</code></pre></div><p>使用<code>rm</code>命令删除abc文件后，再使用<code>stat xyz</code>看下, <code>Links</code>已变成了1。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>k$ stat xyz
   File: &#39;xyz&#39;
   Size: 29              Blocks: 0          IO Block: 4096   regular file
 Device: 2h/2d   Inode: 2814749767789161  Links: 1
@@ -20,25 +161,62 @@ Access: 2020-08-20 16:39:05.415709000 +0800
 Modify: 2020-08-20 16:39:05.415709000 +0800
 Change: 2020-08-20 17:05:25.726910300 +0800
  Birth: -
-</code></pre></div><p>当rm从目录中删除一个文件名后，其对应的i-node如果Links变成0了，那么这个i-node和其指向的文件数据块就会被回收。</p><p>所有的文件名（链接）都是平等的。只要有一个文件名存在，i-node就存在。</p><p>硬链接有两个限制：</p><ul><li>因为目录条目使用i-node号区分文件，而i-number只有在同一个文件系统中才唯一，所以一个硬链接和它对应的文件必须在同一个文件系统内。</li><li>硬链接不能指向一个目录，这是为了防止无休止的循环。</li></ul><h2 id=符号链接symbolic-link软连接>符号链接Symbolic link（软连接）</h2><p>先看张图：</p><figure class=center><img src=/img/the-linux-programming-interface-s17/soft_link.png width=600><figcaption><h4>软链接</h4></figcaption></figure><p>符号链接是一种特殊的文件类型,它的数据是另外一个文件的<strong>文件名</strong>。软连接并不会包括在i-node中的Links数中，所以软连接指向的<strong>文件名</strong>删除后，软连接依然存在，只是在通过软连接访问时会提示<code>No such file or directory</code>。</p><p>因为符号链接是指向一个文件名，而不是一个i-number，所以它可以链接到一个在不同文件系统的文件。软连接也允许指向一个目录。</p><p><strong>系统调用对符号链接的解释</strong><br>这个表可在使用时查询下，其中记录了系统调用是否会去对符号链接解引用。</p><figure class=center><img src=/img/the-linux-programming-interface-s17/follow_link.png width=800><figcaption><h4>系统调用是否解引用</h4></figcaption></figure><h2 id=创建和移除硬链接>创建和移除硬链接</h2><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</code></pre></div><p>当rm从目录中删除一个文件名后，其对应的i-node如果Links变成0了，那么这个i-node和其指向的文件数据块就会被回收。</p>
+<p>所有的文件名（链接）都是平等的。只要有一个文件名存在，i-node就存在。</p>
+<p>硬链接有两个限制：</p>
+<ul>
+<li>因为目录条目使用i-node号区分文件，而i-number只有在同一个文件系统中才唯一，所以一个硬链接和它对应的文件必须在同一个文件系统内。</li>
+<li>硬链接不能指向一个目录，这是为了防止无休止的循环。</li>
+</ul>
+<h2 id=符号链接symbolic-link软连接>符号链接Symbolic link（软连接）</h2>
+<p>先看张图：</p>
+<figure class=center><img src=/img/the-linux-programming-interface-s17/soft_link.png width=600><figcaption>
+<h4>软链接</h4>
+</figcaption>
+</figure>
+<p>符号链接是一种特殊的文件类型,它的数据是另外一个文件的<strong>文件名</strong>。软连接并不会包括在i-node中的Links数中，所以软连接指向的<strong>文件名</strong>删除后，软连接依然存在，只是在通过软连接访问时会提示<code>No such file or directory</code>。</p>
+<p>因为符号链接是指向一个文件名，而不是一个i-number，所以它可以链接到一个在不同文件系统的文件。软连接也允许指向一个目录。</p>
+<p><strong>系统调用对符号链接的解释</strong><br>
+这个表可在使用时查询下，其中记录了系统调用是否会去对符号链接解引用。</p>
+<figure class=center><img src=/img/the-linux-programming-interface-s17/follow_link.png width=800><figcaption>
+<h4>系统调用是否解引用</h4>
+</figcaption>
+</figure>
+<h2 id=创建和移除硬链接>创建和移除硬链接</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>link</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>oldpath</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>newpath</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>unlink</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>);</span>
-</code></pre></div><p><code>link()</code>系统调用将使用newpath指定的文件名创建一个硬链接指向oldpath文件名指向的文件。<code>link()</code>并不会解引用符号链接，所以如果oldpath是一个符号链接，会创建一个此符号链接文件的硬链接。<br><code>unlink()</code>用于删除一个链接，<code>unlink()</code>也不会解引用符号链接。</p><h3 id=一个打开的文件只有在所有文件描述符关闭后才会被删除>一个打开的文件只有在所有文件描述符关闭后才会被删除</h3><p>如果有一个文件描述符还打开着，那这个实际上就不会被删除（当然链接数为0的打开着的文件，我们也不能通过文件名访问了）。这可以用在一个场景下：创建一个临时文件并打开，持有文件描述符，然后unlink()文件，这样这个临时文件就只能被我们自己进程使用了。当我们使用完后，close文件描述符后，文件会被删除。</p><h2 id=rename>rename()</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</code></pre></div><p><code>link()</code>系统调用将使用newpath指定的文件名创建一个硬链接指向oldpath文件名指向的文件。<code>link()</code>并不会解引用符号链接，所以如果oldpath是一个符号链接，会创建一个此符号链接文件的硬链接。<br>
+<code>unlink()</code>用于删除一个链接，<code>unlink()</code>也不会解引用符号链接。</p>
+<h3 id=一个打开的文件只有在所有文件描述符关闭后才会被删除>一个打开的文件只有在所有文件描述符关闭后才会被删除</h3>
+<p>如果有一个文件描述符还打开着，那这个实际上就不会被删除（当然链接数为0的打开着的文件，我们也不能通过文件名访问了）。这可以用在一个场景下：创建一个临时文件并打开，持有文件描述符，然后unlink()文件，这样这个临时文件就只能被我们自己进程使用了。当我们使用完后，close文件描述符后，文件会被删除。</p>
+<h2 id=rename>rename()</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=n>rename</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>oldpath</span><span class=p>,</span> <span class=k>const</span> <span class=o>*</span><span class=n>newpath</span><span class=p>)</span>
-</code></pre></div><p>rename()既可以重命名文件，也可以将文件移至同一文件系统的另一目录。rename()调用仅操作目录条目（不会改变i-node），而不移动文件数据,这也是它仅能在同一文件系统移动文件的原因。</p><h2 id=使用符号链接>使用符号链接</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</code></pre></div><p>rename()既可以重命名文件，也可以将文件移至同一文件系统的另一目录。rename()调用仅操作目录条目（不会改变i-node），而不移动文件数据,这也是它仅能在同一文件系统移动文件的原因。</p>
+<h2 id=使用符号链接>使用符号链接</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>symlink</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>filepath</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>linkpath</span><span class=p>);</span>
 <span class=n>ssize_t</span> <span class=nf>readlink</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>buffer</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>bufsiz</span><span class=p>);</span>
-</code></pre></div><p>symlink()系统调用会针对第一个参数filepath创建一个新的符号链接&ndash;linkpath。 由filepath所命名的目录或文件调用时无需存在。<br>readlink():获取链接的本身内容，即其所指向的路径名，符号链接字符串的副本将放置于buffer所指向的字符数组中。</p><h2 id=创建和移除目录>创建和移除目录</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
+</code></pre></div><p>symlink()系统调用会针对第一个参数filepath创建一个新的符号链接&ndash;linkpath。 由filepath所命名的目录或文件调用时无需存在。<br>
+readlink():获取链接的本身内容，即其所指向的路径名，符号链接字符串的副本将放置于buffer所指向的字符数组中。</p>
+<h2 id=创建和移除目录>创建和移除目录</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>mkdir</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>,</span> <span class=n>mode_t</span> <span class=n>mode</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>rmdir</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>);</span>
-</code></pre></div><p>mkdir()系统调用所创建的仅仅是路径名中的最后一部分，换言之，<code>mkdir("aaa/bbb/ccc", mode)</code>仅当目录aaa和aaa/bbb已经存在的情况下才会成功。<br>要是rmdir()调用成功，则要删除的目录必须为空。</p><h2 id=移除一个文件或目录>移除一个文件或目录</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</code></pre></div><p>mkdir()系统调用所创建的仅仅是路径名中的最后一部分，换言之，<code>mkdir("aaa/bbb/ccc", mode)</code>仅当目录aaa和aaa/bbb已经存在的情况下才会成功。<br>
+要是rmdir()调用成功，则要删除的目录必须为空。</p>
+<h2 id=移除一个文件或目录>移除一个文件或目录</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>remove</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>);</span>
-</code></pre></div><p>如果pathname是一个文件，那么remove()去调用unlink();如果pathname为一目录，那么remove()去调用rmdir()。</p><h2 id=读目录>读目录</h2><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;dirent.h&gt;</span><span class=cp>
+</code></pre></div><p>如果pathname是一个文件，那么remove()去调用unlink();如果pathname为一目录，那么remove()去调用rmdir()。</p>
+<h2 id=读目录>读目录</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;dirent.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=n>DIR</span> <span class=o>*</span><span class=nf>opendir</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>dirpath</span><span class=p>);</span>
 <span class=n>DIR</span> <span class=o>*</span><span class=nf>fdopendir</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>);</span>
@@ -47,18 +225,33 @@ Change: 2020-08-20 17:05:25.726910300 +0800
 <span class=kt>int</span> <span class=nf>closedir</span><span class=p>(</span><span class=n>DIR</span> <span class=o>*</span><span class=n>dirp</span><span class=p>);</span>
 
 <span class=kt>int</span> <span class=nf>readdir_r</span><span class=p>(</span><span class=n>DIR</span> <span class=o>*</span><span class=n>dirp</span><span class=p>,</span> <span class=k>struct</span> <span class=nc>dirent</span> <span class=o>*</span><span class=n>entry</span><span class=p>,</span> <span class=k>struct</span> <span class=nc>dirent</span> <span class=o>**</span><span class=n>result</span><span class=p>);</span> <span class=c1>// 可重入版的readdir()
-</span></code></pre></div><p>opendir()和fdopendir()都会但会指向DIR类型结构的指针。该结构即所谓目录流。每调用readdir()一次，就会从dirp所指代的目录流读取下一目录条目。并返回一枚指针指向静态分配而得的dirent类型结构，每次调用readdir()都会覆盖该结构,读取完毕后返回NULL。<br>rewinddir()函数可将目录流回移到起点。<br>closedir()函数将dirp指代的目录流关闭。</p><h2 id=文件树遍历>文件树遍历</h2><p>这个很实用。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#define _XOPEN_SOURCE 500
+</span></code></pre></div><p>opendir()和fdopendir()都会但会指向DIR类型结构的指针。该结构即所谓目录流。每调用readdir()一次，就会从dirp所指代的目录流读取下一目录条目。并返回一枚指针指向静态分配而得的dirent类型结构，每次调用readdir()都会覆盖该结构,读取完毕后返回NULL。<br>
+rewinddir()函数可将目录流回移到起点。<br>
+closedir()函数将dirp指代的目录流关闭。</p>
+<h2 id=文件树遍历>文件树遍历</h2>
+<p>这个很实用。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _XOPEN_SOURCE 500
 </span><span class=cp></span>
 <span class=cp>#include</span> <span class=cpf>&lt;ftw.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>nftw</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>dirpath</span><span class=p>,</span> <span class=kt>int</span> <span class=p>(</span><span class=o>*</span><span class=n>func</span><span class=p>)</span> <span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>stat</span> <span class=o>*</span><span class=n>statbuf</span><span class=p>,</span> <span class=kt>int</span> <span class=n>typeflag</span><span class=p>,</span> <span class=k>struct</span> <span class=n>FTW</span> <span class=o>*</span><span class=n>ftwbuf</span><span class=p>),</span> <span class=kt>int</span> <span class=n>nopenfd</span><span class=p>,</span> <span class=kt>int</span> <span class=n>flags</span> <span class=p>);</span>
-</code></pre></div><p><code>nftw()</code>遍历目录树时，最多会为树的每一层级打开一个文件描述符。参数<code>nopenfd</code>指定了<code>nftw()</code>可使用文件描述符数量的最大值。如果目录树深度超过这一最大值，那么nftw()会在做好记录的前提下，关闭并重新打开描述符。</p><p>nftw()函数的flags参数修正函数的一些行为，详见 <a href=https://man7.org/linux/man-pages/man3/nftw.3.html>https://man7.org/linux/man-pages/man3/nftw.3.html</a></p><p>nftw()为每个文件调用func时传递4个参数，pathnames是文件的路径名，是绝对路径还是相对路径取决与参数dirpath是何种路径。第二个参数statbuf是一枚指向stat结构的指针，内含该文件的相关信息。第三个参数typeflag提供了有关该文件的深入信息，详见上一个链接。第四个参数ftwbuf一枚结构体指针，所指向的结构体为</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>FTW</span> <span class=p>{</span>
+</code></pre></div><p><code>nftw()</code>遍历目录树时，最多会为树的每一层级打开一个文件描述符。参数<code>nopenfd</code>指定了<code>nftw()</code>可使用文件描述符数量的最大值。如果目录树深度超过这一最大值，那么nftw()会在做好记录的前提下，关闭并重新打开描述符。</p>
+<p>nftw()函数的flags参数修正函数的一些行为，详见 <a href=https://man7.org/linux/man-pages/man3/nftw.3.html>https://man7.org/linux/man-pages/man3/nftw.3.html</a></p>
+<p>nftw()为每个文件调用func时传递4个参数，pathnames是文件的路径名，是绝对路径还是相对路径取决与参数dirpath是何种路径。第二个参数statbuf是一枚指向stat结构的指针，内含该文件的相关信息。第三个参数typeflag提供了有关该文件的深入信息，详见上一个链接。第四个参数ftwbuf一枚结构体指针，所指向的结构体为</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>FTW</span> <span class=p>{</span>
   <span class=kt>int</span> <span class=n>base</span><span class=p>;</span>
   <span class=kt>int</span> <span class=n>level</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div><p>结构体中的<code>base</code>字段是指func函数中pathname参数内文件名部分的（最后一个“/”字符之后的部分）的整型偏移量。<code>level</code>字段是指该条目想对于遍历起点（其level为0）的深度。</p><p>每次调用<code>func</code>必须返回一个整型值，若返回非0值，则<code>nftw()</code>立即停止遍历，对调用者返回相同的非0值。<br>由于<code>nftw()</code>使用的数据结构是动态分配的，故而应用程序提前终止目录树遍历的唯一方法就是让<code>func</code>调用返回一个非0值，否则可能会引起内存泄漏等不可预期结果。</p><h2 id=进程的当前工作目录>进程的当前工作目录</h2><p>进程的当前工作目录定义了该进程解析相对路径名的起点。新进程的当前工作目录继承自其父进程。</p><p>可以使用<code>getcwd()</code>获取进程的当前工作目录，一旦调用成功，当前路径会保存在cwdbuf所指向的缓冲区中，如果当前路径名长度超过size个字节，那么getcwd()会返回NULL。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</code></pre></div><p>结构体中的<code>base</code>字段是指func函数中pathname参数内文件名部分的（最后一个“/”字符之后的部分）的整型偏移量。<code>level</code>字段是指该条目想对于遍历起点（其level为0）的深度。</p>
+<p>每次调用<code>func</code>必须返回一个整型值，若返回非0值，则<code>nftw()</code>立即停止遍历，对调用者返回相同的非0值。<br>
+由于<code>nftw()</code>使用的数据结构是动态分配的，故而应用程序提前终止目录树遍历的唯一方法就是让<code>func</code>调用返回一个非0值，否则可能会引起内存泄漏等不可预期结果。</p>
+<h2 id=进程的当前工作目录>进程的当前工作目录</h2>
+<p>进程的当前工作目录定义了该进程解析相对路径名的起点。新进程的当前工作目录继承自其父进程。</p>
+<p>可以使用<code>getcwd()</code>获取进程的当前工作目录，一旦调用成功，当前路径会保存在cwdbuf所指向的缓冲区中，如果当前路径名长度超过size个字节，那么getcwd()会返回NULL。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>char</span> <span class=o>*</span><span class=nf>getcwd</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>cwdbuf</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>size</span><span class=p>);</span>
-</code></pre></div><p>有两种用法：</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#define MAX_SIZE 255
+</code></pre></div><p>有两种用法：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define MAX_SIZE 255
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[]){</span>
     <span class=kt>char</span> <span class=n>path</span><span class=p>[</span><span class=n>MAX_SIZE</span><span class=p>];</span>
@@ -66,7 +259,8 @@ Change: 2020-08-20 17:05:25.726910300 +0800
     <span class=n>puts</span><span class=p>(</span><span class=n>path</span><span class=p>);</span>  <span class=c1>// puts is equal to print. In c++ we can use: cout &lt;&lt; path &lt;&lt; endl;
 </span><span class=c1></span>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div><p>还有一种是cwdbuf参数为NULL,size参数传入0,则glibc会为getcwd()按需分配一个缓冲区，使用完我们需要自己释放掉</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[]){</span>
+</code></pre></div><p>还有一种是cwdbuf参数为NULL,size参数传入0,则glibc会为getcwd()按需分配一个缓冲区，使用完我们需要自己释放掉</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[]){</span>
     <span class=kt>char</span><span class=o>*</span> <span class=n>path</span><span class=p>;</span>
     <span class=n>path</span> <span class=o>=</span> <span class=n>getcwd</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
     <span class=n>puts</span><span class=p>(</span><span class=n>path</span><span class=p>);</span>
@@ -74,32 +268,62 @@ Change: 2020-08-20 17:05:25.726910300 +0800
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
 
-</code></pre></div><h3 id=改变当前工作目录>改变当前工作目录</h3><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</code></pre></div><h3 id=改变当前工作目录>改变当前工作目录</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>chdir</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>);</span>
-</code></pre></div><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#define _XOPEN_SOURCE 500
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _XOPEN_SOURCE 500
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>fchdir</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>);</span>
-</code></pre></div><h2 id=针对目录文件描述的相关操作>针对目录文件描述的相关操作</h2><figure class=center><img src=/img/the-linux-programming-interface-s17/use_fd.png width=800><figcaption><h4>使用文件描述符的系统调用</h4></figcaption></figure><p>这些系统调用参数中都有一个文件描述符，当打开相对路径时，会以传入的文件描述符为参照点，之所以要支持这些系统调用，原因有二：</p><ul><li>当调用open()或其他使用路径的系统调用的同时，如果pathname目录前缀的某些部分发生了改变，就可能导致竞争，想要避免可以针对目标目录打开一个文件描述符，然后将该描述符传给上述的<code>xxxat()</code>。</li><li>工作目录是进程的属性之一，为进程的所有线程共享，而对某些应用程序而言，需要针对不同线程拥有不同的‘虚拟’工作目录。将<code>xxxat()</code>与应用所维护的目录文件描述符号，就可以模拟出这一功能。</li></ul><h2 id=改变进程的根目录>改变进程的根目录</h2><p>每个进程都有一个根目录，该目录是解释绝对路径(即那些以/开始的目录)时的起点。默认情况，这是文件系统的根目录。想改变需要为特权(CAP_SYS_CHROOT)进程调用chroot()。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#define _BSD_SOURCE
+</code></pre></div><h2 id=针对目录文件描述的相关操作>针对目录文件描述的相关操作</h2>
+<figure class=center><img src=/img/the-linux-programming-interface-s17/use_fd.png width=800><figcaption>
+<h4>使用文件描述符的系统调用</h4>
+</figcaption>
+</figure>
+<p>这些系统调用参数中都有一个文件描述符，当打开相对路径时，会以传入的文件描述符为参照点，之所以要支持这些系统调用，原因有二：</p>
+<ul>
+<li>当调用open()或其他使用路径的系统调用的同时，如果pathname目录前缀的某些部分发生了改变，就可能导致竞争，想要避免可以针对目标目录打开一个文件描述符，然后将该描述符传给上述的<code>xxxat()</code>。</li>
+<li>工作目录是进程的属性之一，为进程的所有线程共享，而对某些应用程序而言，需要针对不同线程拥有不同的‘虚拟’工作目录。将<code>xxxat()</code>与应用所维护的目录文件描述符号，就可以模拟出这一功能。</li>
+</ul>
+<h2 id=改变进程的根目录>改变进程的根目录</h2>
+<p>每个进程都有一个根目录，该目录是解释绝对路径(即那些以/开始的目录)时的起点。默认情况，这是文件系统的根目录。想改变需要为特权(CAP_SYS_CHROOT)进程调用chroot()。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _BSD_SOURCE
 </span><span class=cp></span>
 <span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>chroot</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>pathname</span><span class=p>);</span>
-</code></pre></div><p>调用<code>chroot()</code>后，用户将受困于文件系统中新根目录下的子树中，<code>/..</code>是<code>/</code>的一个链接，所以目录到<code>/</code>后再执行命令<code>cd ..</code>时，用户依然会待在同一目录下。</p><p>对于无特权程序，需要注意：</p><ul><li><p>调用<code>chroot()</code>后，通常应调用一次<code>chdir("/")</code>改变当前工作目录，否则进程就可能使用相对路径访问外面的文件。</p></li><li><p>如果进程针对监禁区的某一目录持有一打开的文件描述符，那么结合fchdir()和chroot()即可越狱成功，比如</p></li></ul><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=kt>int</span> <span class=n>fd</span><span class=p>;</span>
+</code></pre></div><p>调用<code>chroot()</code>后，用户将受困于文件系统中新根目录下的子树中，<code>/..</code>是<code>/</code>的一个链接，所以目录到<code>/</code>后再执行命令<code>cd ..</code>时，用户依然会待在同一目录下。</p>
+<p>对于无特权程序，需要注意：</p>
+<ul>
+<li>
+<p>调用<code>chroot()</code>后，通常应调用一次<code>chdir("/")</code>改变当前工作目录，否则进程就可能使用相对路径访问外面的文件。</p>
+</li>
+<li>
+<p>如果进程针对监禁区的某一目录持有一打开的文件描述符，那么结合fchdir()和chroot()即可越狱成功，比如</p>
+</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>int</span> <span class=n>fd</span><span class=p>;</span>
 
 <span class=n>fd</span> <span class=o>=</span> <span class=n>open</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span> <span class=n>O_RDONLY</span><span class=p>);</span>
 <span class=n>chroot</span><span class=p>(</span><span class=s>&#34;/home/xx&#34;</span><span class=p>);</span>
 <span class=n>fchdir</span><span class=p>(</span><span class=n>fd</span><span class=p>);</span>
 <span class=n>chroot</span><span class=p>(</span><span class=s>&#34;.&#34;</span><span class=p>);</span> <span class=cm>/*out of jail*/</span>
-</code></pre></div><h2 id=解析路径名>解析路径名</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
+</code></pre></div><h2 id=解析路径名>解析路径名</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>char</span> <span class=o>*</span><span class=nf>realpath</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>resolved_path</span><span class=p>);</span>
-</code></pre></div><p><code>realpath()</code>将对pathname中的所有符号链接和<code>/.``/..</code>解析,得到的绝对路径放置于resolved_path指向的缓冲区中。</p><h2 id=解析路径名字字符串>解析路径名字字符串</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;libgen.h&gt;</span><span class=cp>
+</code></pre></div><p><code>realpath()</code>将对pathname中的所有符号链接和<code>/.``/..</code>解析,得到的绝对路径放置于resolved_path指向的缓冲区中。</p>
+<h2 id=解析路径名字字符串>解析路径名字字符串</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;libgen.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>char</span> <span class=o>*</span><span class=nf>dirname</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>);</span>
 <span class=kt>char</span> <span class=o>*</span><span class=nf>basename</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>);</span>
-</code></pre></div><p><code>dirname()</code>和<code>basename()</code>函数将一个路径名字符串分解成目录和文件名两部分。比如给定路径名<code>/home/britta/prog.c</code>,<code>dirname()</code>将返回<code>/home/britta</code>,而<code>basename()</code>将返回<code>prog.c</code>。</p><h2 id=exercises>Exercises</h2><p>1.根据提示，在编译前后使用<code>ls -li</code>查看，发现可执行文件的i-number改变了，所以实际行为为原可执行文件的在目录中的记录被删除了，但其i-node在其执行期间还存在，只不过新建了一个新文件以及i-node信息，文件名指向了新的i-number。<br>3.Github上找到了一个小哥写的<a href=https://github.com/timjb/tlpi-exercises/blob/master/realpath_clone.c>程序</a>，花了点时间看懂了，加了些注释。</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;limits.h&gt;</span><span class=cp>
+</code></pre></div><p><code>dirname()</code>和<code>basename()</code>函数将一个路径名字符串分解成目录和文件名两部分。比如给定路径名<code>/home/britta/prog.c</code>,<code>dirname()</code>将返回<code>/home/britta</code>,而<code>basename()</code>将返回<code>prog.c</code>。</p>
+<h2 id=exercises>Exercises</h2>
+<p>1.根据提示，在编译前后使用<code>ls -li</code>查看，发现可执行文件的i-number改变了，所以实际行为为原可执行文件的在目录中的记录被删除了，但其i-node在其执行期间还存在，只不过新建了一个新文件以及i-node信息，文件名指向了新的i-number。<br>
+3.Github上找到了一个小哥写的<a href=https://github.com/timjb/tlpi-exercises/blob/master/realpath_clone.c>程序</a>，花了点时间看懂了，加了些注释。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;limits.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;libgen.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
@@ -240,22 +464,91 @@ Change: 2020-08-20 17:05:25.726910300 +0800
   <span class=p>}</span>
   <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
 <span class=p>}</span>
-</code></pre></div><p>7.实现nftw()</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>
+</code></pre></div><p>7.实现nftw()</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>
 
 
-</code></pre></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s18/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记18.监控文件事件</span>
-<span class="prev-text nav-mobile">Prev</span></a>
-<a class=next href=/post/linux/the-linux-programming-interface-s16/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记16.访问控制列表</span>
+</code></pre></div>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2023-07-01
+<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/linux/>Linux</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/linux/the-linux-programming-interface-s18/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Linux/Unix系统编程手册-笔记18.监控文件事件</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/linux/the-linux-programming-interface-s16/>
+<span class="next-text nav-default">Linux/Unix系统编程手册-笔记16.访问控制列表</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>

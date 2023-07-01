@@ -1,13 +1,126 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>ptrace 笔记 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/ptrace/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="ptrace 笔记"><meta property="og:description" content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/ptrace/"><meta property="article:published_time" content="2021-03-02T22:01:00+08:00"><meta property="article:modified_time" content="2023-07-01T13:16:34+08:00"><meta itemprop=name content="ptrace 笔记"><meta itemprop=description content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供"><meta itemprop=datePublished content="2021-03-02T22:01:00+08:00"><meta itemprop=dateModified content="2023-07-01T13:16:34+08:00"><meta itemprop=wordCount content="2868"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="ptrace 笔记"><meta name=twitter:description content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>ptrace 笔记</h1><div class=post-meta><span class=post-time>2021-03-02</span><div class=post-category><a href=/categories/linux/>Linux</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents></nav></div></div><div class=post-content><p>笔记主要参考<a href=https://www.linuxjournal.com/article/6100>Playing with ptrace</a>， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。</p><p>ptrace() 系统调用提供了一个机制供一个父进程可以追踪和控制其他进程，主要用来实现断点debug以及系统调用追踪等功能。
-函数原型如下：</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>ptrace 笔记 - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/linux/ptrace/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="ptrace 笔记">
+<meta property="og:description" content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/linux/ptrace/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2021-03-02T22:01:00+08:00">
+<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
+<meta itemprop=name content="ptrace 笔记">
+<meta itemprop=description content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供"><meta itemprop=datePublished content="2021-03-02T22:01:00+08:00">
+<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
+<meta itemprop=wordCount content="2868">
+<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="ptrace 笔记">
+<meta name=twitter:description content="笔记主要参考Playing with ptrace， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。 ptrace() 系统调用提供"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>ptrace 笔记</h1>
+<div class=post-meta>
+<span class=post-time> 2021-03-02 </span>
+<div class=post-category>
+<a href=/categories/linux/> Linux </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents></nav>
+</div>
+</div>
+<div class=post-content>
+<p>笔记主要参考<a href=https://www.linuxjournal.com/article/6100>Playing with ptrace</a>， 原文比较久远，而且是在程序是在32位机器上跑的，修改成了64位机器能正确运行的版本。</p>
+<p>ptrace() 系统调用提供了一个机制供一个父进程可以追踪和控制其他进程，主要用来实现断点debug以及系统调用追踪等功能。
+函数原型如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>long</span> <span class=nf>ptrace</span><span class=p>(</span><span class=k>enum</span> <span class=n>__ptrace_request</span> <span class=n>request</span><span class=p>,</span> <span class=n>pid_t</span> <span class=n>pid</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>addr</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>data</span><span class=p>);</span>
-</code></pre></div><p><a href=https://man7.org/linux/man-pages/man2/ptrace.2.html>https://man7.org/linux/man-pages/man2/ptrace.2.html</a></p><p>要更容易的看懂例程，需要先了解以下x86的寄存器，32bit和64bit的寄存器存在一些不同,如下图(来自参考3 page27)</p><figure class=center><img src=/img/ptrace/AMD_64bit_reg.png width=600><figcaption><h4>General Purpose Registers in 64-Bit Mode</h4></figcaption></figure><p>32bit下常用的<code>eax</code>, <code>ebx</code>在64bit下对应为 <code>rax</code>, <code>rbx</code>，但是使用<code>eax</code>依然可以访问<code>rax</code>的低32位。</p><p>在32位情况下，系统调用号被放到<code>eax</code>, 传给系统调用的参数被依次放到 <code>ebx</code>, <code>ecx</code>, <code>edx</code>, <code>esi</code>, <code>edi</code>。在64位系统下，情况有些不同，我们使用<a href=https://gcc.godbolt.org>godblolt</a>将下面的C程序翻译成汇编代码看一下寄存器使用情况，</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span><span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</code></pre></div><p><a href=https://man7.org/linux/man-pages/man2/ptrace.2.html>https://man7.org/linux/man-pages/man2/ptrace.2.html</a></p>
+<p>要更容易的看懂例程，需要先了解以下x86的寄存器，32bit和64bit的寄存器存在一些不同,如下图(来自参考3 page27)</p>
+<figure class=center><img src=/img/ptrace/AMD_64bit_reg.png width=600><figcaption>
+<h4>General Purpose Registers in 64-Bit Mode</h4>
+</figcaption>
+</figure>
+<p>32bit下常用的<code>eax</code>, <code>ebx</code>在64bit下对应为 <code>rax</code>, <code>rbx</code>，但是使用<code>eax</code>依然可以访问<code>rax</code>的低32位。</p>
+<p>在32位情况下，系统调用号被放到<code>eax</code>, 传给系统调用的参数被依次放到 <code>ebx</code>, <code>ecx</code>, <code>edx</code>, <code>esi</code>, <code>edi</code>。在64位系统下，情况有些不同，我们使用<a href=https://gcc.godbolt.org>godblolt</a>将下面的C程序翻译成汇编代码看一下寄存器使用情况，</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span><span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
 
     <span class=n>write</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=s>&#34;hello!&#34;</span><span class=p>,</span> <span class=mi>6</span><span class=p>);</span>
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div><p>翻译出来的汇编代码：</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>.LC0:
+</code></pre></div><p>翻译出来的汇编代码：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>.LC0:
         .string &#34;hello!&#34;
 main:
         push    rbp
@@ -19,7 +132,71 @@ main:
         mov     eax, 0
         pop     rbp
         ret
-</code></pre></div><p>可见64位上，系统调用<code>write()</code>的三个参数依次被放到了<code>edi</code>, <code>esi</code>, <code>edx</code> 中，这里只使用了寄存器的低32位，所以还是e开头。各架构在系统调用时用到的寄存器如下:</p><table><thead><tr><th>arch</th><th>syscall number</th><th>return</th><th>arg0</th><th>arg1</th><th>arg2</th><th>arg3</th><th>arg4</th><th>arg5</th></tr></thead><tbody><tr><td>arm</td><td>r7</td><td>r0</td><td>r0</td><td>r1</td><td>r2</td><td>r3</td><td>r4</td><td>r5</td></tr><tr><td>arm64</td><td>x8</td><td>x0</td><td>x0</td><td>x1</td><td>x2</td><td>x3</td><td>x4</td><td>x5</td></tr><tr><td>x86</td><td>eax</td><td>eax</td><td>ebx</td><td>ecx</td><td>edx</td><td>esi</td><td>edi</td><td>ebp</td></tr><tr><td>x86_64</td><td>rax</td><td>rax</td><td>rdi</td><td>rsi</td><td>rdx</td><td>r10</td><td>r8</td><td>r9</td></tr></tbody></table><p>完整的寄存器常用法表见： <a href=https://web.stanford.edu/class/cs107/guide/x86-64.html>https://web.stanford.edu/class/cs107/guide/x86-64.html</a></p><p>知道了这几个寄存器的一般用法，就可以开始看例子了：</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
+</code></pre></div><p>可见64位上，系统调用<code>write()</code>的三个参数依次被放到了<code>edi</code>, <code>esi</code>, <code>edx</code> 中，这里只使用了寄存器的低32位，所以还是e开头。各架构在系统调用时用到的寄存器如下:</p>
+<table>
+<thead>
+<tr>
+<th>arch</th>
+<th>syscall number</th>
+<th>return</th>
+<th>arg0</th>
+<th>arg1</th>
+<th>arg2</th>
+<th>arg3</th>
+<th>arg4</th>
+<th>arg5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>arm</td>
+<td>r7</td>
+<td>r0</td>
+<td>r0</td>
+<td>r1</td>
+<td>r2</td>
+<td>r3</td>
+<td>r4</td>
+<td>r5</td>
+</tr>
+<tr>
+<td>arm64</td>
+<td>x8</td>
+<td>x0</td>
+<td>x0</td>
+<td>x1</td>
+<td>x2</td>
+<td>x3</td>
+<td>x4</td>
+<td>x5</td>
+</tr>
+<tr>
+<td>x86</td>
+<td>eax</td>
+<td>eax</td>
+<td>ebx</td>
+<td>ecx</td>
+<td>edx</td>
+<td>esi</td>
+<td>edi</td>
+<td>ebp</td>
+</tr>
+<tr>
+<td>x86_64</td>
+<td>rax</td>
+<td>rax</td>
+<td>rdi</td>
+<td>rsi</td>
+<td>rdx</td>
+<td>r10</td>
+<td>r8</td>
+<td>r9</td>
+</tr>
+</tbody>
+</table>
+<p>完整的寄存器常用法表见： <a href=https://web.stanford.edu/class/cs107/guide/x86-64.html>https://web.stanford.edu/class/cs107/guide/x86-64.html</a></p>
+<p>知道了这几个寄存器的一般用法，就可以开始看例子了：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/wait.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
@@ -45,9 +222,13 @@ main:
     <span class=p>}</span>
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div><p>程序的主进程会追踪子进程的系统调用，将其系统调用号打印出来，然后调用<code>ptrace(PTRACE_CONT,...)</code> 让子进程继续运行。当系统调用发生时，内核会保存<code>rax</code>的原始内容到内存中，里面的内容就是系统调用号，可以从子进程的USER段读取出来，其偏移地址就是我们传入的<code>8 * ORIG_RAX</code>， <code>ORIG_RAX</code>定义在<code>sys/reg.h</code>文件中，其定义为<code>#define ORIG_RAX 15</code> ，因为64bit系统里，USER中的每个数据为8个字节，而orig_rax是第15个数据。USER的数据结构体定义在/usr/include/x86_64-linux-gnu/sys/user.h <code>struct user_regs_struct</code> 可以看一下。</p><p>运行输出</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>The child made a system call 59
+</code></pre></div><p>程序的主进程会追踪子进程的系统调用，将其系统调用号打印出来，然后调用<code>ptrace(PTRACE_CONT,...)</code> 让子进程继续运行。当系统调用发生时，内核会保存<code>rax</code>的原始内容到内存中，里面的内容就是系统调用号，可以从子进程的USER段读取出来，其偏移地址就是我们传入的<code>8 * ORIG_RAX</code>， <code>ORIG_RAX</code>定义在<code>sys/reg.h</code>文件中，其定义为<code>#define ORIG_RAX 15</code> ，因为64bit系统里，USER中的每个数据为8个字节，而orig_rax是第15个数据。USER的数据结构体定义在/usr/include/x86_64-linux-gnu/sys/user.h <code>struct user_regs_struct</code> 可以看一下。</p>
+<p>运行输出</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>The child made a system call 59
 ...
-</code></pre></div><p>查阅系统调用号表 <a href=https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl>https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl</a> ， 系统调用为<code>execve</code>。</p><p>看第二个例程：</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
+</code></pre></div><p>查阅系统调用号表 <a href=https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl>https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl</a> ， 系统调用为<code>execve</code>。</p>
+<p>看第二个例程：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/wait.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
@@ -103,14 +284,17 @@ main:
    <span class=p>}</span>
    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div><p>和第一个例子区别不大，这段程序使用 <code>ptrace(PTRACE_GETREGS, ...)</code>函数获取系统调用时所有寄存器的值， 并打印出<code>rdi</code>, <code>rsi</code>, <code>rdx</code>中的值也就是<code>write()</code>的三个参数值, 在<code>write()</code>返回的时候打印出<code>rax</code>中的返回值。</p><p>输出类似于：</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>Write called with 1, 9348640, 99
+</code></pre></div><p>和第一个例子区别不大，这段程序使用 <code>ptrace(PTRACE_GETREGS, ...)</code>函数获取系统调用时所有寄存器的值， 并打印出<code>rdi</code>, <code>rsi</code>, <code>rdx</code>中的值也就是<code>write()</code>的三个参数值, 在<code>write()</code>返回的时候打印出<code>rax</code>中的返回值。</p>
+<p>输出类似于：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>Write called with 1, 9348640, 99
 a.out	      foo.c	      libbar.so		libnice.a     mod1.cpp	nice.cpp	 rtsched	  test_reg.s  wrapjack
 Write returned with 99
 Write called with 1, 9348640, 103
 bar.c	      foo.map	      libdemo.a		libtom.so     mod1.o	nice.o		 rtsched.cpp	  tlpi-dist   wrapjack2
 Write returned with 103
 
-</code></pre></div><p>第三例子，修改系统调用的参数，</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
+</code></pre></div><p>第三例子，修改系统调用的参数，</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/wait.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
@@ -235,7 +419,8 @@ Write returned with 103
     <span class=p>}</span>
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div><p>输出类似于下面这样</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ ls
+</code></pre></div><p>输出类似于下面这样</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ ls
 
 a.out   fun.c 
 
@@ -243,7 +428,10 @@ $ ./a.out
 
 c.nuf   tuo.a
 
-</code></pre></div><p>程序使用 <code>PTRACE_POKEDATA</code> 修改传给<code>write()</code>的参数，<code>ssize_t write(int fd, const void *buf, size_t count)</code> 三个参数分别为要写入的文件描述符，buf指针, 写入的字节数。 <code>getdata()</code>的作用是调用<code>ptrace(PTRACE_PEEKDATA,..)</code>以8个字节为单位取得参数<code>buf</code>指向的数据后，写入<code>str</code>指向的地址。之后反转字符串再调用<code>putdata()</code>使用<code>ptrace(PTRACE_POKEDATA,..)</code>写回去，就实现了上面的效果。</p><p>前几个例子，子进程开始时都调用了 <code>ptrace(PTRACE_TRACEME, 0, NULL, NULL)</code>来告诉内核对其追踪，但不是每个程序都会去调用这个的，而且我们经常随便拿来一个程序就用<code>strace</code>命令跟踪系统调用，那些程序里面也不会都调用了<code>PTRACE_TRACEME</code>吧。 要trace一个既有的进程也是可以的，只要使用<code>ptrace(PTRACE_ATTACH, ..)</code>就可以了。接下来我们就用<code>PTRACE_ATTACH</code>来跟踪一个进程。</p><p>首先写一个简单的程序供我们跟踪, 这个小程序会每两秒计数并输出。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=c1>// counter
+</code></pre></div><p>程序使用 <code>PTRACE_POKEDATA</code> 修改传给<code>write()</code>的参数，<code>ssize_t write(int fd, const void *buf, size_t count)</code> 三个参数分别为要写入的文件描述符，buf指针, 写入的字节数。 <code>getdata()</code>的作用是调用<code>ptrace(PTRACE_PEEKDATA,..)</code>以8个字节为单位取得参数<code>buf</code>指向的数据后，写入<code>str</code>指向的地址。之后反转字符串再调用<code>putdata()</code>使用<code>ptrace(PTRACE_POKEDATA,..)</code>写回去，就实现了上面的效果。</p>
+<p>前几个例子，子进程开始时都调用了 <code>ptrace(PTRACE_TRACEME, 0, NULL, NULL)</code>来告诉内核对其追踪，但不是每个程序都会去调用这个的，而且我们经常随便拿来一个程序就用<code>strace</code>命令跟踪系统调用，那些程序里面也不会都调用了<code>PTRACE_TRACEME</code>吧。 要trace一个既有的进程也是可以的，只要使用<code>ptrace(PTRACE_ATTACH, ..)</code>就可以了。接下来我们就用<code>PTRACE_ATTACH</code>来跟踪一个进程。</p>
+<p>首先写一个简单的程序供我们跟踪, 这个小程序会每两秒计数并输出。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// counter
 </span><span class=c1></span>
 <span class=cp>#include</span><span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span>
@@ -254,7 +442,8 @@ c.nuf   tuo.a
     <span class=p>}</span>
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div><p>然后使用<code>PTRACE_ATTACH</code>写我们的追踪程序, 结合一下之前的例子，将被追踪程序的输出也截取出来。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=c1>// trace_counter
+</code></pre></div><p>然后使用<code>PTRACE_ATTACH</code>写我们的追踪程序, 结合一下之前的例子，将被追踪程序的输出也截取出来。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// trace_counter
 </span><span class=c1></span>
 <span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
@@ -344,14 +533,17 @@ c.nuf   tuo.a
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
 
-</code></pre></div><p>编译两个程序，然后在两个终端运行:</p><p>counter 的输出：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>Counter: <span class=m>0</span>
+</code></pre></div><p>编译两个程序，然后在两个终端运行:</p>
+<p>counter 的输出：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>Counter: <span class=m>0</span>
 Counter: <span class=m>1</span>
 Counter: <span class=m>2</span>
 Counter: <span class=m>3</span>
 Counter: <span class=m>4</span>
 Counter: <span class=m>5</span>
 ...
-</code></pre></div><p>trace_counter 的输出：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>Write called with 1, 28184592, <span class=m>11</span>
+</code></pre></div><p>trace_counter 的输出：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>Write called with 1, 28184592, <span class=m>11</span>
 write string is : Counter: <span class=m>7</span>
 Write returned with <span class=m>11</span>
 Write called with 1, 28184592, <span class=m>11</span>
@@ -366,7 +558,8 @@ Write returned with <span class=m>12</span>
 
 ...
 
-</code></pre></div><p>设置断点：</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</code></pre></div><p>设置断点：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/ptrace.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
@@ -472,19 +665,96 @@ Write returned with <span class=m>12</span>
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
 
-</code></pre></div><p>设置断点的主要原理是读取程序的<code>rip</code>（instruction pointer）寄存器，将其指向的指令保存下来， 然后用<code>int3（0xCC）</code>指令替换掉原指令，当CPU遇到<code>int3</code>会发送<code>SIGTRAP</code>信号给调试进程，将进程stop。之后再将指令恢复，并将<code>rip</code>指回原处，程序就可以继续执行下去了。</p><p>参考：<br>0. <a href=https://www.linuxjournal.com/article/6100>https://www.linuxjournal.com/article/6100</a></p><ol><li>系统调用号表 <a href=https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl>https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl</a></li><li>寄存器列表 <a href=https://web.stanford.edu/class/cs107/guide/x86-64.html>https://web.stanford.edu/class/cs107/guide/x86-64.html</a></li><li><a href=https://www.amd.com/system/files/TechDocs/24592.pdf>https://www.amd.com/system/files/TechDocs/24592.pdf</a></li><li><a href=https://theantway.com/2013/01/notes-for-playing-with-ptrace-on-64-bits-ubuntu-12-10/>https://theantway.com/2013/01/notes-for-playing-with-ptrace-on-64-bits-ubuntu-12-10/</a></li><li><a href=https://abda.nl/posts/understanding-ptrace/>https://abda.nl/posts/understanding-ptrace/</a></li></ol></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/ipsec-config/><i class="iconfont icon-left"></i><span class="prev-text nav-default">IKEV2 vpn 配置备忘</span>
-<span class="prev-text nav-mobile">Prev</span></a>
-<a class=next href=/post/linux/the-linux-programming-interface-s35/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记35. Sockets</span>
+</code></pre></div><p>设置断点的主要原理是读取程序的<code>rip</code>（instruction pointer）寄存器，将其指向的指令保存下来， 然后用<code>int3（0xCC）</code>指令替换掉原指令，当CPU遇到<code>int3</code>会发送<code>SIGTRAP</code>信号给调试进程，将进程stop。之后再将指令恢复，并将<code>rip</code>指回原处，程序就可以继续执行下去了。</p>
+<p>参考：<br>
+0. <a href=https://www.linuxjournal.com/article/6100>https://www.linuxjournal.com/article/6100</a></p>
+<ol>
+<li>系统调用号表 <a href=https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl>https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl</a></li>
+<li>寄存器列表 <a href=https://web.stanford.edu/class/cs107/guide/x86-64.html>https://web.stanford.edu/class/cs107/guide/x86-64.html</a></li>
+<li><a href=https://www.amd.com/system/files/TechDocs/24592.pdf>https://www.amd.com/system/files/TechDocs/24592.pdf</a></li>
+<li><a href=https://theantway.com/2013/01/notes-for-playing-with-ptrace-on-64-bits-ubuntu-12-10/>https://theantway.com/2013/01/notes-for-playing-with-ptrace-on-64-bits-ubuntu-12-10/</a></li>
+<li><a href=https://abda.nl/posts/understanding-ptrace/>https://abda.nl/posts/understanding-ptrace/</a></li>
+</ol>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2023-07-01
+<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/linux/>Linux</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/ipsec-config/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">IKEV2 vpn 配置备忘</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/linux/the-linux-programming-interface-s35/>
+<span class="next-text nav-default">Linux/Unix系统编程手册-笔记35. Sockets</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>

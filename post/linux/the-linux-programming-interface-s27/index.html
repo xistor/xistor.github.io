@@ -1,12 +1,183 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记27. 共享库 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s27/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记27. 共享库"><meta property="og:description" content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s27/"><meta property="article:published_time" content="2020-11-23T18:30:00+08:00"><meta property="article:modified_time" content="2023-07-01T13:16:34+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记27. 共享库"><meta itemprop=description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><meta itemprop=datePublished content="2020-11-23T18:30:00+08:00"><meta itemprop=dateModified content="2023-07-01T13:16:34+08:00"><meta itemprop=wordCount content="2637"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记27. 共享库"><meta name=twitter:description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记27. 共享库</h1><div class=post-meta><span class=post-time>2020-11-23</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#创建动态库>创建动态库</a></li><li><a href=#real-names-sonames-and-linker-names>Real names, sonames, and linker names</a></li><li><a href=#ldconfig>ldconfig</a></li><li><a href=#运行时符号解析>运行时符号解析</a></li><li><a href=#指定使用静态库>指定使用静态库</a></li><li><a href=#动态加载库>动态加载库</a></li><li><a href=#控制符号可见性>控制符号可见性</a></li><li><a href=#链接器版本脚本>链接器版本脚本</a></li><li><a href=#初始化和析构函数>初始化和析构函数</a></li></ul></nav></div></div><div class=post-content><p>静态库是一个归档(archives),可以使用<code>ar</code>命令生成：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ ar options archive object-file...
-</code></pre></div><p>静态库会被整个拷贝到可执行文件中。</p><h2 id=创建动态库>创建动态库</h2><p>书中给的命令分两步</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall mod1.c mod2.c mod3.c
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>Linux/Unix系统编程手册-笔记27. 共享库 - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s27/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记27. 共享库">
+<meta property="og:description" content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s27/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2020-11-23T18:30:00+08:00">
+<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
+<meta itemprop=name content="Linux/Unix系统编程手册-笔记27. 共享库">
+<meta itemprop=description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><meta itemprop=datePublished content="2020-11-23T18:30:00+08:00">
+<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
+<meta itemprop=wordCount content="2637">
+<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Linux/Unix系统编程手册-笔记27. 共享库">
+<meta name=twitter:description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Linux/Unix系统编程手册-笔记27. 共享库</h1>
+<div class=post-meta>
+<span class=post-time> 2020-11-23 </span>
+<div class=post-category>
+<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#创建动态库>创建动态库</a></li>
+<li><a href=#real-names-sonames-and-linker-names>Real names, sonames, and linker names</a></li>
+<li><a href=#ldconfig>ldconfig</a></li>
+<li><a href=#运行时符号解析>运行时符号解析</a></li>
+<li><a href=#指定使用静态库>指定使用静态库</a></li>
+<li><a href=#动态加载库>动态加载库</a></li>
+<li><a href=#控制符号可见性>控制符号可见性</a></li>
+<li><a href=#链接器版本脚本>链接器版本脚本</a></li>
+<li><a href=#初始化和析构函数>初始化和析构函数</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>静态库是一个归档(archives),可以使用<code>ar</code>命令生成：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ ar options archive object-file...
+</code></pre></div><p>静态库会被整个拷贝到可执行文件中。</p>
+<h2 id=创建动态库>创建动态库</h2>
+<p>书中给的命令分两步</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall mod1.c mod2.c mod3.c
 $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
-</code></pre></div><p><code>-g</code>参数在可执行文件中保留源码级的debug和symbol信息。<br><code>-c</code>编译源码而不链接。
+</code></pre></div><p><code>-g</code>参数在可执行文件中保留源码级的debug和symbol信息。<br>
+<code>-c</code>编译源码而不链接。
 <code>-Wall</code>打开所有编译器警告。
 <code>-shared</code> 生成共享库。
-<code>-fPIC</code> PIC意味着编译器生成Position Independent Code，f没有啥意义是历史遗留产物。位置无关代码意味着产生的机器码不会依赖一个特定地址才能正常工作，比如jump会使用相对地址而不是绝对地址。这样就允许产生的机器码可以被放到虚拟内存的任意位置。</p><h2 id=real-names-sonames-and-linker-names>Real names, sonames, and linker names</h2><p>共享库有时需要升级，升级就会引入不兼容等问题。所以需要使用版本号来管理，同一个主版本号内的库是兼容的，不同主版本号之间不兼容。</p><table><thead><tr><th>名称</th><th>格式</th><th>描述</th></tr></thead><tbody><tr><td>real name</td><td>libname.so.maj.min</td><td>库文件的真实名字，包含共享库的主次版本号</td></tr><tr><td>soname</td><td>libname.so.maj</td><td>包含主版本号，可能存在多个次要版本的real name,一般会被链接到最新版本的real name</td></tr><tr><td>linker name</td><td>libname.so</td><td>链接到最新的real name或者通常是链接到最新的soname,以允许在链接的时候，可以版本无关的链接</td></tr></tbody></table><h2 id=ldconfig>ldconfig</h2><p>ldconfig 维护着<code>/etc/ld.so.cache</code>，它会检查每个主要版本库的小版本变化，并为每个soname更新或创建对应的软连接。一般系统启动的时候执行一次，安装新的库后需要手动执行一下。</p><p>ldconfig 不会自动设置linker name,原因是：虽然一般来说会希望代码跑在最新的库上，但可能还是存在例外，想使用老版本的兼容库。所以ldconfig不会假定你的程序想使用哪个版本的库，安装者需要自己修改linker name的软连接。</p><h2 id=运行时符号解析>运行时符号解析</h2><p>如果同一个全局符号（函数或变量），在可执行文件那和共享库中多个位置重复定义，或者在多个共享库中重复定义，如何解决符号引用？
-书中举了如图的栗子，最终主函数中调到了可执行文件中的xyz()。</p><figure class=center><img src=/img/the-linux-programming-interface-s27/resolve_symbol_reference.png><figcaption><h4>解析符号引用</h4></figcaption></figure><ul><li>在主程序中定义的全局符号会override在共享库中的定义</li><li>在多个共享库中重复定义，将会引用至第一个扫描到的库</li></ul><p>如果想指定调用共享库中的函数，生成共享库时可以使用<code>–Bsymbolic</code>参数。</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>gcc -g -shared -Wl,-Bsymbolic -o libfoo.so foo.o
-</code></pre></div><h2 id=指定使用静态库>指定使用静态库</h2><p>链接时使用<code>-ldemo</code>时，若同时存在<code>libdemo.so</code>和<code>libdemo.a</code>，则共享库会被使用，若想指定使用静态库，可以</p><ul><li>在gcc编译时，将静态库路径(包括.a)加在后面。</li><li>指定<code>-static</code>参数</li><li>使用<code>–Wl,–Bstatic</code>和<code>–Wl,–Bdynamic</code>来切换让链接器选择静态或动态库。</li></ul><h2 id=动态加载库>动态加载库</h2><p>主要使用几个API, <code>dlopen()</code>、<code>dlsym()</code>，用法如下：</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+<code>-fPIC</code> PIC意味着编译器生成Position Independent Code，f没有啥意义是历史遗留产物。位置无关代码意味着产生的机器码不会依赖一个特定地址才能正常工作，比如jump会使用相对地址而不是绝对地址。这样就允许产生的机器码可以被放到虚拟内存的任意位置。</p>
+<h2 id=real-names-sonames-and-linker-names>Real names, sonames, and linker names</h2>
+<p>共享库有时需要升级，升级就会引入不兼容等问题。所以需要使用版本号来管理，同一个主版本号内的库是兼容的，不同主版本号之间不兼容。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>格式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>real name</td>
+<td>libname.so.maj.min</td>
+<td>库文件的真实名字，包含共享库的主次版本号</td>
+</tr>
+<tr>
+<td>soname</td>
+<td>libname.so.maj</td>
+<td>包含主版本号，可能存在多个次要版本的real name,一般会被链接到最新版本的real name</td>
+</tr>
+<tr>
+<td>linker name</td>
+<td>libname.so</td>
+<td>链接到最新的real name或者通常是链接到最新的soname,以允许在链接的时候，可以版本无关的链接</td>
+</tr>
+</tbody>
+</table>
+<h2 id=ldconfig>ldconfig</h2>
+<p>ldconfig 维护着<code>/etc/ld.so.cache</code>，它会检查每个主要版本库的小版本变化，并为每个soname更新或创建对应的软连接。一般系统启动的时候执行一次，安装新的库后需要手动执行一下。</p>
+<p>ldconfig 不会自动设置linker name,原因是：虽然一般来说会希望代码跑在最新的库上，但可能还是存在例外，想使用老版本的兼容库。所以ldconfig不会假定你的程序想使用哪个版本的库，安装者需要自己修改linker name的软连接。</p>
+<h2 id=运行时符号解析>运行时符号解析</h2>
+<p>如果同一个全局符号（函数或变量），在可执行文件那和共享库中多个位置重复定义，或者在多个共享库中重复定义，如何解决符号引用？
+书中举了如图的栗子，最终主函数中调到了可执行文件中的xyz()。</p>
+<figure class=center><img src=/img/the-linux-programming-interface-s27/resolve_symbol_reference.png><figcaption>
+<h4>解析符号引用</h4>
+</figcaption>
+</figure>
+<ul>
+<li>在主程序中定义的全局符号会override在共享库中的定义</li>
+<li>在多个共享库中重复定义，将会引用至第一个扫描到的库</li>
+</ul>
+<p>如果想指定调用共享库中的函数，生成共享库时可以使用<code>–Bsymbolic</code>参数。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>gcc -g -shared -Wl,-Bsymbolic -o libfoo.so foo.o
+</code></pre></div><h2 id=指定使用静态库>指定使用静态库</h2>
+<p>链接时使用<code>-ldemo</code>时，若同时存在<code>libdemo.so</code>和<code>libdemo.a</code>，则共享库会被使用，若想指定使用静态库，可以</p>
+<ul>
+<li>在gcc编译时，将静态库路径(包括.a)加在后面。</li>
+<li>指定<code>-static</code>参数</li>
+<li>使用<code>–Wl,–Bstatic</code>和<code>–Wl,–Bdynamic</code>来切换让链接器选择静态或动态库。</li>
+</ul>
+<h2 id=动态加载库>动态加载库</h2>
+<p>主要使用几个API, <code>dlopen()</code>、<code>dlsym()</code>，用法如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;dlfcn.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
@@ -29,12 +200,36 @@ $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
     <span class=n>dlclose</span><span class=p>(</span><span class=n>libfoo</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><p>使用<code>dlopen()</code>打开对应的库文件，打开过程可以指定flag,打开成功会返回一个指针。之后使用<code>dlsym()</code>传入<code>dlopen()</code>返回的指针和符号名称，若找到了对应的函数或变量，会返回其地址，然后转换成合适的类型，就可以使用了。</p><ul><li>RTLD_DEFAULT: 默认顺序搜索符号。</li><li>RTLD_NEXT: 根据共享对象的搜索顺序，从“当前对象”后搜索某个符号，返回该符号的地址。“当前对象”指的是，dlsym(RTLD_NEXT, &ldquo;syscall&rdquo;);代码所在的对象。可以用来wrap系统函数。使用方法：<code>func = dlsym(RTLD_NEXT, “malloc”)</code>。这个选项我特么困惑了，一开始是编译出的可执行文件并没有依赖<code>gcc -l</code>后添加的库，貌似原因是gcc现在默认开启–as-needed选项，如果没有用到库就不会写到到可执行文件的依赖表中，所以编译时加了<code> -Wl,--no-as-needed</code>，之后程序可以运行，但表现和使用RTLD_DEFAULT选项并无不同，原因还待查。</li></ul><p><code>dlopen()</code>和<code>dlclose()</code>在打开和关闭库的时候会有类似引用计数的机制，直到一个库的的handle计数为0才会实际上unload库。</p><h2 id=控制符号可见性>控制符号可见性</h2><p>一个设计良好的库应该只将其ABI中指定的符号（函数或变量）可见，因为:</p><ul><li>若开放的未指明的接口被用户使用了，在库升级的时候带来兼容性问题。</li><li>在符号解析时，开放的符号可能会影响其他库。</li><li>开放没必要的符号会增大在必须在运行时载入的动态符号表。</li></ul><p>以下几种方法可以用来控制符号的输出：</p><ul><li>在C程序中，可以使用<code>static</code>关键字将符号限制在同一个源码文件中。</li><li>GNU C 编译器提供了编译器特性属性可以实现和<code>static</code>类似的效果</li></ul><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=kt>void</span>
+</code></pre></div><p>使用<code>dlopen()</code>打开对应的库文件，打开过程可以指定flag,打开成功会返回一个指针。之后使用<code>dlsym()</code>传入<code>dlopen()</code>返回的指针和符号名称，若找到了对应的函数或变量，会返回其地址，然后转换成合适的类型，就可以使用了。</p>
+<ul>
+<li>RTLD_DEFAULT: 默认顺序搜索符号。</li>
+<li>RTLD_NEXT: 根据共享对象的搜索顺序，从“当前对象”后搜索某个符号，返回该符号的地址。“当前对象”指的是，dlsym(RTLD_NEXT, &ldquo;syscall&rdquo;);代码所在的对象。可以用来wrap系统函数。使用方法：<code>func = dlsym(RTLD_NEXT, “malloc”)</code>。这个选项我特么困惑了，一开始是编译出的可执行文件并没有依赖<code>gcc -l</code>后添加的库，貌似原因是gcc现在默认开启–as-needed选项，如果没有用到库就不会写到到可执行文件的依赖表中，所以编译时加了<code> -Wl,--no-as-needed</code>，之后程序可以运行，但表现和使用RTLD_DEFAULT选项并无不同，原因还待查。</li>
+</ul>
+<p><code>dlopen()</code>和<code>dlclose()</code>在打开和关闭库的时候会有类似引用计数的机制，直到一个库的的handle计数为0才会实际上unload库。</p>
+<h2 id=控制符号可见性>控制符号可见性</h2>
+<p>一个设计良好的库应该只将其ABI中指定的符号（函数或变量）可见，因为:</p>
+<ul>
+<li>若开放的未指明的接口被用户使用了，在库升级的时候带来兼容性问题。</li>
+<li>在符号解析时，开放的符号可能会影响其他库。</li>
+<li>开放没必要的符号会增大在必须在运行时载入的动态符号表。</li>
+</ul>
+<p>以下几种方法可以用来控制符号的输出：</p>
+<ul>
+<li>在C程序中，可以使用<code>static</code>关键字将符号限制在同一个源码文件中。</li>
+<li>GNU C 编译器提供了编译器特性属性可以实现和<code>static</code>类似的效果</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span>
 <span class=nf>__attribute__</span> <span class=p>((</span><span class=n>visibility</span><span class=p>(</span><span class=s>&#34;hidden&#34;</span><span class=p>)))</span>
 <span class=n>func</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span> <span class=p>{</span>
  <span class=cm>/* Code */</span>
 <span class=p>}</span>
-</code></pre></div><ul><li>版本脚本可以用来精确的控制符号的可见性。</li><li>当动态载入共享库时，<code>dlopen() RTLD_GLOBAL</code> flag可以用来指定共享库内定义的符号对其后来载入的库可见，<code>––export–dynamic</code>链接器选项可以用来将主程序中的全局变量对其动态载入的库可见。</li></ul><h2 id=链接器版本脚本>链接器版本脚本</h2><p>比如一个c文件</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=c1>// foo.c
+</code></pre></div><ul>
+<li>版本脚本可以用来精确的控制符号的可见性。</li>
+<li>当动态载入共享库时，<code>dlopen() RTLD_GLOBAL</code> flag可以用来指定共享库内定义的符号对其后来载入的库可见，<code>––export–dynamic</code>链接器选项可以用来将主程序中的全局变量对其动态载入的库可见。</li>
+</ul>
+<h2 id=链接器版本脚本>链接器版本脚本</h2>
+<p>比如一个c文件</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// foo.c
 </span><span class=c1></span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>void</span> <span class=nf>xyz</span><span class=p>(){</span>
@@ -44,7 +239,8 @@ $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
 <span class=kt>void</span> <span class=nf>func</span><span class=p>()</span> <span class=p>{</span>
  <span class=n>xyz</span><span class=p>();</span>
 <span class=p>}</span>
-</code></pre></div><p>有两个全局函数，编译后查看公开的动态符号如下：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
+</code></pre></div><p>有两个全局函数，编译后查看公开的动态符号如下：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
 
 Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <span class=k>for</span> image:
   Num Buc:    Value          Size   Type   Bind Vis      Ndx Name
@@ -55,7 +251,8 @@ Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <sp
    <span class=m>11</span>   2: <span class=m>0000000000000670</span>     <span class=m>0</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> _fini
    <span class=m>12</span>   2: 000000000000065d    <span class=m>17</span> FUNC    GLOBAL DEFAULT  <span class=m>12</span> func
    <span class=m>13</span>   2: 000000000000064a    <span class=m>19</span> FUNC    GLOBAL DEFAULT  <span class=m>12</span> xyz
-</code></pre></div><p>如果我们只想公开func符号，可以像下面这样写版本脚本，global后的符号会被处理为可见，local后面的符号会被对外隐藏。</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>// foo.map
+</code></pre></div><p>如果我们只想公开func符号，可以像下面这样写版本脚本，global后的符号会被处理为可见，local后面的符号会被对外隐藏。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>// foo.map
 
 VER_1 {
     global:
@@ -63,15 +260,18 @@ VER_1 {
     local:
         *;
 };
-</code></pre></div><p>编译命令：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall foo.c
+</code></pre></div><p>编译命令：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall foo.c
 $ gcc -g -shared -o libfoo.so foo.o -Wl,--version-script,foo.map
-</code></pre></div><p>查看新的so的符号，xyz已不可见：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
+</code></pre></div><p>查看新的so的符号，xyz已不可见：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
 
 Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <span class=k>for</span> image:
   Num Buc:    Value          Size   Type   Bind Vis      Ndx Name
     <span class=m>7</span>   0: <span class=m>0000000000000000</span>     <span class=m>0</span> OBJECT  GLOBAL DEFAULT ABS VER_1
     <span class=m>8</span>   1: 00000000000005dd    <span class=m>17</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> func
-</code></pre></div><p>若新的库内重新定义了func函数，但希望老的程序依然使用ver1版本的函数，需要如下定义，<code>@@</code>符号表示默认定义，一个符号只能有一个。</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>#include &lt;stdio.h&gt;
+</code></pre></div><p>若新的库内重新定义了func函数，但希望老的程序依然使用ver1版本的函数，需要如下定义，<code>@@</code>符号表示默认定义，一个符号只能有一个。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#include &lt;stdio.h&gt;
 
 __asm__(&#34;.symver func_old,func@VER_1&#34;);
 __asm__(&#34;.symver func_new,func@@VER_2&#34;);
@@ -90,7 +290,8 @@ void func_old() {
 void func_new() {
     printf(&#34;func_new&#34;);
 }
-</code></pre></div><p>相应的版本脚本修改为：</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>VER_1 {
+</code></pre></div><p>相应的版本脚本修改为：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>VER_1 {
     global:
         func;
     local:
@@ -104,7 +305,8 @@ VER_2 {
         *;
 
 } VER_1;
-</code></pre></div><p>编译后查看符号有两个func，应该是两个不同的版本。不过好像没发现在编译时指定使用哪个版本的方法，只能在源文件中使用<code>@@</code>指定。VER_2最后的VER_1后缀表示：VER_2中没有定义的，会继承VER_1中的定义。</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
+</code></pre></div><p>编译后查看符号有两个func，应该是两个不同的版本。不过好像没发现在编译时指定使用哪个版本的方法，只能在源文件中使用<code>@@</code>指定。VER_2最后的VER_1后缀表示：VER_2中没有定义的，会继承VER_1中的定义。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
 
 Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <span class=k>for</span> image:
   Num Buc:    Value          Size   Type   Bind Vis      Ndx Name
@@ -114,7 +316,13 @@ Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <sp
    <span class=m>11</span>   2: 00000000000006bd    <span class=m>24</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> func
    <span class=m>12</span>   2: 00000000000006aa    <span class=m>19</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> xyz
 
-</code></pre></div><h2 id=初始化和析构函数>初始化和析构函数</h2><p>初始化函数在库被加载的时候被调用，析构函数在库被卸载的时候被调用。</p><p>有两种方式：</p><ul><li>一种是使用gcc 构造和析构属性</li></ul><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=nf>__attribute__</span> <span class=p>((</span><span class=n>constructor</span><span class=p>))</span> <span class=n>some_name_load</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span>
+</code></pre></div><h2 id=初始化和析构函数>初始化和析构函数</h2>
+<p>初始化函数在库被加载的时候被调用，析构函数在库被卸载的时候被调用。</p>
+<p>有两种方式：</p>
+<ul>
+<li>一种是使用gcc 构造和析构属性</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=nf>__attribute__</span> <span class=p>((</span><span class=n>constructor</span><span class=p>))</span> <span class=n>some_name_load</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span>
 <span class=p>{</span>
  <span class=cm>/* Initialization code */</span>
 <span class=p>}</span>
@@ -123,19 +331,89 @@ Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <sp
 <span class=p>{</span>
  <span class=cm>/* Finalization code */</span>
 <span class=p>}</span>
-</code></pre></div><ul><li>第二种也是比较老的一种是使用<code>_init()</code>和<code>_fini()</code>函数。使用这两个函数需要在编译库时指定<code>gcc -nostartfiles</code>选项，以避免链接器生成默认的函数。</li></ul></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s28/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记28. 管道</span>
-<span class="prev-text nav-mobile">Prev</span></a>
-<a class=next href=/post/linux/the-linux-programming-interface-s26/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记26. 守护进程</span>
+</code></pre></div><ul>
+<li>第二种也是比较老的一种是使用<code>_init()</code>和<code>_fini()</code>函数。使用这两个函数需要在编译库时指定<code>gcc -nostartfiles</code>选项，以避免链接器生成默认的函数。</li>
+</ul>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2023-07-01
+<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/linux/>Linux</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/linux/the-linux-programming-interface-s28/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Linux/Unix系统编程手册-笔记28. 管道</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/linux/the-linux-programming-interface-s26/>
+<span class="next-text nav-default">Linux/Unix系统编程手册-笔记26. 守护进程</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>

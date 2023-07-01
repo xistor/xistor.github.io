@@ -1,42 +1,186 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>小主机配置笔记 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/home-server-config/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="小主机配置笔记"><meta property="og:description" content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/home-server-config/"><meta property="article:published_time" content="2023-06-21T22:03:16+08:00"><meta property="article:modified_time" content="2023-07-01T13:16:34+08:00"><meta itemprop=name content="小主机配置笔记"><meta itemprop=description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><meta itemprop=datePublished content="2023-06-21T22:03:16+08:00"><meta itemprop=dateModified content="2023-07-01T13:16:34+08:00"><meta itemprop=wordCount content="1312"><meta itemprop=keywords content="x86,eq12,"><meta name=twitter:card content="summary"><meta name=twitter:title content="小主机配置笔记"><meta name=twitter:description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>小主机配置笔记</h1><div class=post-meta><span class=post-time>2023-06-21</span><div class=post-category><a href=/categories/linux/>Linux</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#挂载硬盘>挂载硬盘</a></li><li><a href=#ftp-server>FTP Server</a></li><li><a href=#安装docker>安装Docker</a></li><li><a href=#配置服务>配置服务</a><ul><li><a href=#存储服务>存储服务</a></li><li><a href=#导航>导航</a></li><li><a href=#媒体>媒体</a></li><li><a href=#笔记>笔记</a></li></ul></li><li><a href=#定时任务>定时任务</a></li><li><a href=#frp>FRP</a></li></ul></nav></div></div><div class=post-content><p>决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系统安装略。</p><h2 id=挂载硬盘>挂载硬盘</h2><p>暂时还是外置usb硬盘。</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>sudo mkdir /media/disk1
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>小主机配置笔记 - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/home-server-config/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="小主机配置笔记">
+<meta property="og:description" content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/home-server-config/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2023-06-21T22:03:16+08:00">
+<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
+<meta itemprop=name content="小主机配置笔记">
+<meta itemprop=description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><meta itemprop=datePublished content="2023-06-21T22:03:16+08:00">
+<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
+<meta itemprop=wordCount content="1312">
+<meta itemprop=keywords content="x86,eq12,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="小主机配置笔记">
+<meta name=twitter:description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>小主机配置笔记</h1>
+<div class=post-meta>
+<span class=post-time> 2023-06-21 </span>
+<div class=post-category>
+<a href=/categories/linux/> Linux </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#挂载硬盘>挂载硬盘</a></li>
+<li><a href=#ftp-server>FTP Server</a></li>
+<li><a href=#安装docker>安装Docker</a></li>
+<li><a href=#配置服务>配置服务</a>
+<ul>
+<li><a href=#存储服务>存储服务</a></li>
+<li><a href=#导航>导航</a></li>
+<li><a href=#媒体>媒体</a></li>
+<li><a href=#笔记>笔记</a></li>
+</ul>
+</li>
+<li><a href=#定时任务>定时任务</a></li>
+<li><a href=#frp>FRP</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系统安装略。</p>
+<h2 id=挂载硬盘>挂载硬盘</h2>
+<p>暂时还是外置usb硬盘。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo mkdir /media/disk1
 sudo chown x:x /media/disk1
-</code></pre></div><p>查看UUID</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>$ sudo blkid 
+</code></pre></div><p>查看UUID</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ sudo blkid 
 
 /dev/sda1: <span class=nv>UUID</span><span class=o>=</span><span class=s2>&#34;31c2f09d-e3e6-4e46-bb08-0370165c4f96&#34;</span> <span class=nv>BLOCK_SIZE</span><span class=o>=</span><span class=s2>&#34;4096&#34;</span> <span class=nv>TYPE</span><span class=o>=</span><span class=s2>&#34;ext4&#34;</span> <span class=nv>PARTLABEL</span><span class=o>=</span><span class=s2>&#34;LVM&#34;</span> <span class=nv>PARTUUID</span><span class=o>=</span><span class=s2>&#34;522e1944-2b81-4574-90f5-9da62a622ddd&#34;</span>
-</code></pre></div><p>添加到/etc/fstab， 开机挂载</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>UUID=31c2f09d-e3e6-4e46-bb08-0370165c4f96 /media/disk ext4 defaults,auto,users,rw,nofail 0 0
-</code></pre></div><p>重启。</p><h2 id=ftp-server>FTP Server</h2><p>安装 vsftpd</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>sudo apt install vsftpd
-</code></pre></div><p>修改ftp用户的home目录，也就是ftp登录的时候看到的目录。</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>sudo usermod -d /media/disk3/ ftp
+</code></pre></div><p>添加到/etc/fstab， 开机挂载</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>UUID=31c2f09d-e3e6-4e46-bb08-0370165c4f96 /media/disk ext4 defaults,auto,users,rw,nofail 0 0
+</code></pre></div><p>重启。</p>
+<h2 id=ftp-server>FTP Server</h2>
+<p>安装 vsftpd</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo apt install vsftpd
+</code></pre></div><p>修改ftp用户的home目录，也就是ftp登录的时候看到的目录。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo usermod -d /media/disk3/ ftp
 </code></pre></div><p>限制ftp只能访问其home目录
-编辑/etc/vsftpd.conf</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>chroot_local_user=YES
+编辑/etc/vsftpd.conf</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>chroot_local_user=YES
 chroot_list_file=/etc/vsftpd.chroot_list
-</code></pre></div><p>创建 vsftpd.chroot_list, 添加ftp用户</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>$ cat /etc/vsftpd.chroot_list
+</code></pre></div><p>创建 vsftpd.chroot_list, 添加ftp用户</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ cat /etc/vsftpd.chroot_list
 ftp
 
-</code></pre></div><p>修改ftp密码</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>sudo passwd ftp
-</code></pre></div><p>登了下报错500</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>500 OOPS: vsftpd: refusing to run with writable root inside chroot()
-</code></pre></div><p>解决方法是修改 /etc/pam.d/vsftpd, 将</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_shells.so
-</code></pre></div><p>修改为</p><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_nologin.so
-</code></pre></div><p>最后重启ftp服务</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>sudo systemctl restart vsftpd.service
-</code></pre></div><p>使用用户名：ftp和前面设置的密码登录。</p><h2 id=安装docker>安装Docker</h2><p>官网步骤 <a href=https://docs.docker.com/engine/install/ubuntu/>https://docs.docker.com/engine/install/ubuntu/</a></p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell> sudo apt-get update
+</code></pre></div><p>修改ftp密码</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo passwd ftp
+</code></pre></div><p>登了下报错500</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>500 OOPS: vsftpd: refusing to run with writable root inside chroot()
+</code></pre></div><p>解决方法是修改 /etc/pam.d/vsftpd, 将</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_shells.so
+</code></pre></div><p>修改为</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_nologin.so
+</code></pre></div><p>最后重启ftp服务</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo systemctl restart vsftpd.service
+</code></pre></div><p>使用用户名：ftp和前面设置的密码登录。</p>
+<h2 id=安装docker>安装Docker</h2>
+<p>官网步骤 <a href=https://docs.docker.com/engine/install/ubuntu/>https://docs.docker.com/engine/install/ubuntu/</a></p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell> sudo apt-get update
  sudo apt-get install ca-certificates curl gnupg
-</code></pre></div><p>添加 Docker GPG key:</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell> sudo install -m <span class=m>0755</span> -d /etc/apt/keyrings
+</code></pre></div><p>添加 Docker GPG key:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell> sudo install -m <span class=m>0755</span> -d /etc/apt/keyrings
 
  curl -fsSL https://download.docker.com/linux/ubuntu/gpg <span class=p>|</span> sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
  sudo chmod a+r /etc/apt/keyrings/docker.gpg
-</code></pre></div><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell><span class=nb>echo</span> <span class=se>\
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=nb>echo</span> <span class=se>\
 </span><span class=se></span>  <span class=s2>&#34;deb [arch=&#34;</span><span class=k>$(</span>dpkg --print-architecture<span class=k>)</span><span class=s2>&#34; signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
 </span><span class=s2>  &#34;</span><span class=k>$(</span>. /etc/os-release <span class=o>&amp;&amp;</span> <span class=nb>echo</span> <span class=s2>&#34;</span><span class=nv>$VERSION_CODENAME</span><span class=s2>&#34;</span><span class=k>)</span><span class=s2>&#34; stable&#34;</span> <span class=p>|</span> <span class=se>\
 </span><span class=se></span>  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
 
-</code></pre></div><p>安装</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>sudo apt-get update
+</code></pre></div><p>安装</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo apt-get update
 
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-</code></pre></div><p>添加权限</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>sudo groupadd docker
+</code></pre></div><p>添加权限</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo groupadd docker
 sudo usermod -aG docker <span class=nv>$USER</span>
 
-</code></pre></div><p>验证</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>docker run hello-world
-</code></pre></div><h2 id=配置服务>配置服务</h2><p>使用docker-compose同时启动多个服务， 按照功能分成了几块，每种服务对应一个 docker-compose.yml</p><h3 id=存储服务>存储服务</h3><div class=highlight><pre class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
+</code></pre></div><p>验证</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>docker run hello-world
+</code></pre></div><h2 id=配置服务>配置服务</h2>
+<p>使用docker-compose同时启动多个服务， 按照功能分成了几块，每种服务对应一个 docker-compose.yml</p>
+<h3 id=存储服务>存储服务</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
 </span><span class=w>
 </span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span><span class=nt>db</span><span class=p>:</span><span class=w>
@@ -112,15 +256,21 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
 </span><span class=w>
 </span><span class=w>  
-</span></code></pre></div><p>包括nextcloud、transmission、syncthing这几个服务。</p><p>transmission的 web ui需要单独下载 <a href=https://github.com/6c65726f79/Transmissionic/releases>https://github.com/6c65726f79/Transmissionic/releases</a>， 解压后放到./transmission/ui目录下。</p><p>启动各项服务：</p><div class=highlight><pre class=chroma><code class=language-sh data-lang=sh>docker compose up -d
-</code></pre></div><p>修改nextcloud/config/config.php， 添加信任域名</p><div class=highlight><pre class=chroma><code class=language-php data-lang=php><span class=s1>&#39;trusted_domains&#39;</span> <span class=o>=&gt;</span> 
+</span></code></pre></div><p>包括nextcloud、transmission、syncthing这几个服务。</p>
+<p>transmission的 web ui需要单独下载 <a href=https://github.com/6c65726f79/Transmissionic/releases>https://github.com/6c65726f79/Transmissionic/releases</a>， 解压后放到./transmission/ui目录下。</p>
+<p>启动各项服务：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>docker compose up -d
+</code></pre></div><p>修改nextcloud/config/config.php， 添加信任域名</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=s1>&#39;trusted_domains&#39;</span> <span class=o>=&gt;</span> 
   <span class=k>array</span> <span class=p>(</span>
     <span class=mi>0</span> <span class=o>=&gt;</span> <span class=s1>&#39;192.168.123.201:8000&#39;</span><span class=p>,</span>
     <span class=mi>1</span> <span class=o>=&gt;</span> <span class=s1>&#39;nc.xistor.top&#39;</span><span class=p>,</span>
   <span class=p>),</span>
 
 
-</code></pre></div><h3 id=导航>导航</h3><p>Heimdall导航页</p><div class=highlight><pre class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.5&#34;</span><span class=w>
+</code></pre></div><h3 id=导航>导航</h3>
+<p>Heimdall导航页</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.5&#34;</span><span class=w>
 </span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span><span class=nt>heimdall</span><span class=p>:</span><span class=w>
 </span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>lscr.io/linuxserver/heimdall:latest</span><span class=w>
@@ -136,7 +286,9 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>      </span>- <span class=m>8007</span><span class=p>:</span><span class=m>443</span><span class=w>
 </span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
 </span><span class=w>
-</span></code></pre></div><h3 id=媒体>媒体</h3><p>jellyfin 媒体中心</p><div class=highlight><pre class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
+</span></code></pre></div><h3 id=媒体>媒体</h3>
+<p>jellyfin 媒体中心</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
 </span><span class=w>
 </span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span><span class=nt>jellyfin</span><span class=p>:</span><span class=w>
@@ -158,7 +310,9 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>      </span>- <span class=m>1900</span><span class=p>:</span><span class=m>1900</span><span class=l>/udp</span><span class=w> </span><span class=c>#optional</span><span class=w>
 </span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
 </span><span class=w>
-</span></code></pre></div><h3 id=笔记>笔记</h3><p>为知笔记</p><div class=highlight><pre class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
+</span></code></pre></div><h3 id=笔记>笔记</h3>
+<p>为知笔记</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
 </span><span class=w>
 </span><span class=w></span><span class=nt>service</span><span class=p>:</span><span class=w>
 </span><span class=w>
@@ -176,11 +330,14 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>    </span><span class=nt>tty</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
 </span><span class=w>
 </span><span class=w>
-</span></code></pre></div><h2 id=定时任务>定时任务</h2><p>定时更新证书， vps那边使用acme.sh申请的免费证书，会定时更新，这边定时同步。需要放到/root下所以使用sudo</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>$ sudo mkdir /root/certs
+</span></code></pre></div><h2 id=定时任务>定时任务</h2>
+<p>定时更新证书， vps那边使用acme.sh申请的免费证书，会定时更新，这边定时同步。需要放到/root下所以使用sudo</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ sudo mkdir /root/certs
 $ sudo crontab -e
 
 <span class=m>35</span> <span class=m>8</span>   <span class=m>22</span>  *  * bash /home/x/bin/update_key.sh
-</code></pre></div><p>update_key.sh的内容</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell><span class=cp>#!/bin/bash
+</code></pre></div><p>update_key.sh的内容</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=cp>#!/bin/bash
 </span><span class=cp></span>
 scp -i /home/x/.ssh/id_rsa root@123.123.123.123:/root/certs/xistor.top* /root/certs/
 
@@ -188,7 +345,11 @@ scp -i /home/x/.ssh/id_rsa root@123.123.123.123:/root/certs/xistor.top* /root/ce
 service frpc restart 
 <span class=nb>cd</span> /opt/docker-comp/stroge/ <span class=o>&amp;&amp;</span>  docker-compose restart
 ...
-</code></pre></div><h2 id=frp>FRP</h2><p>仅涉及客户端配置</p><p>下载frpc <a href=https://github.com/fatedier/frp/releases>https://github.com/fatedier/frp/releases</a></p><p>开机启动frpc, 新建systemd 服务 /etc/systemd/system/frpc.service</p><div class=highlight><pre class=chroma><code class=language-ini data-lang=ini><span class=k>[Unit]</span>
+</code></pre></div><h2 id=frp>FRP</h2>
+<p>仅涉及客户端配置</p>
+<p>下载frpc <a href=https://github.com/fatedier/frp/releases>https://github.com/fatedier/frp/releases</a></p>
+<p>开机启动frpc, 新建systemd 服务 /etc/systemd/system/frpc.service</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=k>[Unit]</span>
 <span class=na>Description</span><span class=o>=</span><span class=s>Frp Client Service</span>
 <span class=na>After</span><span class=o>=</span><span class=s>network.target</span>
 
@@ -202,7 +363,8 @@ service frpc restart
 
 <span class=k>[Install]</span>
 <span class=na>WantedBy</span><span class=o>=</span><span class=s>multi-user.target</span>
-</code></pre></div><p>使用frpc 内网穿透，并将http转成https, 下面是frpc.ini 的配置。</p><div class=highlight><pre class=chroma><code class=language-ini data-lang=ini><span class=k>[common]</span>
+</code></pre></div><p>使用frpc 内网穿透，并将http转成https, 下面是frpc.ini 的配置。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=k>[common]</span>
 
 <span class=c1>#frps 服务器地址、端口</span>
 <span class=na>server_addr</span> <span class=o>=</span> <span class=s>xxx.xx</span>
@@ -251,20 +413,87 @@ service frpc restart
 <span class=na>plugin_crt_path</span> <span class=o>=</span> <span class=s>/root/certs/xistor.top.cer</span>
 <span class=na>plugin_key_path</span> <span class=o>=</span> <span class=s>/root/certs/xistor.top.key</span>
 
-</code></pre></div><p>启动服务</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>systemctl start  frpc.service
-</code></pre></div><p>开机启动</p><div class=highlight><pre class=chroma><code class=language-shell data-lang=shell>systemctl <span class=nb>enable</span>  frpc.service
-</code></pre></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/x86/>x86</a>
-<a href=/tags/eq12/>eq12</a></div><nav class=post-nav><a class=next href=/post/linux/rpi-touchscreen-with-ft5406/><span class="next-text nav-default">适配树梅派4.3寸LCD屏幕的触摸</span>
+</code></pre></div><p>启动服务</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>systemctl start  frpc.service
+</code></pre></div><p>开机启动</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>systemctl <span class=nb>enable</span>  frpc.service
+</code></pre></div>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2023-07-01
+<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/x86/>x86</a>
+<a href=/tags/eq12/>eq12</a>
+</div>
+<nav class=post-nav>
+<a class=next href=/post/linux/rpi-touchscreen-with-ft5406/>
+<span class="next-text nav-default">适配树梅派4.3寸LCD屏幕的触摸</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>

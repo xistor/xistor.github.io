@@ -1,13 +1,204 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记23. 线程 - xistor's notes</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><meta name=generator content="Hugo 0.78.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s23/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记23. 线程"><meta property="og:description" content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s23/"><meta property="article:published_time" content="2020-10-18T18:30:00+08:00"><meta property="article:modified_time" content="2023-07-01T13:16:34+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记23. 线程"><meta itemprop=description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><meta itemprop=datePublished content="2020-10-18T18:30:00+08:00"><meta itemprop=dateModified content="2023-07-01T13:16:34+08:00"><meta itemprop=wordCount content="6495"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记23. 线程"><meta name=twitter:description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记23. 线程</h1><div class=post-meta><span class=post-time>2020-10-18</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#创建线程>创建线程</a></li><li><a href=#终止进程>终止进程</a></li><li><a href=#pthread_join>pthread_join()</a></li><li><a href=#线程的分离>线程的分离</a></li><li><a href=#线程的同步>线程的同步</a><ul><li><a href=#互斥量>互斥量</a></li><li><a href=#条件变量>条件变量</a></li></ul></li><li><a href=#线程安全>线程安全</a><ul><li><a href=#one-time-初始化>One-time 初始化</a></li><li><a href=#线程特有数据>线程特有数据</a></li><li><a href=#线程局部存储thread-local-storage>线程局部存储(thread-local Storage)</a></li></ul></li><li><a href=#线程取消>线程取消</a><ul><li><a href=#线程取消状态>线程取消状态</a></li><li><a href=#取消点>取消点</a></li><li><a href=#cleanup-handlers>cleanup handlers</a></li><li><a href=#异步取消>异步取消</a></li></ul></li><li><a href=#线程细节>线程细节</a><ul><li><a href=#栈>栈</a></li><li><a href=#线程和信号>线程和信号</a></li><li><a href=#线程和进程控制>线程和进程控制</a></li></ul></li></ul></nav></div></div><div class=post-content><p>本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。<br>多线程相比多进程有几个优点：</p><ul><li>共享信息简单快速</li><li>线程创建速度快</li></ul><p>线程的缺点：</p><ul><li>多线程编程时，需要考虑线程安全。</li><li>某个线程存在BUG,可能危及该进程的所有线程。</li><li>每个线程争用宿主进程的有限的虚拟地址空间。</li><li>多线程中处理信号需要特别小心</li><li>除了数据，还可以共享文件描述符、信号处理、当前工作目录、以及用户ID和组ID，优劣视应用而定。</li></ul><p>线程在进程中执行时的内存布局如下图：</p><figure class=center><img src=/img/the-linux-programming-interface-s23/four_threads_in_a_process.png width=500><figcaption><h4>线程在进程内运行时内存布局</h4></figcaption></figure><p>线程之间共享的信息：</p><ul><li>进程ID和父进程ID</li><li>进程组ID和会话ID</li><li>控制终端</li><li>用户和组ID</li><li>文件描述符</li><li>使用fcntl()创建的record locks</li><li>信号配置</li><li>文件系统相关信息：umask，当前工作目录，根目录</li><li>间隔计时器 (setitimer())和POSIX计时器 (timer_create())</li><li>System V信号量</li><li>资源限制</li><li>CPU 时间消耗(times())</li><li>资源消耗(getrusage())</li><li>nice值</li></ul><p>线程之间不共享的属性：</p><ul><li>线程id</li><li>信号mask</li><li>线程相关的数据</li><li>备用信号栈</li><li>errno 变量</li><li>浮点数环境（fenv(3)）</li><li>实时调度策略和优先级</li><li>CPU affinity</li><li>capabilities</li><li>栈</li></ul><h2 id=创建线程>创建线程</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<!doctype html><html lang=en>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>Linux/Unix系统编程手册-笔记23. 线程 - xistor's notes</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="xistor"><meta name=description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单">
+<meta name=generator content="Hugo 0.92.2 with theme even">
+<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s23/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
+<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="Linux/Unix系统编程手册-笔记23. 线程">
+<meta property="og:description" content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s23/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2020-10-18T18:30:00+08:00">
+<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
+<meta itemprop=name content="Linux/Unix系统编程手册-笔记23. 线程">
+<meta itemprop=description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><meta itemprop=datePublished content="2020-10-18T18:30:00+08:00">
+<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
+<meta itemprop=wordCount content="6495">
+<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Linux/Unix系统编程手册-笔记23. 线程">
+<meta name=twitter:description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
+</head>
+<body>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
+</div>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>Home</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>Archives</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>Tags</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>Categories</li>
+</a>
+</ul>
+</nav>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>Xistor's Notes</a>
+</div>
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>Home</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>Archives</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>Tags</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>Categories</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Linux/Unix系统编程手册-笔记23. 线程</h1>
+<div class=post-meta>
+<span class=post-time> 2020-10-18 </span>
+<div class=post-category>
+<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>Contents</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#创建线程>创建线程</a></li>
+<li><a href=#终止进程>终止进程</a></li>
+<li><a href=#pthread_join>pthread_join()</a></li>
+<li><a href=#线程的分离>线程的分离</a></li>
+<li><a href=#线程的同步>线程的同步</a>
+<ul>
+<li><a href=#互斥量>互斥量</a></li>
+<li><a href=#条件变量>条件变量</a></li>
+</ul>
+</li>
+<li><a href=#线程安全>线程安全</a>
+<ul>
+<li><a href=#one-time-初始化>One-time 初始化</a></li>
+<li><a href=#线程特有数据>线程特有数据</a></li>
+<li><a href=#线程局部存储thread-local-storage>线程局部存储(thread-local Storage)</a></li>
+</ul>
+</li>
+<li><a href=#线程取消>线程取消</a>
+<ul>
+<li><a href=#线程取消状态>线程取消状态</a></li>
+<li><a href=#取消点>取消点</a></li>
+<li><a href=#cleanup-handlers>cleanup handlers</a></li>
+<li><a href=#异步取消>异步取消</a></li>
+</ul>
+</li>
+<li><a href=#线程细节>线程细节</a>
+<ul>
+<li><a href=#栈>栈</a></li>
+<li><a href=#线程和信号>线程和信号</a></li>
+<li><a href=#线程和进程控制>线程和进程控制</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<p>本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。<br>
+多线程相比多进程有几个优点：</p>
+<ul>
+<li>共享信息简单快速</li>
+<li>线程创建速度快</li>
+</ul>
+<p>线程的缺点：</p>
+<ul>
+<li>多线程编程时，需要考虑线程安全。</li>
+<li>某个线程存在BUG,可能危及该进程的所有线程。</li>
+<li>每个线程争用宿主进程的有限的虚拟地址空间。</li>
+<li>多线程中处理信号需要特别小心</li>
+<li>除了数据，还可以共享文件描述符、信号处理、当前工作目录、以及用户ID和组ID，优劣视应用而定。</li>
+</ul>
+<p>线程在进程中执行时的内存布局如下图：</p>
+<figure class=center><img src=/img/the-linux-programming-interface-s23/four_threads_in_a_process.png width=500><figcaption>
+<h4>线程在进程内运行时内存布局</h4>
+</figcaption>
+</figure>
+<p>线程之间共享的信息：</p>
+<ul>
+<li>进程ID和父进程ID</li>
+<li>进程组ID和会话ID</li>
+<li>控制终端</li>
+<li>用户和组ID</li>
+<li>文件描述符</li>
+<li>使用fcntl()创建的record locks</li>
+<li>信号配置</li>
+<li>文件系统相关信息：umask，当前工作目录，根目录</li>
+<li>间隔计时器 (setitimer())和POSIX计时器 (timer_create())</li>
+<li>System V信号量</li>
+<li>资源限制</li>
+<li>CPU 时间消耗(times())</li>
+<li>资源消耗(getrusage())</li>
+<li>nice值</li>
+</ul>
+<p>线程之间不共享的属性：</p>
+<ul>
+<li>线程id</li>
+<li>信号mask</li>
+<li>线程相关的数据</li>
+<li>备用信号栈</li>
+<li>errno 变量</li>
+<li>浮点数环境（fenv(3)）</li>
+<li>实时调度策略和优先级</li>
+<li>CPU affinity</li>
+<li>capabilities</li>
+<li>栈</li>
+</ul>
+<h2 id=创建线程>创建线程</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_create</span><span class=p>(</span><span class=n>pthread_t</span> <span class=o>*</span><span class=kr>thread</span><span class=p>,</span> <span class=k>const</span> <span class=n>pthread_attr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=p>(</span><span class=o>*</span><span class=n>start</span><span class=p>)(</span><span class=kt>void</span> <span class=o>*</span><span class=p>),</span> <span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on success, or a positive error number on error
-</span></code></pre></div><p>新线程从函数start以参数arg开始执行，参数thread指向的缓冲区，在此保存一个该进程的唯一标识， 供后续使用。start函数的返回值不应指定在线程栈中，因为线程终止后无法确定线程栈的内容是否有效。<br>参数attr是指向pthread_attr_t对象的指针，指定新线程的属性。</p><h2 id=终止进程>终止进程</h2><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p>新线程从函数start以参数arg开始执行，参数thread指向的缓冲区，在此保存一个该进程的唯一标识， 供后续使用。start函数的返回值不应指定在线程栈中，因为线程终止后无法确定线程栈的内容是否有效。<br>
+参数attr是指向pthread_attr_t对象的指针，指定新线程的属性。</p>
+<h2 id=终止进程>终止进程</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>void</span> <span class=nf>pthread_exit</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>retval</span><span class=p>);</span>
 
-</code></pre></div><p>相当于在start函数内return。retval指定了线程返回值，举个使用的栗子:</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=o>*</span><span class=nf>thread</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span> <span class=p>{</span>
+</code></pre></div><p>相当于在start函数内return。retval指定了线程返回值，举个使用的栗子:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=o>*</span><span class=nf>thread</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span> <span class=p>{</span>
   <span class=kt>char</span> <span class=o>*</span><span class=n>ret</span><span class=p>;</span>
 
   <span class=k>if</span> <span class=p>((</span><span class=n>ret</span> <span class=o>=</span> <span class=p>(</span><span class=kt>char</span><span class=o>*</span><span class=p>)</span> <span class=n>malloc</span><span class=p>(</span><span class=mi>20</span><span class=p>))</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span> <span class=p>{</span>
@@ -18,17 +209,32 @@
   <span class=n>pthread_exit</span><span class=p>(</span><span class=n>ret</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><h2 id=pthread_join>pthread_join()</h2><p>函数thread_join()等待由thread标识的线程终止（若已经终止会立即返回）</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</code></pre></div><h2 id=pthread_join>pthread_join()</h2>
+<p>函数thread_join()等待由thread标识的线程终止（若已经终止会立即返回）</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_join</span><span class=p>(</span><span class=n>pthread_t</span> <span class=kr>thread</span><span class=p>,</span> <span class=kt>void</span> <span class=o>**</span><span class=n>retval</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on sucess, or a positive error number on error
-</span></code></pre></div><p>若线程未分离（detached），而又没有使用pthread_join(),那么线程终止后将产生僵尸线程。<br>pthread_join()和waitpid()之间的区别：</p><ul><li>一个进程内的线程之间的关系是对等的，进程中的任意线程都可以调用pthread_join()与该进程的任何其他线程连接起来。</li><li>pthread_join()无法连接任意线程，必须指定特定的线程ID。也不能以非阻塞方式连接。</li></ul><h2 id=线程的分离>线程的分离</h2><p>如果不关心进程的返回状态，只希望进程在线程终止的时候能自动清理并移除之，可以使用pthread_detach()</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p>若线程未分离（detached），而又没有使用pthread_join(),那么线程终止后将产生僵尸线程。<br>
+pthread_join()和waitpid()之间的区别：</p>
+<ul>
+<li>一个进程内的线程之间的关系是对等的，进程中的任意线程都可以调用pthread_join()与该进程的任何其他线程连接起来。</li>
+<li>pthread_join()无法连接任意线程，必须指定特定的线程ID。也不能以非阻塞方式连接。</li>
+</ul>
+<h2 id=线程的分离>线程的分离</h2>
+<p>如果不关心进程的返回状态，只希望进程在线程终止的时候能自动清理并移除之，可以使用pthread_detach()</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_detach</span><span class=p>(</span><span class=n>pthread_t</span> <span class=kr>thread</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on sucess, or a positive error number on error
-</span></code></pre></div><p>但是当其他线程调用了exit(), 或主进程执行return时，即使分离的线程也会收到影响，进程的所有线程将会立即停止。</p><h2 id=线程的同步>线程的同步</h2><p>因为线程之间能够共享全局变量，所以就存在竞争问题，为了安全的共享变量，不同线程之间需要同步操作。</p><h3 id=互斥量>互斥量</h3><p>互斥量pthread_mutex_t使用前必须初始化</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
+</span></code></pre></div><p>但是当其他线程调用了exit(), 或主进程执行return时，即使分离的线程也会收到影响，进程的所有线程将会立即停止。</p>
+<h2 id=线程的同步>线程的同步</h2>
+<p>因为线程之间能够共享全局变量，所以就存在竞争问题，为了安全的共享变量，不同线程之间需要同步操作。</p>
+<h3 id=互斥量>互斥量</h3>
+<p>互斥量pthread_mutex_t使用前必须初始化</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=c1>// 静态互斥量的初始化
 </span><span class=c1></span><span class=k>static</span> <span class=n>pthread_mutex_t</span> <span class=n>mtx</span> <span class=o>=</span> <span class=n>PTHREAD_MUTEX_INITIALIZER</span><span class=p>;</span>
@@ -55,19 +261,32 @@
   <span class=n>pthread_mutex_init</span><span class=p>(</span><span class=n>mtx</span><span class=p>,</span> <span class=p>);</span>
 
 <span class=p>}</span>
-</code></pre></div><p>对互斥量加锁和解锁</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
+</code></pre></div><p>对互斥量加锁和解锁</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_mutex_lock</span><span class=p>(</span><span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 
 <span class=kt>int</span> <span class=nf>pthread_mutex_unlock</span><span class=p>(</span><span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on success, or a positive error number on error
-</span></code></pre></div><p>如果互斥量之前未锁定，执行锁定操作将会立即返回，否则将会一直阻塞到互斥量被解锁。</p><p>当不再需要互斥量时，应使用pthread_mutex_destory()将其销毁。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p>如果互斥量之前未锁定，执行锁定操作将会立即返回，否则将会一直阻塞到互斥量被解锁。</p>
+<p>当不再需要互斥量时，应使用pthread_mutex_destory()将其销毁。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_mutex_destory</span><span class=p>(</span><span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on success, or a positive error number on error
-</span></code></pre></div><p>互斥量的属性之一 类型：</p><ul><li>PTHREAD_MUTEX_NORMAL: 该互斥量不具有死锁自检功能，对与已经锁住的互斥量，再次加锁会导致不确定结果。（linux下会成功）</li><li>PTHREAD_MUTEX_ERRORCHECK: 会对加解锁过程做检查。</li><li>PTHREAD_MUTEX_RECURSIVE: 递归维护一个锁计数器，每次加锁会+1，每次解锁会-1，当计数为0时才会释放该互斥量。解锁时和上一个类型一样，若互斥量处于未锁定状态或已由其他线程锁定， 操作都会失败。<br>还有其他类型，不赘述。</li></ul><h3 id=条件变量>条件变量</h3><p>条件变量可以在共享变量状态改变的时候通知其他线程，其他线程可以等待通知。</p><p>条件变量初始化</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p>互斥量的属性之一 类型：</p>
+<ul>
+<li>PTHREAD_MUTEX_NORMAL: 该互斥量不具有死锁自检功能，对与已经锁住的互斥量，再次加锁会导致不确定结果。（linux下会成功）</li>
+<li>PTHREAD_MUTEX_ERRORCHECK: 会对加解锁过程做检查。</li>
+<li>PTHREAD_MUTEX_RECURSIVE: 递归维护一个锁计数器，每次加锁会+1，每次解锁会-1，当计数为0时才会释放该互斥量。解锁时和上一个类型一样，若互斥量处于未锁定状态或已由其他线程锁定， 操作都会失败。<br>
+还有其他类型，不赘述。</li>
+</ul>
+<h3 id=条件变量>条件变量</h3>
+<p>条件变量可以在共享变量状态改变的时候通知其他线程，其他线程可以等待通知。</p>
+<p>条件变量初始化</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=c1>// 静态条件变量初始化
 </span><span class=c1></span><span class=k>static</span> <span class=n>pthread_cond_t</span> <span class=n>cond</span> <span class=o>=</span> <span class=n>PTHREAD_COND_INITIALIZER</span><span class=p>;</span>
@@ -76,14 +295,36 @@
 </span><span class=c1></span>
 <span class=kt>int</span> <span class=nf>pthread_cond_init</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>,</span> <span class=k>const</span> <span class=n>pthread_condattr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or a positive error number on error
-</span></code></pre></div><p>通知和等待条件变量操作</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p>通知和等待条件变量操作</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_cond_signal</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_cond_broadcast</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_cond_wait</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>,</span> <span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_cond_timedwait</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>,</span> <span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>,</span>
   <span class=k>const</span> <span class=k>struct</span> <span class=n>timespec</span> <span class=o>*</span><span class=n>abstime</span><span class=p>);</span>
 <span class=c1>// All return 0 on success, or a positive error number on error
-</span></code></pre></div><p><code>pthread_cond_signal()</code>和<code>pthread_cond_broadcast()</code>区别在于前者只保证通知至少一个阻塞在<code>pthread_cond_wait()</code>的线程，后者会通知所有阻塞的线程。除非只有一个阻塞线程需要唤醒，比如所有线程都执行同一操作，只需要唤醒一个线程做就行。使用<code>pthread_cond_broadcast()</code>一般会得到正确结果。<strong><code>pthread_cond_signal()</code>通知的时候若没有线程在等待，就会被忽略。</strong></p><p>从<code>pthread_cond_wait()</code>的参数就能看出，它需要和mutex配合使用，在其内部对mutex会按顺序做如下操作：</p><ol><li>释放mutex;</li><li>阻塞当前调用线程，直到其他线程通知条件变量改变</li><li>再次获取mutex</li></ol><p><code>pthread_cond_wait()</code>传入的mutex就是用于控制共享变量访问时用到的mutex, 为什么需要这个mutex呢？ 这个mutex就是为了保护共享变量的，这个共享变量的作用类似“状态(state)”或“标志(flag)”，比如下面这段程序中的<code>avail</code>。在检查或修改共享变量之前都需要拥有mutex。这样设计的原因是因为条件变量和互斥量之间存在着天然的关系：</p><ol><li>线程在准备检查共享变量状态时锁定互斥量。</li><li>检查共享变量状态</li><li>如果共享变量未处于预期状态，线程应在等待条件变量并进入休眠前解锁互斥量（以便其他线程能访问该共享变量）</li><li>当线程因为条件变量的通知而被再度唤醒时，必须对互斥量再次加锁，因为在典型情况下，线程会立即访问共享变量。</li></ol><p>pthread_cond_wait()会自动执行最后两步中对互斥量的解锁和加锁动作，并且第3步的互斥量释放和陷入休眠属于一个原子操作。在这个地方一开始我还存在困扰，我想如果在生产者发条件变量信号之后，消费者才陷入等待，岂不是会丢掉信号。其实我看错了，因为消费者陷入等待之前会首先判断共享变量也就是状态是否满足，不满足要求才会陷入等待。而前述情况既然发了条件变量信号，就说明<code>avail</code>已经<code>++</code>了，是不会等待的。所以是我之前看的太局部，没有考虑到条件变量是为线程间访问临界资源服务的。</p><p>使用<code>while()</code>而不是<code>if()</code>来检查判断条件是因为从pthread_cond_wait()返回后需要重新检查判断条件，这是因为：</p><ul><li>其他线程可能会率先醒来，改变了判断条件的状态。</li><li>条件变量信号意味着“可能有事情去做”，而不是“一定有事情去做”，接收信号的线程可以通过再次检查条件来确定是否真的需要做什么。</li><li>可能出现虚假唤醒的情况</li></ul><div class=highlight><pre class=chroma><code class=language-c data-lang=c>
+</span></code></pre></div><p><code>pthread_cond_signal()</code>和<code>pthread_cond_broadcast()</code>区别在于前者只保证通知至少一个阻塞在<code>pthread_cond_wait()</code>的线程，后者会通知所有阻塞的线程。除非只有一个阻塞线程需要唤醒，比如所有线程都执行同一操作，只需要唤醒一个线程做就行。使用<code>pthread_cond_broadcast()</code>一般会得到正确结果。<strong><code>pthread_cond_signal()</code>通知的时候若没有线程在等待，就会被忽略。</strong></p>
+<p>从<code>pthread_cond_wait()</code>的参数就能看出，它需要和mutex配合使用，在其内部对mutex会按顺序做如下操作：</p>
+<ol>
+<li>释放mutex;</li>
+<li>阻塞当前调用线程，直到其他线程通知条件变量改变</li>
+<li>再次获取mutex</li>
+</ol>
+<p><code>pthread_cond_wait()</code>传入的mutex就是用于控制共享变量访问时用到的mutex, 为什么需要这个mutex呢？ 这个mutex就是为了保护共享变量的，这个共享变量的作用类似“状态(state)”或“标志(flag)”，比如下面这段程序中的<code>avail</code>。在检查或修改共享变量之前都需要拥有mutex。这样设计的原因是因为条件变量和互斥量之间存在着天然的关系：</p>
+<ol>
+<li>线程在准备检查共享变量状态时锁定互斥量。</li>
+<li>检查共享变量状态</li>
+<li>如果共享变量未处于预期状态，线程应在等待条件变量并进入休眠前解锁互斥量（以便其他线程能访问该共享变量）</li>
+<li>当线程因为条件变量的通知而被再度唤醒时，必须对互斥量再次加锁，因为在典型情况下，线程会立即访问共享变量。</li>
+</ol>
+<p>pthread_cond_wait()会自动执行最后两步中对互斥量的解锁和加锁动作，并且第3步的互斥量释放和陷入休眠属于一个原子操作。在这个地方一开始我还存在困扰，我想如果在生产者发条件变量信号之后，消费者才陷入等待，岂不是会丢掉信号。其实我看错了，因为消费者陷入等待之前会首先判断共享变量也就是状态是否满足，不满足要求才会陷入等待。而前述情况既然发了条件变量信号，就说明<code>avail</code>已经<code>++</code>了，是不会等待的。所以是我之前看的太局部，没有考虑到条件变量是为线程间访问临界资源服务的。</p>
+<p>使用<code>while()</code>而不是<code>if()</code>来检查判断条件是因为从pthread_cond_wait()返回后需要重新检查判断条件，这是因为：</p>
+<ul>
+<li>其他线程可能会率先醒来，改变了判断条件的状态。</li>
+<li>条件变量信号意味着“可能有事情去做”，而不是“一定有事情去做”，接收信号的线程可以通过再次检查条件来确定是否真的需要做什么。</li>
+<li>可能出现虚假唤醒的情况</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c>
 <span class=k>static</span> <span class=n>pthread_mutex_t</span> <span class=n>mtx</span> <span class=o>=</span> <span class=n>PTHREAD_MUTEX_INITIALIZER</span><span class=p>;</span>
 <span class=k>static</span> <span class=n>pthread_cond_t</span> <span class=n>cond</span> <span class=o>=</span> <span class=n>PTHREAD_COND_INITIALIZER</span><span class=p>;</span>
 <span class=k>static</span> <span class=kt>int</span> <span class=n>avail</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
@@ -97,7 +338,7 @@
 
 <span class=n>pthread_cond_signal</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cond</span><span class=p>);</span>
 
-</code></pre></div><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=c1>// 消费者
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// 消费者
 </span><span class=c1></span><span class=n>pthread_mutex_lock</span><span class=p>(</span><span class=o>&amp;</span><span class=n>mtx</span><span class=p>);</span>
 
 <span class=k>while</span> <span class=p>(</span><span class=n>avail</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span> <span class=cm>/* Wait for something to consume */</span>
@@ -110,14 +351,19 @@
 <span class=p>}</span>
 
 <span class=n>pthread_mutex_unlock</span><span class=p>(</span><span class=o>&amp;</span><span class=n>mtx</span><span class=p>);</span>
-</code></pre></div><h2 id=线程安全>线程安全</h2><p>一个线程安全的函数允许同时被多个线程调用，若一个函数中使用了全局变量，通常需要互斥量来同步以保证线程安全。不用互斥量就可以被多线程安全调用的函数称为可重入函数，可重入函数中不会用到全局和静态变量。</p><h3 id=one-time-初始化>One-time 初始化</h3><p>有时候，可能有一个函数会被每一个线程调用，但只希望第一次调用的时候执行。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</code></pre></div><h2 id=线程安全>线程安全</h2>
+<p>一个线程安全的函数允许同时被多个线程调用，若一个函数中使用了全局变量，通常需要互斥量来同步以保证线程安全。不用互斥量就可以被多线程安全调用的函数称为可重入函数，可重入函数中不会用到全局和静态变量。</p>
+<h3 id=one-time-初始化>One-time 初始化</h3>
+<p>有时候，可能有一个函数会被每一个线程调用，但只希望第一次调用的时候执行。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=n>pthread_once_t</span> <span class=n>once_control</span> <span class=o>=</span> <span class=n>PTHREAD_ONCE_INIT</span><span class=p>;</span>
 
 <span class=kt>int</span> <span class=nf>pthread_once</span><span class=p>(</span><span class=n>pthread_once_t</span> <span class=o>*</span><span class=n>once_control</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>init</span><span class=p>)(</span><span class=kt>void</span><span class=p>));</span>
 
 <span class=c1>// return 0 on success, or a positive error number on error
-</span></code></pre></div><p>使用栗子：</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
+</span></code></pre></div><p>使用栗子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;errno.h&gt;                                                              </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;                                                            </span><span class=cp>
 </span><span class=cp></span>                                                                                
@@ -185,38 +431,83 @@
   <span class=n>exit</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>                                                                       
 <span class=p>}</span>                                                                               
 
-</code></pre></div><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>执行结果：
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>执行结果：
 
 Thread 1 executing
 in once_fn
 Thread 2 executing
 Thread 3 executing
-</code></pre></div><h3 id=线程特有数据>线程特有数据</h3><p>线程特有数据允许每个调用函数的线程持有一份变量的拷贝。</p><p>为了区分不同函数之间的线程特有数据，需要创建一个key来区分它们。记住，这个key是用来区分函数的，而不是线程的。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</code></pre></div><h3 id=线程特有数据>线程特有数据</h3>
+<p>线程特有数据允许每个调用函数的线程持有一份变量的拷贝。</p>
+<p>为了区分不同函数之间的线程特有数据，需要创建一个key来区分它们。记住，这个key是用来区分函数的，而不是线程的。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_key_create</span><span class=p>(</span><span class=n>pthread_key_t</span> <span class=o>*</span><span class=n>key</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>destructor</span><span class=p>)(</span><span class=kt>void</span> <span class=o>*</span><span class=p>));</span>
 <span class=c1>// Returns 0 on success, or a positive error number on error
-</span></code></pre></div><p>也正是因为key是用来区分函数的，所以返回的key可以被进程中的所有线程使用，指向的是一个由我们事先声明的全局变量。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p>也正是因为key是用来区分函数的，所以返回的key可以被进程中的所有线程使用，指向的是一个由我们事先声明的全局变量。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_setspecific</span><span class=p>(</span><span class=n>pthread_key_t</span> <span class=n>key</span><span class=p>,</span> <span class=k>const</span> <span class=kt>void</span> <span class=o>*</span><span class=n>value</span><span class=p>);</span>
 <span class=c1>// return 0 on success, or a positive error number on error
 </span><span class=c1></span><span class=kt>void</span> <span class=o>*</span><span class=nf>pthread_getspecific</span><span class=p>(</span><span class=n>pthread_key_t</span> <span class=n>key</span><span class=p>);</span>
 <span class=c1>// return pointer, or a NULL if no thread-specific data is associated with key
-</span></code></pre></div><p><code>pthread_setspecific()</code>的参数<code>key</code>是调用<code>pthread_key_create()</code>分配的key,<code>value</code>通常指向一块由调用者分配的内存，线程终止时，会自动调用<code>create</code>时指定的<code>destructor()</code>去释放<code>value</code>指向的内存。<br>下图是线程特有数据的实现结构，如图，Pthread为每个线程维护一个指针数组，指针数组内每一个成员都指向一个函数的特有数据。key1所对应的函数的特有数据数据保存在tsd[1]指向的内存中。</p><figure class=center><img src=/img/the-linux-programming-interface-s23/tsd.png width=500><figcaption><h4>线程特有数据的实现结构</h4></figcaption></figure><p>其实根据上面这个图，之前对key的总结有点补充，key是用来区分函数的，但并不代表一个函数内只能用一个key，一个函数中可以创建和指定多个key。但上限有限，linux中key最多可以1024个。通常只用一个key就可以了，将函数要用的多个特有数据值放到一个结构中。</p><h3 id=线程局部存储thread-local-storage>线程局部存储(thread-local Storage)</h3><p>线程局部存储比线程特有数据使用起来更加简单,只要在声明全局或静态变量的时候加上__thread说明符，每个线程就会持有一份此变量的拷贝：</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=k>static</span> <span class=n>__thread</span> <span class=n>buf</span><span class=p>[</span><span class=n>MAX_ERROR_LEN</span><span class=p>];</span>
-</code></pre></div><h2 id=线程取消>线程取消</h2><p>调用下面系统调用可以请求取消掉指定线程(在其他线程中调用)。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p><code>pthread_setspecific()</code>的参数<code>key</code>是调用<code>pthread_key_create()</code>分配的key,<code>value</code>通常指向一块由调用者分配的内存，线程终止时，会自动调用<code>create</code>时指定的<code>destructor()</code>去释放<code>value</code>指向的内存。<br>
+下图是线程特有数据的实现结构，如图，Pthread为每个线程维护一个指针数组，指针数组内每一个成员都指向一个函数的特有数据。key1所对应的函数的特有数据数据保存在tsd[1]指向的内存中。</p>
+<figure class=center><img src=/img/the-linux-programming-interface-s23/tsd.png width=500><figcaption>
+<h4>线程特有数据的实现结构</h4>
+</figcaption>
+</figure>
+<p>其实根据上面这个图，之前对key的总结有点补充，key是用来区分函数的，但并不代表一个函数内只能用一个key，一个函数中可以创建和指定多个key。但上限有限，linux中key最多可以1024个。通常只用一个key就可以了，将函数要用的多个特有数据值放到一个结构中。</p>
+<h3 id=线程局部存储thread-local-storage>线程局部存储(thread-local Storage)</h3>
+<p>线程局部存储比线程特有数据使用起来更加简单,只要在声明全局或静态变量的时候加上__thread说明符，每个线程就会持有一份此变量的拷贝：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>static</span> <span class=n>__thread</span> <span class=n>buf</span><span class=p>[</span><span class=n>MAX_ERROR_LEN</span><span class=p>];</span>
+</code></pre></div><h2 id=线程取消>线程取消</h2>
+<p>调用下面系统调用可以请求取消掉指定线程(在其他线程中调用)。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_cancel</span><span class=p>(</span><span class=n>pthread_t</span> <span class=kr>thread</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or a positive error number on error
-</span></code></pre></div><h3 id=线程取消状态>线程取消状态</h3><p>调用如下接口，可以控制本线程对取消请求的应对方式。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><h3 id=线程取消状态>线程取消状态</h3>
+<p>调用如下接口，可以控制本线程对取消请求的应对方式。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_setcancelstate</span><span class=p>(</span><span class=kt>int</span> <span class=n>state</span><span class=p>,</span> <span class=kt>int</span> <span class=o>*</span><span class=n>oldstate</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_setcanceltype</span><span class=p>(</span><span class=kt>int</span> <span class=n>type</span><span class=p>,</span> <span class=kt>int</span> <span class=o>*</span><span class=n>oldtype</span><span class=p>);</span>
 <span class=c1>// Both return 0 on success, or a positive error number on error
-</span></code></pre></div><p>pthread_setcancelstate()参数state可选状态如下：</p><ul><li>PTHREAD_CANCEL_DISABLE: 线程不可取消，取消状态被挂起，直到状态改为enable</li><li>PTHREAD_CANCEL_ENABLE: 线程可取消</li></ul><p>如果线程是可取消的，那线程取消的请求结果由可取消类型决定</p><ul><li>PTHREAD_CANCEL_ASYNCHRONOUS：线程可以在任何时间被取消（不一定是马上被取消）。</li><li>PTHREAD_CANCEL_DEFERRED：请求被挂起，直到下一个取消点。</li></ul><h3 id=取消点>取消点</h3><p>仅当取消操作安全时才应取消线程。pthreads 标准指定了几个取消点，其中包括：</p><ul><li>通过 pthread_testcancel 调用以编程方式建立线程取消点。如果当前有一个取消请求在等待，线程就会取消。</li><li>线程等待 pthread_cond_wait 或 pthread_cond_timedwait(3C) 中的特定条件出现。</li><li>线程在 pthread_join()等待其他线程结束。</li><li>被 sigwait(2) 阻塞的线程。</li><li>一些标准的库调用。通常这些调用可使其线程阻塞。有关列表，请参见 cancellation(5) 手册页。</li></ul><p>线程取消的危险性主要与未释放共享资源有关，取消时须十分注意，否则可能导致死锁。为了避免这些，取消点因此选在线程阻塞的时候，减小持有资源的可能，除此之外还可以使用cleanup handler</p><h3 id=cleanup-handlers>cleanup handlers</h3><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></div><p>pthread_setcancelstate()参数state可选状态如下：</p>
+<ul>
+<li>PTHREAD_CANCEL_DISABLE: 线程不可取消，取消状态被挂起，直到状态改为enable</li>
+<li>PTHREAD_CANCEL_ENABLE: 线程可取消</li>
+</ul>
+<p>如果线程是可取消的，那线程取消的请求结果由可取消类型决定</p>
+<ul>
+<li>PTHREAD_CANCEL_ASYNCHRONOUS：线程可以在任何时间被取消（不一定是马上被取消）。</li>
+<li>PTHREAD_CANCEL_DEFERRED：请求被挂起，直到下一个取消点。</li>
+</ul>
+<h3 id=取消点>取消点</h3>
+<p>仅当取消操作安全时才应取消线程。pthreads 标准指定了几个取消点，其中包括：</p>
+<ul>
+<li>通过 pthread_testcancel 调用以编程方式建立线程取消点。如果当前有一个取消请求在等待，线程就会取消。</li>
+<li>线程等待 pthread_cond_wait 或 pthread_cond_timedwait(3C) 中的特定条件出现。</li>
+<li>线程在 pthread_join()等待其他线程结束。</li>
+<li>被 sigwait(2) 阻塞的线程。</li>
+<li>一些标准的库调用。通常这些调用可使其线程阻塞。有关列表，请参见 cancellation(5) 手册页。</li>
+</ul>
+<p>线程取消的危险性主要与未释放共享资源有关，取消时须十分注意，否则可能导致死锁。为了避免这些，取消点因此选在线程阻塞的时候，减小持有资源的可能，除此之外还可以使用cleanup handler</p>
+<h3 id=cleanup-handlers>cleanup handlers</h3>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>void</span> <span class=nf>pthread_cleanup_push</span><span class=p>(</span><span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>routine</span><span class=p>)(</span><span class=kt>void</span><span class=o>*</span><span class=p>),</span> <span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>);</span>
 <span class=kt>void</span> <span class=nf>pthread_cleanup_pop</span><span class=p>(</span><span class=kt>int</span> <span class=n>execute</span><span class=p>);</span>
-</code></pre></div><p>清理函数是以栈的形式来管理的，这两个函数很明显用来添加和删除handler，每个push都应该有一个对应的pop。当线程执行到最后退出的话，是不需要调用清理函数的，所以要在适当的时候将handler从栈中pop出来。若<code>pthread_cleanup_pop()</code>参数<code>execute</code>不为0，弹出的栈顶处理函数的同时会执行清理函数。线程因调用pthread_exit()终止的时候，会自动执行尚未从清理函数栈中弹出的清理函数，线程正常返回(return)时不会执行s清理函数。</p><h3 id=异步取消>异步取消</h3><p>如果设定线程可异步取消时，可以在任何时点将其取消，取消动作不会拖延到下一个取消点才执行。异步取消时虽然清理函数可以执行，但是无法得知线程当前执行到哪一步。所以原则上可异步取消的线程不应该分配资源。</p><h2 id=线程细节>线程细节</h2><h3 id=栈>栈</h3><p>每个线程有自己的固定大小的栈，以下函数可以修改：</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</code></pre></div><p>清理函数是以栈的形式来管理的，这两个函数很明显用来添加和删除handler，每个push都应该有一个对应的pop。当线程执行到最后退出的话，是不需要调用清理函数的，所以要在适当的时候将handler从栈中pop出来。若<code>pthread_cleanup_pop()</code>参数<code>execute</code>不为0，弹出的栈顶处理函数的同时会执行清理函数。线程因调用pthread_exit()终止的时候，会自动执行尚未从清理函数栈中弹出的清理函数，线程正常返回(return)时不会执行s清理函数。</p>
+<h3 id=异步取消>异步取消</h3>
+<p>如果设定线程可异步取消时，可以在任何时点将其取消，取消动作不会拖延到下一个取消点才执行。异步取消时虽然清理函数可以执行，但是无法得知线程当前执行到哪一步。所以原则上可异步取消的线程不应该分配资源。</p>
+<h2 id=线程细节>线程细节</h2>
+<h3 id=栈>栈</h3>
+<p>每个线程有自己的固定大小的栈，以下函数可以修改：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=c1>// 可以更改栈大小
 </span><span class=c1></span><span class=kt>int</span> <span class=nf>pthread_attr_setstacksize</span><span class=p>(</span><span class=n>pthread_attr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>stacksize</span><span class=p>);</span>
 <span class=c1>// 可以更该栈地址和栈大小
 </span><span class=c1></span><span class=kt>int</span> <span class=nf>pthread_attr_setstack</span><span class=p>(</span><span class=n>pthread_attr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>stackaddr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>stacksize</span><span class=p>);</span>
-</code></pre></div><p>使用栗子如下，可见上面两个函数是将栈size或地址写到属性中，在创建线程的时候再使用指定属性创建线程。</p><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
+</code></pre></div><p>使用栗子如下，可见上面两个函数是将栈size或地址写到属性中，在创建线程的时候再使用指定属性创建线程。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;                                                            </span><span class=cp>
 </span><span class=cp></span>                                                                                
 <span class=kt>void</span> <span class=o>*</span><span class=nf>thread1</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span>                                                        
@@ -255,11 +546,41 @@ Thread 3 executing
    <span class=n>exit</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>                                                                     
 <span class=p>}</span>
 
-</code></pre></div><h3 id=线程和信号>线程和信号</h3><p>信号的接收：</p><ul><li>信号动作（signal action）是进程级的，如果一个默认动作是<code>stop</code>或<code>terminate</code>的信号送达任意一个线程，那么进程中的所有线程都会<code>stop</code>或<code>terminate</code>。</li><li>信号处置是进程级的，进程中所有线程对于一个信号共享同样的处置，如果一个线程使用<code>sigaction()</code>为信号创建了信号处理函数，当信号到达时，信号处理函数可能在任一进程中执行。</li><li>在以下情况下信号会被发给特定的线程：<ol><li>由于线程执行的硬件指令异常产生的信号(SIGBUS, SIGFPE, SIGILL, and SIGSEGV),只有产生异常的线程收到并处理。</li><li>写一个被破坏的管道时产生的SIGPIPE信号。</li><li>pthread_kill() or pthread_sigqueue()发送给指定线程。</li></ol></li><li>当信号被发送到一个多线程进程时，内核会任意选择一个线程，把信号发给它，并在那个线程中调用线程处理函数。</li><li>signal mask是线程级的，线程的信号掩码继承自创建它的线程，每个线程可以使用<code>pthread_sigmask()</code>单独block或unblock某个信号。</li><li>内核为进程维护一个挂起信号表，也为每个线程维护一个挂起信号表，sigpending()返回的线程正在挂起的信号和进程正在挂起的信号的并集。</li><li>当信号处理函数打断了pthread_mutex_lock()和pthread_cond_wait()的调用，会自动重新执行调用。</li><li>备用信号栈是线程级的。</li></ul><h3 id=线程和进程控制>线程和进程控制</h3><ul><li>当某一个线程调用<code>exec()</code>后，调用程序会被完全替换掉。线程的特有数据析构函数和清理处理函数都不会被调用。</li><li>当多线程程序调用<code>fork()</code>后，只有调用线程会被复制到子进程中。其他线程都会消失，它们的清理函数也不会被调用，这就带来一些问题：<ol><li>除了调用线程，全局变量包括互斥量等也会被复制进子进程，这就导致如果在<code>fork()</code>的时候，其他线程锁了一个互斥量，<code>fork()</code>完毕后，它消失了..那个互斥量就会被永远的锁住。</li><li>因为清理函数不会被调用，所以还有可能导致内存泄漏。<br>基于以上原因，在多线程程序中使用<code>fork()</code>最好马上调用<code>exec()</code>。如果不能，Pthread提供了pthread_atfork()接口</li></ol></li></ul><div class=highlight><pre class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</code></pre></div><h3 id=线程和信号>线程和信号</h3>
+<p>信号的接收：</p>
+<ul>
+<li>信号动作（signal action）是进程级的，如果一个默认动作是<code>stop</code>或<code>terminate</code>的信号送达任意一个线程，那么进程中的所有线程都会<code>stop</code>或<code>terminate</code>。</li>
+<li>信号处置是进程级的，进程中所有线程对于一个信号共享同样的处置，如果一个线程使用<code>sigaction()</code>为信号创建了信号处理函数，当信号到达时，信号处理函数可能在任一进程中执行。</li>
+<li>在以下情况下信号会被发给特定的线程：
+<ol>
+<li>由于线程执行的硬件指令异常产生的信号(SIGBUS, SIGFPE, SIGILL, and SIGSEGV),只有产生异常的线程收到并处理。</li>
+<li>写一个被破坏的管道时产生的SIGPIPE信号。</li>
+<li>pthread_kill() or pthread_sigqueue()发送给指定线程。</li>
+</ol>
+</li>
+<li>当信号被发送到一个多线程进程时，内核会任意选择一个线程，把信号发给它，并在那个线程中调用线程处理函数。</li>
+<li>signal mask是线程级的，线程的信号掩码继承自创建它的线程，每个线程可以使用<code>pthread_sigmask()</code>单独block或unblock某个信号。</li>
+<li>内核为进程维护一个挂起信号表，也为每个线程维护一个挂起信号表，sigpending()返回的线程正在挂起的信号和进程正在挂起的信号的并集。</li>
+<li>当信号处理函数打断了pthread_mutex_lock()和pthread_cond_wait()的调用，会自动重新执行调用。</li>
+<li>备用信号栈是线程级的。</li>
+</ul>
+<h3 id=线程和进程控制>线程和进程控制</h3>
+<ul>
+<li>当某一个线程调用<code>exec()</code>后，调用程序会被完全替换掉。线程的特有数据析构函数和清理处理函数都不会被调用。</li>
+<li>当多线程程序调用<code>fork()</code>后，只有调用线程会被复制到子进程中。其他线程都会消失，它们的清理函数也不会被调用，这就带来一些问题：
+<ol>
+<li>除了调用线程，全局变量包括互斥量等也会被复制进子进程，这就导致如果在<code>fork()</code>的时候，其他线程锁了一个互斥量，<code>fork()</code>完毕后，它消失了..那个互斥量就会被永远的锁住。</li>
+<li>因为清理函数不会被调用，所以还有可能导致内存泄漏。<br>
+基于以上原因，在多线程程序中使用<code>fork()</code>最好马上调用<code>exec()</code>。如果不能，Pthread提供了pthread_atfork()接口</li>
+</ol>
+</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_atfork</span><span class=p>(</span><span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>prepare_func</span><span class=p>)(</span><span class=kt>void</span><span class=p>),</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>parent_func</span><span class=p>)(</span><span class=kt>void</span><span class=p>),</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>child_func</span><span class=p>)(</span><span class=kt>void</span><span class=p>));</span>
 </code></pre></div><p>prepare_func会被加入一个函数列表中，在子进程创建之前，自动按照注册顺序反序执行。parent_func和child_func在fork()返回之前，分别在父进程和子进程中按注册顺序执行。
-下面是栗子:</p><div class=highlight><pre class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _UNIX03_THREADS 1                                                       
+下面是栗子:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _UNIX03_THREADS 1                                                       
 </span><span class=cp></span>
 <span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;                                                            </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
@@ -434,7 +755,7 @@ Thread 3 executing
   <span class=p>}</span>
 <span class=p>}</span>
 
-</code></pre></div><div class=highlight><pre class=chroma><code class=language-fallback data-lang=fallback>终端输出：
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>终端输出：
 Thread1: Hello from the thread.
 IPT: pthread_join success!  Thread 1 should be finished now.
 IPT: Prepare to fork!!!
@@ -463,19 +784,87 @@ Called Child Handlers
 child3
 child1
 
-</code></pre></div><p>从输出中能看出子进程中调用的处理函数可以通过文件描述符<code>3</code>往<code>childq.out</code>文件写内容，父进程可以通过文件描述符<code>4</code>往<code>parentside.out</code>文件中写内容。根据文件内容可以看出函数执行顺序。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
-<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
-<span class=item-content>2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a></span></p><p class=copyright-item><span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s24/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Linux/Unix系统编程手册-笔记24. 进程组、会话和作业控制</span>
-<span class="prev-text nav-mobile">Prev</span></a>
-<a class=next href=/post/linux/the-linux-programming-interface-s22/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记22. 程序的执行</span>
+</code></pre></div><p>从输出中能看出子进程中调用的处理函数可以通过文件描述符<code>3</code>往<code>childq.out</code>文件写内容，父进程可以通过文件描述符<code>4</code>往<code>parentside.out</code>文件中写内容。根据文件内容可以看出函数执行顺序。</p>
+</div>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>Author</span>
+<span class=item-content>xistor</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>LastMod</span>
+<span class=item-content>
+2023-07-01
+<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
+</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
+</p>
+</div>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/linux/>Linux</a>
+</div>
+<nav class=post-nav>
+<a class=prev href=/post/linux/the-linux-programming-interface-s24/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Linux/Unix系统编程手册-笔记24. 进程组、会话和作业控制</span>
+<span class="prev-text nav-mobile">Prev</span>
+</a>
+<a class=next href=/post/linux/the-linux-programming-interface-s22/>
+<span class="next-text nav-default">Linux/Unix系统编程手册-笔记22. 程序的执行</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==='localhost')return;var dsq=document.createElement('script');dsq.type='text/javascript';dsq.async=true;var disqus_shortname='xistor';dsq.src='//'+disqus_shortname+'.disqus.com/embed.js';(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(dsq);})();</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a></span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+<div id=disqus_thread></div>
+<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
+<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
+<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span>
 <span class=division>|</span>
-<span class=theme-info>Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span></span>
+<span class=theme-info>
+Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<div class=busuanzi-footer>
+<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
 <span class=division>|</span>
-<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
+</div>
+<span class=copyright-year>
+&copy;
 2018 -
-2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.c12618f9a600c40bd024996677e951e64d3487006775aeb22e200c990006c5c7.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],}};</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script></body></html>
+2023<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
+<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
+<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
+</body>
+</html>
