@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记33. 内存映射">
 <meta property="og:description" content="概念 mmap()内存映射有两种： 文件映射： 将一个文件的一部分直接映射到调用进程的虚拟内存中，映射的分页会按需要从文件中自动加载。 匿名映射： 没">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记33. 内存映射">
 <meta itemprop=description content="概念 mmap()内存映射有两种： 文件映射： 将一个文件的一部分直接映射到调用进程的虚拟内存中，映射的分页会按需要从文件中自动加载。 匿名映射： 没"><meta itemprop=datePublished content="2020-12-26T18:47:00+08:00">
 <meta itemprop=dateModified content="2021-03-01T11:15:52+08:00">
-<meta itemprop=wordCount content="2046">
+<meta itemprop=wordCount content="2080">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记33. 内存映射">
 <meta name=twitter:description content="概念 mmap()内存映射有两种： 文件映射： 将一个文件的一部分直接映射到调用进程的虚拟内存中，映射的分页会按需要从文件中自动加载。 匿名映射： 没"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -131,10 +131,19 @@
 <li>共享匿名内存映射：fork()之后，对共享内存映射的内存分页对其他进程可见，和共享内存类似，但只能用在相关进程之间。</li>
 </ul>
 <h2 id=api>API</h2>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/mman.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/mman.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>void</span> <span class=o>*</span><span class=nf>mmap</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>addr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>length</span><span class=p>,</span> <span class=kt>int</span> <span class=n>prot</span><span class=p>,</span> <span class=kt>int</span> <span class=n>flags</span><span class=p>,</span> <span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=n>off_t</span> <span class=n>offset</span><span class=p>);</span>
 <span class=c1>// Returns starting address of mapping on success, or MAP_FAILED on error
-</span></code></pre></div><ul>
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>
 <p><code>addr</code>: 映射到虚拟内存的位置，若为null,内核会选取合适的地址。</p>
 </li>
@@ -182,7 +191,27 @@
 </li>
 </ul>
 <p>一个文件映射的栗子：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// 打开一个文件
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// 打开一个文件
 </span><span class=c1></span><span class=n>fd</span> <span class=o>=</span> <span class=n>open</span><span class=p>(</span><span class=s>&#34;a.txt&#34;</span> <span class=n>O_RDONLY</span><span class=p>);</span>
 <span class=k>if</span> <span class=p>(</span><span class=n>fd</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
     <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;open&#34;</span><span class=p>);</span>
@@ -198,24 +227,57 @@
 <span class=c1>// 将内存中的内容写到输出
 </span><span class=c1></span><span class=k>if</span> <span class=p>(</span><span class=n>write</span><span class=p>(</span><span class=n>STDOUT_FILENO</span><span class=p>,</span> <span class=n>addr</span><span class=p>,</span> <span class=n>sb</span><span class=p>.</span><span class=n>st_size</span><span class=p>)</span> <span class=o>!=</span> <span class=n>sb</span><span class=p>.</span><span class=n>st_size</span><span class=p>)</span>
     <span class=n>fatal</span><span class=p>(</span><span class=s>&#34;partial/failed write&#34;</span><span class=p>)</span>
-</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/mman.h&gt;</span><span class=cp>
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/mman.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>munmap</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>addr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>length</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></div><ul>
+</span></code></pre></td></tr></table>
+</div>
+</div><ul>
 <li><code>addr</code>: 内存映射起始地址，必须页对齐。</li>
 <li><code>length</code>: 映射内存的大小。</li>
 </ul>
 <p>可以unmap映射内存的一部分，也可以多块映射内存一起unmap。</p>
 <p>内存映射并不能改变文件大小，如需要增大文件或截断文件，在mmap()之前使用ftruncate()或write()。</p>
 <p>但Linux提供了重新映射的系统调用<code>mremap()</code>（不可移植），可以改变映射大小。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _GNU_SOURCE
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _GNU_SOURCE
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/mman.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>void</span> <span class=o>*</span><span class=nf>mremap</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>old_address</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>old_size</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>new_size</span><span class=p>,</span> <span class=kt>int</span> <span class=n>flags</span><span class=p>,</span> <span class=p>...);</span>
 <span class=c1>// Returns starting address of remapped region on success, or MAP_FAILED on error
-</span></code></pre></div><h2 id=map_noreserve-和交换空间过量使用>MAP_NORESERVE 和交换空间过量使用</h2>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=map_noreserve-和交换空间过量使用>MAP_NORESERVE 和交换空间过量使用</h2>
 <p>swap是虚拟内存在硬盘上的一部分，物理内存中暂时用不到的页将会被交换到swap中。一些应用创建了超大的内存映射（一般是私有匿名映射），但只使用了很小一块，如果内存为每一一个映射分配足够的交换空间(swap space), 会造成交换空间的浪费，所以就有了lazy swap reservation 机制, 此机制允许交换空间超额使用，只有应用访问的页才会载入。若RAM和swap耗尽会引来OOM killer杀进程释放内存。</p>
 <p>在<code>mmap()</code>时指定MAP_NORESERVE flag可以告诉内核不必检查剩余交换空间是否足够，不过这个flag只有在<code>/proc/sys/vm/overcommit_memory</code>为0时管用。其他情况：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>/proc/sys/vm/overcommit_memory : 1 内核认为内存总是足够的，不检查。
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>/proc/sys/vm/overcommit_memory : 1 内核认为内存总是足够的，不检查。
 /proc/sys/vm/overcommit_memory : 2 分配时总是检查是否足够，从不超额分配。可分配的虚拟内存地址空间的计算方式为：
 CommitLimit = (total_RAM - total_huge_TLB) * overcommit_ratio / 100 + total_swap
 
@@ -223,7 +285,9 @@ total_RAM: 系统RAM的总量
 total_huge_TLB: 为大页面预留的
 overcommit_ratio:  /proc/sys/vm/overcommit_ratio 中的值，默认是50
 total_swap: swap空间的大小
-</code></pre></div><p>超额检测只有在以下两种情况下起作用：</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>超额检测只有在以下两种情况下起作用：</p>
 <ul>
 <li>私有可写映射（无论是文件还是匿名），swap空间使用的大小和每个进程的内存映射大小相同。</li>
 <li>共享匿名映射，swap空间使用和内存映射大小相同。</li>
@@ -304,7 +368,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

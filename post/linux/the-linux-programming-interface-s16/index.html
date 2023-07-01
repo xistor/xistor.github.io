@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记16.访问控制列表">
 <meta property="og:description" content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记16.访问控制列表">
 <meta itemprop=description content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩"><meta itemprop=datePublished content="2020-08-19T22:40:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1058">
+<meta itemprop=wordCount content="1109">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记16.访问控制列表">
 <meta name=twitter:description content="访问控制列表即 ACL(access control list)是对传统UNIX文件权限模型的扩展，籍此可以在每个用户或每组的基础上来控制对文件的访问。访问控制列表是利用文件扩"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -129,21 +129,64 @@
 <li>调用stat(),在st_mode字段的组权限位中会返回ACL_MASK权限。</li>
 </ul>
 <p>但是正是如此，假设某文件设置了如下ACL</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>user::rw-, group::---,mask::---,other::r--
-</code></pre></div><p>若针对该文件执行chmod g+rw，则ACL将会变为</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>user::rw-, group::---,mask::rw-,other::r--
-</code></pre></div><p>这时组用户仍无法访问该文件。迂回策略是修改针对组的ACE,赋予其所有权限，那么组用户将会获得和ACL_MASK一样的权限。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>user::rw-, group::---,mask::---,other::r--
+</code></pre></td></tr></table>
+</div>
+</div><p>若针对该文件执行chmod g+rw，则ACL将会变为</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>user::rw-, group::---,mask::rw-,other::r--
+</code></pre></td></tr></table>
+</div>
+</div><p>这时组用户仍无法访问该文件。迂回策略是修改针对组的ACE,赋予其所有权限，那么组用户将会获得和ACL_MASK一样的权限。</p>
 <h2 id=shell-命令>shell 命令</h2>
 <p>在shell中运行<code>getfacl</code>命令，可查看应用于文件的ACL。会得到类似如下输出：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>getfacl README.md 
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>getfacl README.md 
 # file: README.md
 # owner: x
 # group: x
 user::rw-
 group::r--
 other::r--
-</code></pre></div><p><code>setfacl</code>命令可用来修改文件的ACL。<code>setfacl -m</code>可修改现有ACE,或者当给定标记类型和限定符的ACE不存在时，会追加新的ACE记录。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#命令格式
+</code></pre></td></tr></table>
+</div>
+</div><p><code>setfacl</code>命令可用来修改文件的ACL。<code>setfacl -m</code>可修改现有ACE,或者当给定标记类型和限定符的ACE不存在时，会追加新的ACE记录。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#命令格式
 setfacl -m u:[user]:[permission],g:[group]:[permission] file
 
 #执行效果
@@ -155,11 +198,47 @@ group::r-x
 group:teach:--x
 mask::r-x
 other::--x
-</code></pre></div><h2 id=默认型acl>默认型ACL</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=默认型acl>默认型ACL</h2>
 <p>前面讨论的都是访问型ACL，即当进程访问与该ACL相关的文件时，将使用访问型ACL来判定进程对文件的访问权限。针对目录有第二种ACL：默认型ACL。</p>
 <p>访问目录时，默认型ACL并不参与判定所授予的权限，相反，默认型ACL的存在与否决定了在目录下所创建的文件或子目录的ACL和权限。
 比如创建一个文件夹，并给设置默认型ACL，然后在此文件夹下新建文件</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>mkdir test
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>mkdir test
 setfacl -d -m u::rwx,u:x:rx,g::rx,g:x:rwx,o::- test
 getfacl test
 # file: test
@@ -189,7 +268,9 @@ group:x:rwx			#effective:rw-
 mask::rw-
 other::---
 
-</code></pre></div><p>可以看到新建的文件继承了目录的默认ACL。一旦目录拥有默认型ACL,那么对于新创建于该目录下的文件来说，进程的unmask并不参与判定文件访问型ACL中所记录的权限。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看到新建的文件继承了目录的默认ACL。一旦目录拥有默认型ACL,那么对于新创建于该目录下的文件来说，进程的unmask并不参与判定文件访问型ACL中所记录的权限。</p>
 <h2 id=acl-api>ACL API</h2>
 <figure class=center><img src=/img/the-linux-programming-interface-s16/ACL_library_function_and_datastrures.png><figcaption>
 <h4>ACL库函数及数据结构</h4>
@@ -269,7 +350,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

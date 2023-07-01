@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c">
+<meta name=author content="xistor"><meta name=description content="静态库是一个归档(archives),可以使用ar命令生成： 1 $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 1 2 $">
 <meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s27/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -20,21 +20,21 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记27. 共享库">
-<meta property="og:description" content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c">
+<meta property="og:description" content="静态库是一个归档(archives),可以使用ar命令生成： 1 $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 1 2 $">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s27/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2020-11-23T18:30:00+08:00">
 <meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记27. 共享库">
-<meta itemprop=description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><meta itemprop=datePublished content="2020-11-23T18:30:00+08:00">
+<meta itemprop=description content="静态库是一个归档(archives),可以使用ar命令生成： 1 $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 1 2 $"><meta itemprop=datePublished content="2020-11-23T18:30:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="2637">
+<meta itemprop=wordCount content="2758">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记27. 共享库">
-<meta name=twitter:description content="静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="静态库是一个归档(archives),可以使用ar命令生成： 1 $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 1 2 $"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -113,13 +113,28 @@
 </div>
 <div class=post-content>
 <p>静态库是一个归档(archives),可以使用<code>ar</code>命令生成：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ ar options archive object-file...
-</code></pre></div><p>静态库会被整个拷贝到可执行文件中。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ ar options archive object-file...
+</code></pre></td></tr></table>
+</div>
+</div><p>静态库会被整个拷贝到可执行文件中。</p>
 <h2 id=创建动态库>创建动态库</h2>
 <p>书中给的命令分两步</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall mod1.c mod2.c mod3.c
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall mod1.c mod2.c mod3.c
 $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
-</code></pre></div><p><code>-g</code>参数在可执行文件中保留源码级的debug和symbol信息。<br>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>-g</code>参数在可执行文件中保留源码级的debug和symbol信息。<br>
 <code>-c</code>编译源码而不链接。
 <code>-Wall</code>打开所有编译器警告。
 <code>-shared</code> 生成共享库。
@@ -167,8 +182,15 @@ $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
 <li>在多个共享库中重复定义，将会引用至第一个扫描到的库</li>
 </ul>
 <p>如果想指定调用共享库中的函数，生成共享库时可以使用<code>–Bsymbolic</code>参数。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>gcc -g -shared -Wl,-Bsymbolic -o libfoo.so foo.o
-</code></pre></div><h2 id=指定使用静态库>指定使用静态库</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>gcc -g -shared -Wl,-Bsymbolic -o libfoo.so foo.o
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=指定使用静态库>指定使用静态库</h2>
 <p>链接时使用<code>-ldemo</code>时，若同时存在<code>libdemo.so</code>和<code>libdemo.a</code>，则共享库会被使用，若想指定使用静态库，可以</p>
 <ul>
 <li>在gcc编译时，将静态库路径(包括.a)加在后面。</li>
@@ -177,7 +199,34 @@ $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
 </ul>
 <h2 id=动态加载库>动态加载库</h2>
 <p>主要使用几个API, <code>dlopen()</code>、<code>dlsym()</code>，用法如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;dlfcn.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
@@ -200,7 +249,9 @@ $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
     <span class=n>dlclose</span><span class=p>(</span><span class=n>libfoo</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><p>使用<code>dlopen()</code>打开对应的库文件，打开过程可以指定flag,打开成功会返回一个指针。之后使用<code>dlsym()</code>传入<code>dlopen()</code>返回的指针和符号名称，若找到了对应的函数或变量，会返回其地址，然后转换成合适的类型，就可以使用了。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>使用<code>dlopen()</code>打开对应的库文件，打开过程可以指定flag,打开成功会返回一个指针。之后使用<code>dlsym()</code>传入<code>dlopen()</code>返回的指针和符号名称，若找到了对应的函数或变量，会返回其地址，然后转换成合适的类型，就可以使用了。</p>
 <ul>
 <li>RTLD_DEFAULT: 默认顺序搜索符号。</li>
 <li>RTLD_NEXT: 根据共享对象的搜索顺序，从“当前对象”后搜索某个符号，返回该符号的地址。“当前对象”指的是，dlsym(RTLD_NEXT, &ldquo;syscall&rdquo;);代码所在的对象。可以用来wrap系统函数。使用方法：<code>func = dlsym(RTLD_NEXT, “malloc”)</code>。这个选项我特么困惑了，一开始是编译出的可执行文件并没有依赖<code>gcc -l</code>后添加的库，貌似原因是gcc现在默认开启–as-needed选项，如果没有用到库就不会写到到可执行文件的依赖表中，所以编译时加了<code> -Wl,--no-as-needed</code>，之后程序可以运行，但表现和使用RTLD_DEFAULT选项并无不同，原因还待查。</li>
@@ -218,18 +269,43 @@ $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
 <li>在C程序中，可以使用<code>static</code>关键字将符号限制在同一个源码文件中。</li>
 <li>GNU C 编译器提供了编译器特性属性可以实现和<code>static</code>类似的效果</li>
 </ul>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span>
 <span class=nf>__attribute__</span> <span class=p>((</span><span class=n>visibility</span><span class=p>(</span><span class=s>&#34;hidden&#34;</span><span class=p>)))</span>
 <span class=n>func</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span> <span class=p>{</span>
  <span class=cm>/* Code */</span>
 <span class=p>}</span>
-</code></pre></div><ul>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>版本脚本可以用来精确的控制符号的可见性。</li>
 <li>当动态载入共享库时，<code>dlopen() RTLD_GLOBAL</code> flag可以用来指定共享库内定义的符号对其后来载入的库可见，<code>––export–dynamic</code>链接器选项可以用来将主程序中的全局变量对其动态载入的库可见。</li>
 </ul>
 <h2 id=链接器版本脚本>链接器版本脚本</h2>
 <p>比如一个c文件</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// foo.c
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// foo.c
 </span><span class=c1></span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>void</span> <span class=nf>xyz</span><span class=p>(){</span>
@@ -239,8 +315,25 @@ $ gcc -g -shared -o libfoo.so mod1.o mod2.o mod3.o
 <span class=kt>void</span> <span class=nf>func</span><span class=p>()</span> <span class=p>{</span>
  <span class=n>xyz</span><span class=p>();</span>
 <span class=p>}</span>
-</code></pre></div><p>有两个全局函数，编译后查看公开的动态符号如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
+</code></pre></td></tr></table>
+</div>
+</div><p>有两个全局函数，编译后查看公开的动态符号如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
 
 Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <span class=k>for</span> image:
   Num Buc:    Value          Size   Type   Bind Vis      Ndx Name
@@ -251,8 +344,22 @@ Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <sp
    <span class=m>11</span>   2: <span class=m>0000000000000670</span>     <span class=m>0</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> _fini
    <span class=m>12</span>   2: 000000000000065d    <span class=m>17</span> FUNC    GLOBAL DEFAULT  <span class=m>12</span> func
    <span class=m>13</span>   2: 000000000000064a    <span class=m>19</span> FUNC    GLOBAL DEFAULT  <span class=m>12</span> xyz
-</code></pre></div><p>如果我们只想公开func符号，可以像下面这样写版本脚本，global后的符号会被处理为可见，local后面的符号会被对外隐藏。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>// foo.map
+</code></pre></td></tr></table>
+</div>
+</div><p>如果我们只想公开func符号，可以像下面这样写版本脚本，global后的符号会被处理为可见，local后面的符号会被对外隐藏。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>// foo.map
 
 VER_1 {
     global:
@@ -260,18 +367,63 @@ VER_1 {
     local:
         *;
 };
-</code></pre></div><p>编译命令：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall foo.c
+</code></pre></td></tr></table>
+</div>
+</div><p>编译命令：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ gcc -g -c -fPIC -Wall foo.c
 $ gcc -g -shared -o libfoo.so foo.o -Wl,--version-script,foo.map
-</code></pre></div><p>查看新的so的符号，xyz已不可见：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
+</code></pre></td></tr></table>
+</div>
+</div><p>查看新的so的符号，xyz已不可见：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
 
 Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <span class=k>for</span> image:
   Num Buc:    Value          Size   Type   Bind Vis      Ndx Name
     <span class=m>7</span>   0: <span class=m>0000000000000000</span>     <span class=m>0</span> OBJECT  GLOBAL DEFAULT ABS VER_1
     <span class=m>8</span>   1: 00000000000005dd    <span class=m>17</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> func
-</code></pre></div><p>若新的库内重新定义了func函数，但希望老的程序依然使用ver1版本的函数，需要如下定义，<code>@@</code>符号表示默认定义，一个符号只能有一个。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#include &lt;stdio.h&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>若新的库内重新定义了func函数，但希望老的程序依然使用ver1版本的函数，需要如下定义，<code>@@</code>符号表示默认定义，一个符号只能有一个。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#include &lt;stdio.h&gt;
 
 __asm__(&#34;.symver func_old,func@VER_1&#34;);
 __asm__(&#34;.symver func_new,func@@VER_2&#34;);
@@ -290,8 +442,28 @@ void func_old() {
 void func_new() {
     printf(&#34;func_new&#34;);
 }
-</code></pre></div><p>相应的版本脚本修改为：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>VER_1 {
+</code></pre></td></tr></table>
+</div>
+</div><p>相应的版本脚本修改为：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>VER_1 {
     global:
         func;
     local:
@@ -305,8 +477,24 @@ VER_2 {
         *;
 
 } VER_1;
-</code></pre></div><p>编译后查看符号有两个func，应该是两个不同的版本。不过好像没发现在编译时指定使用哪个版本的方法，只能在源文件中使用<code>@@</code>指定。VER_2最后的VER_1后缀表示：VER_2中没有定义的，会继承VER_1中的定义。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
+</code></pre></td></tr></table>
+</div>
+</div><p>编译后查看符号有两个func，应该是两个不同的版本。不过好像没发现在编译时指定使用哪个版本的方法，只能在源文件中使用<code>@@</code>指定。VER_2最后的VER_1后缀表示：VER_2中没有定义的，会继承VER_1中的定义。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ readelf --syms --use-dynamic libfoo.so 
 
 Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <span class=k>for</span> image:
   Num Buc:    Value          Size   Type   Bind Vis      Ndx Name
@@ -316,13 +504,28 @@ Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <sp
    <span class=m>11</span>   2: 00000000000006bd    <span class=m>24</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> func
    <span class=m>12</span>   2: 00000000000006aa    <span class=m>19</span> FUNC    GLOBAL DEFAULT  <span class=m>13</span> xyz
 
-</code></pre></div><h2 id=初始化和析构函数>初始化和析构函数</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=初始化和析构函数>初始化和析构函数</h2>
 <p>初始化函数在库被加载的时候被调用，析构函数在库被卸载的时候被调用。</p>
 <p>有两种方式：</p>
 <ul>
 <li>一种是使用gcc 构造和析构属性</li>
 </ul>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=nf>__attribute__</span> <span class=p>((</span><span class=n>constructor</span><span class=p>))</span> <span class=n>some_name_load</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=nf>__attribute__</span> <span class=p>((</span><span class=n>constructor</span><span class=p>))</span> <span class=n>some_name_load</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span>
 <span class=p>{</span>
  <span class=cm>/* Initialization code */</span>
 <span class=p>}</span>
@@ -331,7 +534,9 @@ Symbol table of <span class=sb>`</span>.gnu.hash<span class=err>&#39;</span> <sp
 <span class=p>{</span>
  <span class=cm>/* Finalization code */</span>
 <span class=p>}</span>
-</code></pre></div><ul>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>第二种也是比较老的一种是使用<code>_init()</code>和<code>_fini()</code>函数。使用这两个函数需要在编译库时指定<code>gcc -nostartfiles</code>选项，以避免链接器生成默认的函数。</li>
 </ul>
 </div>
@@ -407,7 +612,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

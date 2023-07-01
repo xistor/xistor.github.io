@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记2.系统调用">
 <meta property="og:description" content="系统调用 系统调用将处理器从用户态切换到核心态，以便CPU访问收到保护的内核内存。 系统调用的组成是固定的。每个系统调用都有一个唯一的数字来标识">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记2.系统调用">
 <meta itemprop=description content="系统调用 系统调用将处理器从用户态切换到核心态，以便CPU访问收到保护的内核内存。 系统调用的组成是固定的。每个系统调用都有一个唯一的数字来标识"><meta itemprop=datePublished content="2020-06-21T16:01:00+08:00">
 <meta itemprop=dateModified content="2020-11-18T19:36:36+08:00">
-<meta itemprop=wordCount content="1456">
+<meta itemprop=wordCount content="1492">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记2.系统调用">
 <meta name=twitter:description content="系统调用 系统调用将处理器从用户态切换到核心态，以便CPU访问收到保护的内核内存。 系统调用的组成是固定的。每个系统调用都有一个唯一的数字来标识"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -136,7 +136,24 @@
 <li>若系统调用服务程序的返回值表明调用有误，外壳函数会使用该返回值来设置全局变量errno</li>
 </ol>
 <p>strace 命令可以查看系统调用过程，写一个小程序一探究竟，程序功能为往文件中写一句“hello”：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#include&lt;iostream&gt;
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#include&lt;iostream&gt;
 #include &lt;sys/types.h&gt;
 #include &lt;unistd.h&gt;
 #include &lt;fstream&gt;
@@ -149,8 +166,25 @@ int main()
     in.close();
     return 0;
 }
-</code></pre></div><p>编译后执行<code>strace -o ./straceout.txt ./a.out</code>，输出到调用过程到straceout.txt文件中，内容如下，“=”左边是系统调用，右边是返回值</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>...
+</code></pre></td></tr></table>
+</div>
+</div><p>编译后执行<code>strace -o ./straceout.txt ./a.out</code>，输出到调用过程到straceout.txt文件中，内容如下，“=”左边是系统调用，右边是返回值</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>...
 
 mprotect(0x7fc7e9fb5000, 4096, PROT_READ) = 0
 munmap(0x7fc7e9f98000, 118140)          = 0
@@ -161,42 +195,86 @@ write(3, &#34;hello&#34;, 5)                    = 5
 close(3)                                = 0
 exit_group(0)                           = ?
 +++ exited with 0 +++
-</code></pre></div><p>省略了前面一坨，在文件最后，和程序功能相关的几个系统调用就在其中，openat打开一个文件并返回一个文件描述符，write向里面写了“hello”,
+</code></pre></td></tr></table>
+</div>
+</div><p>省略了前面一坨，在文件最后，和程序功能相关的几个系统调用就在其中，openat打开一个文件并返回一个文件描述符，write向里面写了“hello”,
 然后close文件，程序退出。</p>
 <h3 id=处理系统调用错误>处理系统调用错误</h3>
 <p>系统调用失败时，会将全局整形变量errno设置一个正值，以标识具体的错误（需包含&lt;errno.h>头文件）。如果调用系统和库函数成功，errno绝不会被重置为0，所以errno可能为上次调用失败留下的值。因此进行错误检查时，必须首先检查函数的返回值是否表明调用出错，然后检查errno确定错误原因。</p>
 <p>函数strerror可以将错误号转成容易理解的错误字符串</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#include&lt;string.h&gt;
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>#include&lt;string.h&gt;
 char* strerror(int errnum);
-</code></pre></div><p>需要注意的是strerror返回的字符串指针指向的是一块静态分配的内存，所以后续调用strerror可能会覆盖该字符串。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的是strerror返回的字符串指针指向的是一块静态分配的内存，所以后续调用strerror可能会覆盖该字符串。</p>
 <h3 id=编译书中带的源码>编译书中带的源码</h3>
 <p>下载链接 <a href=https://man7.org/tlpi/code/>https://man7.org/tlpi/code/</a> 一般下载Distribution version即可。
 下载解压后，进入tlpi-dist目录执行<code>make</code>,若报错</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>cc: error: unrecognized command line option ‘-Wimplicit-fallthrough’
-</code></pre></div><p>考虑将gcc版本升到7以上，参考 <a href=https://www.jianshu.com/p/7a8878397213>https://www.jianshu.com/p/7a8878397213</a></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>cc: error: unrecognized command line option ‘-Wimplicit-fallthrough’
+</code></pre></td></tr></table>
+</div>
+</div><p>考虑将gcc版本升到7以上，参考 <a href=https://www.jianshu.com/p/7a8878397213>https://www.jianshu.com/p/7a8878397213</a></p>
 <h3 id=可移植性问题>可移植性问题</h3>
 <p>书中给了几个可移植性问题的例子：
 0. 数据类型，系统相关的数据类型如pid_t等在不同系统上实现不同，所以程序应使用定义好的系统数据类型，而不是原生的int, long等。</p>
 <ol>
 <li>结构体在不同系统实现下，内部元素存储顺序不定，所以最好不使用列表初始化的方式: <code>struct example s = {1, 2, 3}</code>,而使用下面这种方式。</li>
 </ol>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>struct example s; 
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>struct example s; 
 s.a=1;
 s.b=2;
 s.c=3;
-</code></pre></div><ol start=2>
+</code></pre></td></tr></table>
+</div>
+</div><ol start=2>
 <li>有些宏可能并没有在所有类UNIX系统上实现，使用前需要先判断是否已定义。如 WCOREDUMP在SUSv3就没有定义。</li>
 <li>有些时候有些头文件在某些系统上不需要包含。</li>
 </ol>
 <h3 id=exercises>Exercises</h3>
 <p>reboot()系统调用</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>int reboot(int magic, int magic2, int cmd, void *arg);
-</code></pre></div><p>参数magic需要等于 LINUX_REBOOT_MAGIC1(0xfee1dead) 且magic2 为以下之一才不会调用失败(应该是为了避免误调)</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>LINUX_REBOOT_MAGIC2 ( 672274793)
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>int reboot(int magic, int magic2, int cmd, void *arg);
+</code></pre></td></tr></table>
+</div>
+</div><p>参数magic需要等于 LINUX_REBOOT_MAGIC1(0xfee1dead) 且magic2 为以下之一才不会调用失败(应该是为了避免误调)</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>LINUX_REBOOT_MAGIC2 ( 672274793)
 LINUX_REBOOT_MAGIC2A ( 85072278)   since 2.1.17
 LINUX_REBOOT_MAGIC2B ( 369367448)  since 2.1.97
 LINUX_REBOOT_MAGIC2C ( 537993216)  since 2.5.71 
-</code></pre></div><p>这几个参数的意义是 Linus Torvalds和他三个女儿的生日。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>这几个参数的意义是 Linus Torvalds和他三个女儿的生日。</p>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -270,7 +348,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

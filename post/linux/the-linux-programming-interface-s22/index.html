@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 #include &amp;lt;unistd.h&amp;gt; int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行参数 e">
+<meta name=author content="xistor"><meta name=description content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 1 2 3 #include &amp;lt;unistd.h&amp;gt; int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行">
 <meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s22/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -20,21 +20,21 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记22. 程序的执行">
-<meta property="og:description" content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 #include <unistd.h> int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行参数 e">
+<meta property="og:description" content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 1 2 3 #include <unistd.h> int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s22/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2020-10-12T23:30:00+08:00">
 <meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记22. 程序的执行">
-<meta itemprop=description content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 #include <unistd.h> int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行参数 e"><meta itemprop=datePublished content="2020-10-12T23:30:00+08:00">
+<meta itemprop=description content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 1 2 3 #include <unistd.h> int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行"><meta itemprop=datePublished content="2020-10-12T23:30:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1482">
+<meta itemprop=wordCount content="1505">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记22. 程序的执行">
-<meta name=twitter:description content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 #include <unistd.h> int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行参数 e"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="exec() 系统调用execve()将新程序加载到某一进程的内存空间。 1 2 3 #include <unistd.h> int execve(const char *pathname, char *const argv[], char *const envp[]); pathname 为指定程序的路径名 argv为传递给新进程的命令行"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -109,16 +109,41 @@
 <div class=post-content>
 <h2 id=exec>exec()</h2>
 <p>系统调用execve()将新程序加载到某一进程的内存空间。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>execve</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=k>const</span> <span class=n>argv</span><span class=p>[],</span> <span class=kt>char</span> <span class=o>*</span><span class=k>const</span> <span class=n>envp</span><span class=p>[]);</span>
-</code></pre></div><ul>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>pathname 为指定程序的路径名</li>
 <li>argv为传递给新进程的命令行参数</li>
 <li>envp指定了新程序的环境列表</li>
 </ul>
 <p>除此之外还提供了一系列构建于execve()之上的库函数。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>execle</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span> <span class=n>pathname</span> <span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span> <span class=n>arg</span> <span class=p>,</span> <span class=p>...</span>
     <span class=cm>/* , (char *)</span> <span class=nb>NULL</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=k>const</span> <span class=n>envp</span> <span class=p>[]</span> <span class=err>*/</span> <span class=p>);</span>
@@ -130,7 +155,9 @@
     <span class=cm>/* , (char *)</span> <span class=nb>NULL</span> <span class=err>*/</span><span class=p>);</span>
 
 <span class=c1>// None of the above returns on success; all return –1 on error
-</span></code></pre></div><p>从命名上可以看出规律</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>从命名上可以看出规律</p>
 <ul>
 <li>后缀有<code>l</code>的表示以列表的形式指定参数</li>
 <li>后缀有<code>e</code>的表示参数将指定环境变量</li>
@@ -144,8 +171,15 @@
 在set-user-ID和set-group-ID程序中避免使用system(),shell对操作的控制依赖于各种环境变量，所以使用system()会不可避免的给系统带来安全隐患。</p>
 <p>system()实现：</p>
 <p>首先需要使用fork()来创建一个子进程，并调用execl()执行sh命令</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=n>execl</span><span class=p>(</span><span class=s>&#34;/bin/sh&#34;</span><span class=p>,</span> <span class=s>&#34;sh&#34;</span><span class=p>,</span> <span class=s>&#34;-c&#34;</span><span class=p>,</span> <span class=n>command</span><span class=p>,</span> <span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=p>)</span> <span class=nb>NULL</span><span class=p>)</span>
-</code></pre></div><p>system()实现的时候需要考虑对信号的正确处理，首先是SIGCHLD,若调用system()的程序还直接创建了其他子进程，对SIGCHLD信号处理函数也执行了wait()，那么就会和system()中的waitpid()形成竞争关系。所以system()在运行期间必须阻塞SIGCHLD信号。
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=n>execl</span><span class=p>(</span><span class=s>&#34;/bin/sh&#34;</span><span class=p>,</span> <span class=s>&#34;sh&#34;</span><span class=p>,</span> <span class=s>&#34;-c&#34;</span><span class=p>,</span> <span class=n>command</span><span class=p>,</span> <span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=p>)</span> <span class=nb>NULL</span><span class=p>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>system()实现的时候需要考虑对信号的正确处理，首先是SIGCHLD,若调用system()的程序还直接创建了其他子进程，对SIGCHLD信号处理函数也执行了wait()，那么就会和system()中的waitpid()形成竞争关系。所以system()在运行期间必须阻塞SIGCHLD信号。
 只有父进程才需要阻塞SIGCHLD，同时还需要忽略SIGINT和SIGQUIT。<br>
 下图所有进程构成前端进程组的一部分，在输入中断或退出符时，会将相应信号发送给所有3个进程，shell在等待子进程期间会忽略SIGINT和SIGQUIT信号，默认情况下会杀死调用程序与sleep进程。</p>
 <figure class=center><img src=/img/the-linux-programming-interface-s21/overview.png width=500><figcaption>
@@ -159,14 +193,27 @@
 遵守这样的规定后，表现出来的现象是在system()执行时，使用ctrl+c或ctrl+\将只会杀掉system()的子进程，应用程序将会继续运行。</li>
 </ul>
 <h2 id=clone>clone()</h2>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _GNU_SOURCE
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _GNU_SOURCE
 </span><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>clone</span><span class=p>(</span><span class=kt>int</span> <span class=p>(</span><span class=o>*</span><span class=n>func</span><span class=p>)(</span><span class=kt>void</span> <span class=o>*</span><span class=p>),</span> <span class=kt>void</span> <span class=o>*</span><span class=n>child_stack</span><span class=p>,</span> <span class=kt>int</span> <span class=n>flags</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>func_arg</span><span class=p>,</span> <span class=p>...</span>
                  <span class=cm>/* pid_t *ptid, struct user_desc *tls, pid_t *ctid */</span> <span class=p>);</span>
 
 <span class=c1>// return process ID of child on success, or -1 on error
-</span></code></pre></div><p>clone()和fork()的不同之处</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>clone()和fork()的不同之处</p>
 <ul>
 <li>clone()生成的子进程继续运行时不以调用处为起点，转而去调用以参数func所指定的函数。func的参数由func_arg指定。</li>
 <li>子程序可能和父进程共享内存，所以调用者需要分配一块适当大小的栈供子进程使用, 栈向下增长，child_stack指向内存块的高端。</li>
@@ -246,7 +293,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

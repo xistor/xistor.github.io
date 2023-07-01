@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记8.进程信任状态">
 <meta property="og:description" content="每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记8.进程信任状态">
 <meta itemprop=description content="每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us"><meta itemprop=datePublished content="2020-07-28T10:53:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1560">
+<meta itemprop=wordCount content="1593">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记8.进程信任状态">
 <meta name=twitter:description content="每个进程有一组相关的UID和GID: 真实用户ID(real user ID)和组ID 有效用户ID(effective user ID)和组ID 保存的set-us"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -127,19 +127,46 @@
 <h3 id=set-user-id-和-set-group-id-程序>Set-User-ID 和 Set-Group-ID 程序</h3>
 <p>一个set-user-ID 程序可以在其运行时以它的可执行文件的uid和gid运行。
 比如典型的passwd,由于一般用户没有权限修改/etc/shadow, 所以passwd需要以root运行：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>$ll /usr/bin/passwd
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>$ll /usr/bin/passwd
 -rwsr-xr-x 1 root root 54256 Mar 27  2019 /usr/bin/passwd*
-</code></pre></div><p><code>ll</code>看到<code>passwd</code>的二进制文件的owner是root，代表可执行权限的<code>x</code>变成了<code>s</code>。然后我们执行<code>passwd</code>，并用<code>ps -al</code> 看一下<code>passwd</code>进程的uid。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>F S   UID   PID  PPID  C PRI  NI ADDR SZ  WCHAN TTY          TIME CMD
+</code></pre></td></tr></table>
+</div>
+</div><p><code>ll</code>看到<code>passwd</code>的二进制文件的owner是root，代表可执行权限的<code>x</code>变成了<code>s</code>。然后我们执行<code>passwd</code>，并用<code>ps -al</code> 看一下<code>passwd</code>进程的uid。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>F S   UID   PID  PPID  C PRI  NI ADDR SZ  WCHAN TTY          TIME CMD
 0 S  1000     7     6  1  80   0 -  3782      - tty1     00:00:00 bash
 0 S     0    34     7  0  80   0 -  3527      - tty1     00:00:00 passwd
 ...
 
-</code></pre></div><p>可见<code>passwd</code>的uid并不是去执行它的用户的uid,而是其可执行文件owner的uid,也就是root。这也就让一般用户也可以其修改密码。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>可见<code>passwd</code>的uid并不是去执行它的用户的uid,而是其可执行文件owner的uid,也就是root。这也就让一般用户也可以其修改密码。</p>
 <p>可以通过<code>chmod</code>给可执行文件设置 set-user-ID 和 set-group-ID bits</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>chmod u+s xxx       // Turn on set-user-ID permission bit        
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>chmod u+s xxx       // Turn on set-user-ID permission bit        
 chmod g+s xxx       // Turn on set-group-ID permission bit
-</code></pre></div><h3 id=saved-set-user-id-和-saved-set-group-id>Saved Set-User-ID 和 Saved Set-Group-ID</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=saved-set-user-id-和-saved-set-group-id>Saved Set-User-ID 和 Saved Set-Group-ID</h3>
 <p>saved set-user-id 是设计来给set-user-ID程序使用的。当一个suid程序执行时，会发生以下几个步骤：</p>
 <ol>
 <li>如果可执行程序的set-user-id位为enble,然后effective user id 会被设置为可执行程序的拥有者的id。如果可执行程序的set-user-id位没有设置，就什么也不做。</li>
@@ -150,7 +177,22 @@ chmod g+s xxx       // Turn on set-group-ID permission bit
 <h3 id=获取和修改进程信任状态>获取和修改进程信任状态</h3>
 <p>对于任何一个进程，可以在/proc/PID/status文件中查看今晨Uid,Gid和Groups.
 举个栗子，如下。uid和gid行四个数字依次为real,effective,saved set和file system。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>Name:   su
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>Name:   su
 State:  S (sleeping)
 Tgid:   71
 Pid:    71
@@ -161,8 +203,23 @@ Gid:    0       0       0       0
 FDSize: 3
 Groups:
 ...
-</code></pre></div><p>获取进程uid和gid的系统调用如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</code></pre></td></tr></table>
+</div>
+</div><p>获取进程uid和gid的系统调用如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=n>uid_t</span> <span class=nf>getuid</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
     <span class=c1>// Returns real user ID of calling process
 </span><span class=c1></span><span class=n>uid_t</span> <span class=nf>geteuid</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
@@ -171,12 +228,24 @@ Groups:
     <span class=c1>// Returns real group ID of calling process
 </span><span class=c1></span><span class=n>gid_t</span> <span class=nf>getegid</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
     <span class=c1>// Returns effective group ID of calling process
-</span></code></pre></div><p><strong>修改effective id</strong></p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><strong>修改effective id</strong></p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>setuid</span><span class=p>(</span><span class=n>uid_t</span> <span class=n>uid</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>setgid</span><span class=p>(</span><span class=n>gid_t</span> <span class=n>gid</span><span class=p>);</span>
     <span class=c1>// Both return 0 on success, or –1 on error
-</span></code></pre></div><p>setuid()分两种情况:</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>setuid()分两种情况:</p>
 <ol>
 <li>当进程为非特权进程(effective user ID 不是0)，只有effective user ID会被setuid()改变,而且值只能在real user Id和saved set-user-ID之间切换。也就说对于非特权用户，setuid()仅在执行一个set-user-id程序时才有用。</li>
 <li>当一个特权进程执行setuid()并传入一个非0参数，real、effective、saved user ID都会设为参数值。一旦设置成功，进程将不能再把uid设置回0。</li>
@@ -259,7 +328,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

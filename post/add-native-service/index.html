@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Android 使用AIDL添加 native service">
 <meta property="og:description" content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Android 使用AIDL添加 native service">
 <meta itemprop=description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><meta itemprop=datePublished content="2020-05-27T23:03:16+08:00">
 <meta itemprop=dateModified content="2020-08-15T15:32:43+08:00">
-<meta itemprop=wordCount content="1302">
+<meta itemprop=wordCount content="1501">
 <meta itemprop=keywords content="Android,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Android 使用AIDL添加 native service">
 <meta name=twitter:description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -132,13 +132,50 @@
 </code></pre>
 <h3 id=3-编写aidl文件>3. 编写AIDL文件</h3>
 <p>新建AIDL文件ISample.aidl,声明接口，接口名称要与文件名一致。 in/out来表示是输入/输出参数，默认是in，out参数在最终生成的从C++源文件会以指针实现。这里定义了一个DoSomething接口，有两个参数:n和一个内含string的vector，功能是返回n个"Hello"在ouput数组中。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kn>package</span> <span class=nx>sample</span><span class=p>;</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kn>package</span> <span class=nx>sample</span><span class=p>;</span>
 
 <span class=kd>interface</span> <span class=nx>ISample</span> <span class=p>{</span>
 <span class=nx>void</span> <span class=nf>DoSomething</span><span class=p>(</span><span class=kt>int</span> <span class=nx>n</span><span class=p>,</span> <span class=nx>out</span> <span class=nx>List</span><span class=p>&lt;</span><span class=nx>String</span><span class=p>&gt;</span> <span class=nx>output</span><span class=p>);</span>
 <span class=p>}</span>
-</code></pre></div><p>新建一个Android.mk文件,编译生成对应的lib库以及头文件。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>新建一个Android.mk文件,编译生成对应的lib库以及头文件。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
 <span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
 
 <span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
@@ -160,10 +197,36 @@
 
 
 <span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_SHARED_LIBRARY</span><span class=k>)</span>
-</code></pre></div><p>编译会生成BnSample.h,BpSample.h和ISample.h三个头文件，在out/target/product/generic_x86_64/obj/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated 目录下。同级的src目录下还有对应的cpp源文件ISample.cpp,AIDL帮我们实现好了这些格式化的文件，自己手写实现也是可以的。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>编译会生成BnSample.h,BpSample.h和ISample.h三个头文件，在out/target/product/generic_x86_64/obj/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated 目录下。同级的src目录下还有对应的cpp源文件ISample.cpp,AIDL帮我们实现好了这些格式化的文件，自己手写实现也是可以的。</p>
 <h3 id=4-实现-sampleservice>4. 实现 sampleService</h3>
 <p>sampleService.h, sampleService继承自BnSample。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#ifndef SAMPLE_SERVICE_H
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#ifndef SAMPLE_SERVICE_H
 </span><span class=cp>#define SAMPLE_SERVICE_H
 </span><span class=cp></span>
 <span class=cp>#include</span><span class=cpf>&lt;BnSample.h&gt;</span><span class=cp>
@@ -183,8 +246,34 @@
 
 <span class=cp>#endif  </span><span class=c1>// SAMPLE_SERVICE_H
 </span><span class=c1></span>
-</code></pre></div><p>sampleService.cpp，在此实现DoSomething的逻辑，这里就简单的把n个"Hello"塞到vector中返回。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span><span class=cpf>&#34;sampleService.h&#34;</span><span class=cp>
+</code></pre></td></tr></table>
+</div>
+</div><p>sampleService.cpp，在此实现DoSomething的逻辑，这里就简单的把n个"Hello"塞到vector中返回。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span><span class=cpf>&#34;sampleService.h&#34;</span><span class=cp>
 </span><span class=cp></span>
 <span class=k>using</span> <span class=k>namespace</span> <span class=n>android</span><span class=p>;</span>
 
@@ -204,8 +293,39 @@
 
     <span class=k>return</span> <span class=o>::</span><span class=n>android</span><span class=o>::</span><span class=n>binder</span><span class=o>::</span><span class=n>Status</span><span class=o>::</span><span class=n>ok</span><span class=p>();</span> 
 <span class=p>}</span>
-</code></pre></div><p>service的Android.mk 如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>service的Android.mk 如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
 <span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
 
 <span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
@@ -230,8 +350,40 @@
 
 <span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_SHARED_LIBRARY</span><span class=k>)</span>
 
-</code></pre></div><p>然后我们需要一个进程来承载我们的service，在process目录下新建sample_main.cpp文件，在main函数中调用serviceManager的addService方法将我们的service注册进去，以便客户端可以找到。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后我们需要一个进程来承载我们的service，在process目录下新建sample_main.cpp文件，在main函数中调用serviceManager的addService方法将我们的service注册进去，以便客户端可以找到。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;binder/IPCThreadState.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;binder/ProcessState.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;binder/IServiceManager.h&gt;</span><span class=cp>
@@ -257,8 +409,40 @@
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 
 <span class=p>}</span>
-</code></pre></div><p>对应的的mk如下，编译生成的sampleService就是我们service的可执行文件。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>对应的的mk如下，编译生成的sampleService就是我们service的可执行文件。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
 <span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
  
 <span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
@@ -284,9 +468,41 @@
  
 <span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_EXECUTABLE</span><span class=k>)</span>	
 	
-</code></pre></div><h3 id=6-实现客户端>6. 实现客户端</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=6-实现客户端>6. 实现客户端</h3>
 <p>客户端就是通过serviceManager取得sampleService的指针后，简单的调用下DoSomething接口, n值传入3，并把返回的vector打印出来。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;binder/IServiceManager.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;binder/IServiceManager.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;binder/Parcel.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;utils/Errors.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
@@ -312,8 +528,41 @@
     <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
 <span class=p>}</span>
 
-</code></pre></div><p>客户端的mk文件</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>客户端的mk文件</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
 <span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
 
 <span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
@@ -340,11 +589,21 @@
 <span class=nv>LOCAL_MODULE</span><span class=o>:=</span> sampletest
 
 <span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_EXECUTABLE</span><span class=k>)</span>	
-</code></pre></div><h3 id=7-测试>7. 测试</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=7-测试>7. 测试</h3>
 <p>lunch之后输入emulator启动模拟器，将sampleService和Sampletest push进模拟器。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sampleService <span class=p>&amp;</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sampleService <span class=p>&amp;</span>
 sampletest
-</code></pre></div><p>我们客户端传入的参数是3，所以输出三行Hello就代表成功了。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>我们客户端传入的参数是3，所以输出三行Hello就代表成功了。</p>
 <h3 id=8-参考>8. 参考</h3>
 <p><a href=https://android.googlesource.com/platform/system/tools/aidl/+/brillo-m10-dev/docs/aidl-cpp.md>https://android.googlesource.com/platform/system/tools/aidl/+/brillo-m10-dev/docs/aidl-cpp.md</a></p>
 </div>
@@ -420,7 +679,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

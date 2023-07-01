@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记23. 线程">
 <meta property="og:description" content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记23. 线程">
 <meta itemprop=description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><meta itemprop=datePublished content="2020-10-18T18:30:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="6495">
+<meta itemprop=wordCount content="6959">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记23. 线程">
 <meta name=twitter:description content="本章主要介绍了POSIX线程， 也就是pthread。一个进程可以包含多个线程，线程之间共享全局内存。 多线程相比多进程有几个优点： 共享信息简单"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -185,20 +185,56 @@
 <li>栈</li>
 </ul>
 <h2 id=创建线程>创建线程</h2>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_create</span><span class=p>(</span><span class=n>pthread_t</span> <span class=o>*</span><span class=kr>thread</span><span class=p>,</span> <span class=k>const</span> <span class=n>pthread_attr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=p>(</span><span class=o>*</span><span class=n>start</span><span class=p>)(</span><span class=kt>void</span> <span class=o>*</span><span class=p>),</span> <span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on success, or a positive error number on error
-</span></code></pre></div><p>新线程从函数start以参数arg开始执行，参数thread指向的缓冲区，在此保存一个该进程的唯一标识， 供后续使用。start函数的返回值不应指定在线程栈中，因为线程终止后无法确定线程栈的内容是否有效。<br>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>新线程从函数start以参数arg开始执行，参数thread指向的缓冲区，在此保存一个该进程的唯一标识， 供后续使用。start函数的返回值不应指定在线程栈中，因为线程终止后无法确定线程栈的内容是否有效。<br>
 参数attr是指向pthread_attr_t对象的指针，指定新线程的属性。</p>
 <h2 id=终止进程>终止进程</h2>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>void</span> <span class=nf>pthread_exit</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>retval</span><span class=p>);</span>
 
-</code></pre></div><p>相当于在start函数内return。retval指定了线程返回值，举个使用的栗子:</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=o>*</span><span class=nf>thread</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span> <span class=p>{</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>相当于在start函数内return。retval指定了线程返回值，举个使用的栗子:</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>void</span> <span class=o>*</span><span class=nf>thread</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span> <span class=p>{</span>
   <span class=kt>char</span> <span class=o>*</span><span class=n>ret</span><span class=p>;</span>
 
   <span class=k>if</span> <span class=p>((</span><span class=n>ret</span> <span class=o>=</span> <span class=p>(</span><span class=kt>char</span><span class=o>*</span><span class=p>)</span> <span class=n>malloc</span><span class=p>(</span><span class=mi>20</span><span class=p>))</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span> <span class=p>{</span>
@@ -209,14 +245,27 @@
   <span class=n>pthread_exit</span><span class=p>(</span><span class=n>ret</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><h2 id=pthread_join>pthread_join()</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=pthread_join>pthread_join()</h2>
 <p>函数thread_join()等待由thread标识的线程终止（若已经终止会立即返回）</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_join</span><span class=p>(</span><span class=n>pthread_t</span> <span class=kr>thread</span><span class=p>,</span> <span class=kt>void</span> <span class=o>**</span><span class=n>retval</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on sucess, or a positive error number on error
-</span></code></pre></div><p>若线程未分离（detached），而又没有使用pthread_join(),那么线程终止后将产生僵尸线程。<br>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>若线程未分离（detached），而又没有使用pthread_join(),那么线程终止后将产生僵尸线程。<br>
 pthread_join()和waitpid()之间的区别：</p>
 <ul>
 <li>一个进程内的线程之间的关系是对等的，进程中的任意线程都可以调用pthread_join()与该进程的任何其他线程连接起来。</li>
@@ -224,17 +273,59 @@ pthread_join()和waitpid()之间的区别：</p>
 </ul>
 <h2 id=线程的分离>线程的分离</h2>
 <p>如果不关心进程的返回状态，只希望进程在线程终止的时候能自动清理并移除之，可以使用pthread_detach()</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_detach</span><span class=p>(</span><span class=n>pthread_t</span> <span class=kr>thread</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on sucess, or a positive error number on error
-</span></code></pre></div><p>但是当其他线程调用了exit(), 或主进程执行return时，即使分离的线程也会收到影响，进程的所有线程将会立即停止。</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>但是当其他线程调用了exit(), 或主进程执行return时，即使分离的线程也会收到影响，进程的所有线程将会立即停止。</p>
 <h2 id=线程的同步>线程的同步</h2>
 <p>因为线程之间能够共享全局变量，所以就存在竞争问题，为了安全的共享变量，不同线程之间需要同步操作。</p>
 <h3 id=互斥量>互斥量</h3>
 <p>互斥量pthread_mutex_t使用前必须初始化</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=c1>// 静态互斥量的初始化
 </span><span class=c1></span><span class=k>static</span> <span class=n>pthread_mutex_t</span> <span class=n>mtx</span> <span class=o>=</span> <span class=n>PTHREAD_MUTEX_INITIALIZER</span><span class=p>;</span>
@@ -261,22 +352,48 @@ pthread_join()和waitpid()之间的区别：</p>
   <span class=n>pthread_mutex_init</span><span class=p>(</span><span class=n>mtx</span><span class=p>,</span> <span class=p>);</span>
 
 <span class=p>}</span>
-</code></pre></div><p>对互斥量加锁和解锁</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
+</code></pre></td></tr></table>
+</div>
+</div><p>对互斥量加锁和解锁</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthrad.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_mutex_lock</span><span class=p>(</span><span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 
 <span class=kt>int</span> <span class=nf>pthread_mutex_unlock</span><span class=p>(</span><span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on success, or a positive error number on error
-</span></code></pre></div><p>如果互斥量之前未锁定，执行锁定操作将会立即返回，否则将会一直阻塞到互斥量被解锁。</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果互斥量之前未锁定，执行锁定操作将会立即返回，否则将会一直阻塞到互斥量被解锁。</p>
 <p>当不再需要互斥量时，应使用pthread_mutex_destory()将其销毁。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_mutex_destory</span><span class=p>(</span><span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 
 <span class=c1>// Return 0 on success, or a positive error number on error
-</span></code></pre></div><p>互斥量的属性之一 类型：</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>互斥量的属性之一 类型：</p>
 <ul>
 <li>PTHREAD_MUTEX_NORMAL: 该互斥量不具有死锁自检功能，对与已经锁住的互斥量，再次加锁会导致不确定结果。（linux下会成功）</li>
 <li>PTHREAD_MUTEX_ERRORCHECK: 会对加解锁过程做检查。</li>
@@ -286,7 +403,20 @@ pthread_join()和waitpid()之间的区别：</p>
 <h3 id=条件变量>条件变量</h3>
 <p>条件变量可以在共享变量状态改变的时候通知其他线程，其他线程可以等待通知。</p>
 <p>条件变量初始化</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=c1>// 静态条件变量初始化
 </span><span class=c1></span><span class=k>static</span> <span class=n>pthread_cond_t</span> <span class=n>cond</span> <span class=o>=</span> <span class=n>PTHREAD_COND_INITIALIZER</span><span class=p>;</span>
@@ -295,15 +425,30 @@ pthread_join()和waitpid()之间的区别：</p>
 </span><span class=c1></span>
 <span class=kt>int</span> <span class=nf>pthread_cond_init</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>,</span> <span class=k>const</span> <span class=n>pthread_condattr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or a positive error number on error
-</span></code></pre></div><p>通知和等待条件变量操作</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>通知和等待条件变量操作</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_cond_signal</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_cond_broadcast</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_cond_wait</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>,</span> <span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_cond_timedwait</span><span class=p>(</span><span class=n>pthread_cond_t</span> <span class=o>*</span><span class=n>cond</span><span class=p>,</span> <span class=n>pthread_mutex_t</span> <span class=o>*</span><span class=n>mutex</span><span class=p>,</span>
   <span class=k>const</span> <span class=k>struct</span> <span class=n>timespec</span> <span class=o>*</span><span class=n>abstime</span><span class=p>);</span>
 <span class=c1>// All return 0 on success, or a positive error number on error
-</span></code></pre></div><p><code>pthread_cond_signal()</code>和<code>pthread_cond_broadcast()</code>区别在于前者只保证通知至少一个阻塞在<code>pthread_cond_wait()</code>的线程，后者会通知所有阻塞的线程。除非只有一个阻塞线程需要唤醒，比如所有线程都执行同一操作，只需要唤醒一个线程做就行。使用<code>pthread_cond_broadcast()</code>一般会得到正确结果。<strong><code>pthread_cond_signal()</code>通知的时候若没有线程在等待，就会被忽略。</strong></p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>pthread_cond_signal()</code>和<code>pthread_cond_broadcast()</code>区别在于前者只保证通知至少一个阻塞在<code>pthread_cond_wait()</code>的线程，后者会通知所有阻塞的线程。除非只有一个阻塞线程需要唤醒，比如所有线程都执行同一操作，只需要唤醒一个线程做就行。使用<code>pthread_cond_broadcast()</code>一般会得到正确结果。<strong><code>pthread_cond_signal()</code>通知的时候若没有线程在等待，就会被忽略。</strong></p>
 <p>从<code>pthread_cond_wait()</code>的参数就能看出，它需要和mutex配合使用，在其内部对mutex会按顺序做如下操作：</p>
 <ol>
 <li>释放mutex;</li>
@@ -324,7 +469,25 @@ pthread_join()和waitpid()之间的区别：</p>
 <li>条件变量信号意味着“可能有事情去做”，而不是“一定有事情去做”，接收信号的线程可以通过再次检查条件来确定是否真的需要做什么。</li>
 <li>可能出现虚假唤醒的情况</li>
 </ul>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c>
 <span class=k>static</span> <span class=n>pthread_mutex_t</span> <span class=n>mtx</span> <span class=o>=</span> <span class=n>PTHREAD_MUTEX_INITIALIZER</span><span class=p>;</span>
 <span class=k>static</span> <span class=n>pthread_cond_t</span> <span class=n>cond</span> <span class=o>=</span> <span class=n>PTHREAD_COND_INITIALIZER</span><span class=p>;</span>
 <span class=k>static</span> <span class=kt>int</span> <span class=n>avail</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
@@ -338,7 +501,26 @@ pthread_join()和waitpid()之间的区别：</p>
 
 <span class=n>pthread_cond_signal</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cond</span><span class=p>);</span>
 
-</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// 消费者
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// 消费者
 </span><span class=c1></span><span class=n>pthread_mutex_lock</span><span class=p>(</span><span class=o>&amp;</span><span class=n>mtx</span><span class=p>);</span>
 
 <span class=k>while</span> <span class=p>(</span><span class=n>avail</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span> <span class=cm>/* Wait for something to consume */</span>
@@ -351,19 +533,106 @@ pthread_join()和waitpid()之间的区别：</p>
 <span class=p>}</span>
 
 <span class=n>pthread_mutex_unlock</span><span class=p>(</span><span class=o>&amp;</span><span class=n>mtx</span><span class=p>);</span>
-</code></pre></div><h2 id=线程安全>线程安全</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=线程安全>线程安全</h2>
 <p>一个线程安全的函数允许同时被多个线程调用，若一个函数中使用了全局变量，通常需要互斥量来同步以保证线程安全。不用互斥量就可以被多线程安全调用的函数称为可重入函数，可重入函数中不会用到全局和静态变量。</p>
 <h3 id=one-time-初始化>One-time 初始化</h3>
 <p>有时候，可能有一个函数会被每一个线程调用，但只希望第一次调用的时候执行。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=n>pthread_once_t</span> <span class=n>once_control</span> <span class=o>=</span> <span class=n>PTHREAD_ONCE_INIT</span><span class=p>;</span>
 
 <span class=kt>int</span> <span class=nf>pthread_once</span><span class=p>(</span><span class=n>pthread_once_t</span> <span class=o>*</span><span class=n>once_control</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>init</span><span class=p>)(</span><span class=kt>void</span><span class=p>));</span>
 
 <span class=c1>// return 0 on success, or a positive error number on error
-</span></code></pre></div><p>使用栗子：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>使用栗子：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;errno.h&gt;                                                              </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;                                                            </span><span class=cp>
 </span><span class=cp></span>                                                                                
@@ -431,26 +700,61 @@ pthread_join()和waitpid()之间的区别：</p>
   <span class=n>exit</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>                                                                       
 <span class=p>}</span>                                                                               
 
-</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>执行结果：
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>执行结果：
 
 Thread 1 executing
 in once_fn
 Thread 2 executing
 Thread 3 executing
-</code></pre></div><h3 id=线程特有数据>线程特有数据</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=线程特有数据>线程特有数据</h3>
 <p>线程特有数据允许每个调用函数的线程持有一份变量的拷贝。</p>
 <p>为了区分不同函数之间的线程特有数据，需要创建一个key来区分它们。记住，这个key是用来区分函数的，而不是线程的。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_key_create</span><span class=p>(</span><span class=n>pthread_key_t</span> <span class=o>*</span><span class=n>key</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>destructor</span><span class=p>)(</span><span class=kt>void</span> <span class=o>*</span><span class=p>));</span>
 <span class=c1>// Returns 0 on success, or a positive error number on error
-</span></code></pre></div><p>也正是因为key是用来区分函数的，所以返回的key可以被进程中的所有线程使用，指向的是一个由我们事先声明的全局变量。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>也正是因为key是用来区分函数的，所以返回的key可以被进程中的所有线程使用，指向的是一个由我们事先声明的全局变量。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_setspecific</span><span class=p>(</span><span class=n>pthread_key_t</span> <span class=n>key</span><span class=p>,</span> <span class=k>const</span> <span class=kt>void</span> <span class=o>*</span><span class=n>value</span><span class=p>);</span>
 <span class=c1>// return 0 on success, or a positive error number on error
 </span><span class=c1></span><span class=kt>void</span> <span class=o>*</span><span class=nf>pthread_getspecific</span><span class=p>(</span><span class=n>pthread_key_t</span> <span class=n>key</span><span class=p>);</span>
 <span class=c1>// return pointer, or a NULL if no thread-specific data is associated with key
-</span></code></pre></div><p><code>pthread_setspecific()</code>的参数<code>key</code>是调用<code>pthread_key_create()</code>分配的key,<code>value</code>通常指向一块由调用者分配的内存，线程终止时，会自动调用<code>create</code>时指定的<code>destructor()</code>去释放<code>value</code>指向的内存。<br>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>pthread_setspecific()</code>的参数<code>key</code>是调用<code>pthread_key_create()</code>分配的key,<code>value</code>通常指向一块由调用者分配的内存，线程终止时，会自动调用<code>create</code>时指定的<code>destructor()</code>去释放<code>value</code>指向的内存。<br>
 下图是线程特有数据的实现结构，如图，Pthread为每个线程维护一个指针数组，指针数组内每一个成员都指向一个函数的特有数据。key1所对应的函数的特有数据数据保存在tsd[1]指向的内存中。</p>
 <figure class=center><img src=/img/the-linux-programming-interface-s23/tsd.png width=500><figcaption>
 <h4>线程特有数据的实现结构</h4>
@@ -459,19 +763,45 @@ Thread 3 executing
 <p>其实根据上面这个图，之前对key的总结有点补充，key是用来区分函数的，但并不代表一个函数内只能用一个key，一个函数中可以创建和指定多个key。但上限有限，linux中key最多可以1024个。通常只用一个key就可以了，将函数要用的多个特有数据值放到一个结构中。</p>
 <h3 id=线程局部存储thread-local-storage>线程局部存储(thread-local Storage)</h3>
 <p>线程局部存储比线程特有数据使用起来更加简单,只要在声明全局或静态变量的时候加上__thread说明符，每个线程就会持有一份此变量的拷贝：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>static</span> <span class=n>__thread</span> <span class=n>buf</span><span class=p>[</span><span class=n>MAX_ERROR_LEN</span><span class=p>];</span>
-</code></pre></div><h2 id=线程取消>线程取消</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>static</span> <span class=n>__thread</span> <span class=n>buf</span><span class=p>[</span><span class=n>MAX_ERROR_LEN</span><span class=p>];</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=线程取消>线程取消</h2>
 <p>调用下面系统调用可以请求取消掉指定线程(在其他线程中调用)。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_cancel</span><span class=p>(</span><span class=n>pthread_t</span> <span class=kr>thread</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or a positive error number on error
-</span></code></pre></div><h3 id=线程取消状态>线程取消状态</h3>
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id=线程取消状态>线程取消状态</h3>
 <p>调用如下接口，可以控制本线程对取消请求的应对方式。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>pthread_setcancelstate</span><span class=p>(</span><span class=kt>int</span> <span class=n>state</span><span class=p>,</span> <span class=kt>int</span> <span class=o>*</span><span class=n>oldstate</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>pthread_setcanceltype</span><span class=p>(</span><span class=kt>int</span> <span class=n>type</span><span class=p>,</span> <span class=kt>int</span> <span class=o>*</span><span class=n>oldtype</span><span class=p>);</span>
 <span class=c1>// Both return 0 on success, or a positive error number on error
-</span></code></pre></div><p>pthread_setcancelstate()参数state可选状态如下：</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>pthread_setcancelstate()参数state可选状态如下：</p>
 <ul>
 <li>PTHREAD_CANCEL_DISABLE: 线程不可取消，取消状态被挂起，直到状态改为enable</li>
 <li>PTHREAD_CANCEL_ENABLE: 线程可取消</li>
@@ -492,22 +822,85 @@ Thread 3 executing
 </ul>
 <p>线程取消的危险性主要与未释放共享资源有关，取消时须十分注意，否则可能导致死锁。为了避免这些，取消点因此选在线程阻塞的时候，减小持有资源的可能，除此之外还可以使用cleanup handler</p>
 <h3 id=cleanup-handlers>cleanup handlers</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>void</span> <span class=nf>pthread_cleanup_push</span><span class=p>(</span><span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>routine</span><span class=p>)(</span><span class=kt>void</span><span class=o>*</span><span class=p>),</span> <span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>);</span>
 <span class=kt>void</span> <span class=nf>pthread_cleanup_pop</span><span class=p>(</span><span class=kt>int</span> <span class=n>execute</span><span class=p>);</span>
-</code></pre></div><p>清理函数是以栈的形式来管理的，这两个函数很明显用来添加和删除handler，每个push都应该有一个对应的pop。当线程执行到最后退出的话，是不需要调用清理函数的，所以要在适当的时候将handler从栈中pop出来。若<code>pthread_cleanup_pop()</code>参数<code>execute</code>不为0，弹出的栈顶处理函数的同时会执行清理函数。线程因调用pthread_exit()终止的时候，会自动执行尚未从清理函数栈中弹出的清理函数，线程正常返回(return)时不会执行s清理函数。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>清理函数是以栈的形式来管理的，这两个函数很明显用来添加和删除handler，每个push都应该有一个对应的pop。当线程执行到最后退出的话，是不需要调用清理函数的，所以要在适当的时候将handler从栈中pop出来。若<code>pthread_cleanup_pop()</code>参数<code>execute</code>不为0，弹出的栈顶处理函数的同时会执行清理函数。线程因调用pthread_exit()终止的时候，会自动执行尚未从清理函数栈中弹出的清理函数，线程正常返回(return)时不会执行s清理函数。</p>
 <h3 id=异步取消>异步取消</h3>
 <p>如果设定线程可异步取消时，可以在任何时点将其取消，取消动作不会拖延到下一个取消点才执行。异步取消时虽然清理函数可以执行，但是无法得知线程当前执行到哪一步。所以原则上可异步取消的线程不应该分配资源。</p>
 <h2 id=线程细节>线程细节</h2>
 <h3 id=栈>栈</h3>
 <p>每个线程有自己的固定大小的栈，以下函数可以修改：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=c1>// 可以更改栈大小
 </span><span class=c1></span><span class=kt>int</span> <span class=nf>pthread_attr_setstacksize</span><span class=p>(</span><span class=n>pthread_attr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>stacksize</span><span class=p>);</span>
 <span class=c1>// 可以更该栈地址和栈大小
 </span><span class=c1></span><span class=kt>int</span> <span class=nf>pthread_attr_setstack</span><span class=p>(</span><span class=n>pthread_attr_t</span> <span class=o>*</span><span class=n>attr</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>stackaddr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>stacksize</span><span class=p>);</span>
-</code></pre></div><p>使用栗子如下，可见上面两个函数是将栈size或地址写到属性中，在创建线程的时候再使用指定属性创建线程。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
+</code></pre></td></tr></table>
+</div>
+</div><p>使用栗子如下，可见上面两个函数是将栈size或地址写到属性中，在创建线程的时候再使用指定属性创建线程。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;                                                            </span><span class=cp>
 </span><span class=cp></span>                                                                                
 <span class=kt>void</span> <span class=o>*</span><span class=nf>thread1</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span>                                                        
@@ -546,7 +939,9 @@ Thread 3 executing
    <span class=n>exit</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>                                                                     
 <span class=p>}</span>
 
-</code></pre></div><h3 id=线程和信号>线程和信号</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=线程和信号>线程和信号</h3>
 <p>信号的接收：</p>
 <ul>
 <li>信号动作（signal action）是进程级的，如果一个默认动作是<code>stop</code>或<code>terminate</code>的信号送达任意一个线程，那么进程中的所有线程都会<code>stop</code>或<code>terminate</code>。</li>
@@ -575,12 +970,200 @@ Thread 3 executing
 </ol>
 </li>
 </ul>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>pthread_atfork</span><span class=p>(</span><span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>prepare_func</span><span class=p>)(</span><span class=kt>void</span><span class=p>),</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>parent_func</span><span class=p>)(</span><span class=kt>void</span><span class=p>),</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>child_func</span><span class=p>)(</span><span class=kt>void</span><span class=p>));</span>
-</code></pre></div><p>prepare_func会被加入一个函数列表中，在子进程创建之前，自动按照注册顺序反序执行。parent_func和child_func在fork()返回之前，分别在父进程和子进程中按注册顺序执行。
+</code></pre></td></tr></table>
+</div>
+</div><p>prepare_func会被加入一个函数列表中，在子进程创建之前，自动按照注册顺序反序执行。parent_func和child_func在fork()返回之前，分别在父进程和子进程中按注册顺序执行。
 下面是栗子:</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _UNIX03_THREADS 1                                                       
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _UNIX03_THREADS 1                                                       
 </span><span class=cp></span>
 <span class=cp>#include</span> <span class=cpf>&lt;pthread.h&gt;                                                            </span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;                                                              </span><span class=cp>
@@ -755,7 +1338,42 @@ Thread 3 executing
   <span class=p>}</span>
 <span class=p>}</span>
 
-</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>终端输出：
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>终端输出：
 Thread1: Hello from the thread.
 IPT: pthread_join success!  Thread 1 should be finished now.
 IPT: Prepare to fork!!!
@@ -784,7 +1402,9 @@ Called Child Handlers
 child3
 child1
 
-</code></pre></div><p>从输出中能看出子进程中调用的处理函数可以通过文件描述符<code>3</code>往<code>childq.out</code>文件写内容，父进程可以通过文件描述符<code>4</code>往<code>parentside.out</code>文件中写内容。根据文件内容可以看出函数执行顺序。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>从输出中能看出子进程中调用的处理函数可以通过文件描述符<code>3</code>往<code>childq.out</code>文件写内容，父进程可以通过文件描述符<code>4</code>往<code>parentside.out</code>文件中写内容。根据文件内容可以看出函数执行顺序。</p>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -858,7 +1478,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

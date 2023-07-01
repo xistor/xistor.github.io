@@ -22,7 +22,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="xistor's notes">
 <meta property="og:description" content="Don't Panic">
@@ -150,7 +150,7 @@
 </header>
 <div class=post-content>
 <div class=post-summary>
-API msgsnd #include &lt;sys/types.h> /* For portability */#include &lt;sys/msg.h>int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype域来表示消息
+API msgsnd 1 2 3 4 #include &lt;sys/types.h> /* For portability */#include &lt;sys/msg.h>int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype域来
 </div>
 <div class=read-more>
 <a href=/post/linux/the-linux-programming-interface-s30/ class=read-more-link>Read more...</a>
@@ -188,7 +188,7 @@ System V IPC 代表了三种进程间通信机制，他们在同一时期开发�
 </header>
 <div class=post-content>
 <div class=post-summary>
-管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不能
+管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不
 </div>
 <div class=read-more>
 <a href=/post/linux/the-linux-programming-interface-s28/ class=read-more-link>Read more...</a>
@@ -207,7 +207,7 @@ System V IPC 代表了三种进程间通信机制，他们在同一时期开发�
 </header>
 <div class=post-content>
 <div class=post-summary>
-静态库是一个归档(archives),可以使用ar命令生成： $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 $ gcc -g -c
+静态库是一个归档(archives),可以使用ar命令生成： 1 $ ar options archive object-file... 静态库会被整个拷贝到可执行文件中。 创建动态库 书中给的命令分两步 1 2 $
 </div>
 <div class=read-more>
 <a href=/post/linux/the-linux-programming-interface-s27/ class=read-more-link>Read more...</a>
@@ -316,7 +316,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

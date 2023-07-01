@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="K2路由器Pandavan配置frp实现内网穿透">
 <meta property="og:description" content="树梅派跑起来后，肯定是能够随时随地访问才够方便，但是家中的宽带没有固定ip,而且pi又躲在路由器后面，因此想要访问的话必须曲线一下，有好多方">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="K2路由器Pandavan配置frp实现内网穿透">
 <meta itemprop=description content="树梅派跑起来后，肯定是能够随时随地访问才够方便，但是家中的宽带没有固定ip,而且pi又躲在路由器后面，因此想要访问的话必须曲线一下，有好多方"><meta itemprop=datePublished content="2018-08-23T21:42:00+08:00">
 <meta itemprop=dateModified content="2021-08-25T10:26:13+08:00">
-<meta itemprop=wordCount content="1116">
+<meta itemprop=wordCount content="1151">
 <meta itemprop=keywords content="raspberrypi,frp,路由器,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="K2路由器Pandavan配置frp实现内网穿透">
 <meta name=twitter:description content="树梅派跑起来后，肯定是能够随时随地访问才够方便，但是家中的宽带没有固定ip,而且pi又躲在路由器后面，因此想要访问的话必须曲线一下，有好多方"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -110,10 +110,19 @@
 刷完之后很强大，就用它来搞定了。Padavan固件版本为3.4.3.9-099_7-02-21，我们需要的内网穿透工具frp已经在Padavan中内置了，相比与花生壳，使用frp我们需要自己搭建服务器，所以需要一台有固定ip的vps。内置的frp版本太低，frpc和frps版本差太多是跑不起来的。所以后面我们需要把它替换掉，ok,开干！</p>
 <h3 id=1配置服务器端>1.配置服务器端</h3>
 <p>使用一键安装脚本安装，脚本默认安装最新版的frp：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nv>$wget</span> --no-check-certificate https://raw.githubusercontent.com/clangcn/onekey-install-shell/master/frps/install-frps.sh -O ./install-frps.sh
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=nv>$wget</span> --no-check-certificate https://raw.githubusercontent.com/clangcn/onekey-install-shell/master/frps/install-frps.sh -O ./install-frps.sh
 <span class=nv>$chmod</span> <span class=m>700</span> ./install-frps.sh
 $./install-frps.sh install
-</code></pre></div><p>安装过程中会每步询问，一般一路敲确定就行，想要配置也可以注意下。
+</code></pre></td></tr></table>
+</div>
+</div><p>安装过程中会每步询问，一般一路敲确定就行，想要配置也可以注意下。
 下面是我几个主要配置，具体的可以去frp的<a href=https://github.com/fatedier/frp/blob/master/README.md>官方文档</a>查看</p>
 <pre><code>bind_port = 7000 #绑定的端口，服务器和客户端通信用
 kcp_bind_port = 7000
@@ -127,7 +136,43 @@ privilege_mode = true
 <h3 id=2配置客户端>2.配置客户端</h3>
 <p>Padavan中frpc的设置在扩展功能->花生壳内网版->frp内网穿透中，打开frp内网穿透和frpc客户端功能。自带的frpc版本比较低所以我在frp_script中将它替换成了0.20版本的（和我服务器上安装的版本一致），第一次我是手工替换的，但重启后就没了，因为下载的frpc保存在内存中，而且k2的flash太小又不能插u盘，只能每次开机去网上下载替换，所以我将0.20版本的frpc上传到了阿里云上，frp_script脚本会自动去下载替换。脚本内容如下：
 <strong>（直接复制可能格式错误，最好手敲）</strong></p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>
 <span class=c1>#!/bin/sh</span>
 <span class=nb>export</span> <span class=nv>PATH</span><span class=o>=</span><span class=s1>&#39;/opt/usr/sbin:/opt/usr/bin:/opt/sbin:/opt/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin&#39;</span>
 <span class=nb>export</span> <span class=nv>LD_LIBRARY_PATH</span><span class=o>=</span>/lib:/opt/lib
@@ -159,7 +204,9 @@ cat &gt; <span class=s2>&#34;/tmp/frp/myfrpc.ini&#34;</span> <span class=s>&lt;&
 </span><span class=s>remote_port = 6666      #映射到外网的端口
 </span><span class=s>
 </span><span class=s>EOF</span>
-</code></pre></div><p>ok,然后我们就可以用ssh -oPort=6666 <a href=mailto:pi@x.x.x.x>pi@x.x.x.x</a> 在外网访问派了！</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>ok,然后我们就可以用ssh -oPort=6666 <a href=mailto:pi@x.x.x.x>pi@x.x.x.x</a> 在外网访问派了！</p>
 <p>其实Padanvn有个脚本会去下载frpc，只要把那个链接改成我们的0.20版本的下载链接就可以了，但是我只在/tmp目录下找到了sh_frp脚本里面有下载frpc的相关操作，但是这个脚本每次开机会被覆盖掉，应该还有其他源头，所以只好写在frp_script中了。</p>
 </div>
 <div class=post-copyright>
@@ -231,7 +278,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

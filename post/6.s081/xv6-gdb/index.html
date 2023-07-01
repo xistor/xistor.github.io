@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="qemu xv6 使用GDB调试">
 <meta property="og:description" content="Fall 2021 6.S081中视频还是20年的，用的GDB调试的部分没有看到比较清楚的配置过程，整理了下配置过程。 1. riscv64-unknown-elf-gdb 2020 Lecture 5 视频中用的riscv64-u">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="qemu xv6 使用GDB调试">
 <meta itemprop=description content="Fall 2021 6.S081中视频还是20年的，用的GDB调试的部分没有看到比较清楚的配置过程，整理了下配置过程。 1. riscv64-unknown-elf-gdb 2020 Lecture 5 视频中用的riscv64-u"><meta itemprop=datePublished content="2022-01-01T21:26:16+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1005">
+<meta itemprop=wordCount content="1067">
 <meta itemprop=keywords content="6.s081,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="qemu xv6 使用GDB调试">
 <meta name=twitter:description content="Fall 2021 6.S081中视频还是20年的，用的GDB调试的部分没有看到比较清楚的配置过程，整理了下配置过程。 1. riscv64-unknown-elf-gdb 2020 Lecture 5 视频中用的riscv64-u"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -114,18 +114,38 @@
 <ol>
 <li>gdbinit脚本包含了gdb启动的时候自动运行的命令，lab已经提供了.gdbinit（内容在下面），所以需要在lab目录下执行gdb-multiarch。</li>
 </ol>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>set confirm off // 关闭确认，就是操作时Y/N的确认提示
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>set confirm off // 关闭确认，就是操作时Y/N的确认提示
 set architecture riscv:rv64 // 设置架构为riscv:rv64
 target remote 127.0.0.1:26000 // 2600端口号是make qemu-gdb时随机产生并写入.gdbinit的，可能不同，见makefile
 symbol-file kernel/kernel // 指定symbol文件
 set disassemble-next-line auto  // 自动反汇编后面要执行的代码
 set riscv use-compressed-breakpoints yes
 
-</code></pre></div><ol start=2>
+</code></pre></td></tr></table>
+</div>
+</div><ol start=2>
 <li>将xv6-labs-2021/.gdbinit文件所在的路径写到<code>～/.gdbinit</code>中</li>
 </ol>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>	add-auto-load-safe-path /home/x/xv6-labs-2021/.gdbinit
-</code></pre></div><h2 id=3-调试>3. 调试</h2>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>	add-auto-load-safe-path /home/x/xv6-labs-2021/.gdbinit
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=3-调试>3. 调试</h2>
 <p>在一个终端<code>make qemu-gdb</code> 之后，在另一个终端的lab目录内执行<code>gdb-multiarch</code>，
 其他的根据视频中的来就好了。</p>
 <figure class=center><img src=/img/xv6-gdb/gdb-debug.png><figcaption>
@@ -134,9 +154,39 @@ set riscv use-compressed-breakpoints yes
 </figure>
 <p>e.g.</p>
 <p>在做 Lab: page tables 时，添加了自己写的代码后，一开始报错如下，用GDB来找出原因。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>panic: freewalk: leaf
-</code></pre></div><p>这句报错出自vm.c 中的freewalk()函数：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>// Recursively free page-table pages.
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>panic: freewalk: leaf
+</code></pre></td></tr></table>
+</div>
+</div><p>这句报错出自vm.c 中的freewalk()函数：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>// Recursively free page-table pages.
 // All leaf mappings must already have been removed.
 void
 freewalk(pagetable_t pagetable)
@@ -155,8 +205,33 @@ for(int i = 0; i &lt; 512; i++){
 }
 kfree((void*)pagetable);
 }
-</code></pre></div><p>注释中已经说了所有的叶子映射必须已经被移除。再搜一下，发现这个函数只在<code>uvmfree()</code>中被调用。由此，我们可以 <code>b uvmfree</code>设置断点,执行到断点后用<code>n</code> 不进入函数的单步执行。发现第一次调用到<code>freewalk()</code>就painc了。 <code>bt</code> 看一下backtrace,如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>gdb) bt
+</code></pre></td></tr></table>
+</div>
+</div><p>注释中已经说了所有的叶子映射必须已经被移除。再搜一下，发现这个函数只在<code>uvmfree()</code>中被调用。由此，我们可以 <code>b uvmfree</code>设置断点,执行到断点后用<code>n</code> 不进入函数的单步执行。发现第一次调用到<code>freewalk()</code>就painc了。 <code>bt</code> 看一下backtrace,如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>gdb) bt
 
 |#0  uvmfree (pagetable=pagetable@entry=0x87f75000,
 |    sz=sz@entry=4096) at kernel/vm.c:290
@@ -175,16 +250,43 @@ kfree((void*)pagetable);
 │    at kernel/trap.c:67
 │#6  0x0505050505050505 in ?? ()
 
-</code></pre></div><p>显然是<code>proc_freepagetable()</code>函数中调用的<code>uvmfree()</code>，去看一下为什么会报错</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>void
+</code></pre></td></tr></table>
+</div>
+</div><p>显然是<code>proc_freepagetable()</code>函数中调用的<code>uvmfree()</code>，去看一下为什么会报错</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>void
 proc_freepagetable(pagetable_t pagetable, uint64 sz)
 {
   uvmunmap(pagetable, TRAMPOLINE, 1, 0);
   uvmunmap(pagetable, TRAPFRAME, 1, 0);
   uvmfree(pagetable, sz);
 }
-</code></pre></div><p>当看到<code>proc_freepagetable()</code>函数的内容时，原因已经昭然若揭了，之前添加map的USYSCALL没有unmap， 同样的<code>uvmunmap</code>一下，问题解决。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>void
+</code></pre></td></tr></table>
+</div>
+</div><p>当看到<code>proc_freepagetable()</code>函数的内容时，原因已经昭然若揭了，之前添加map的USYSCALL没有unmap， 同样的<code>uvmunmap</code>一下，问题解决。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>void
 proc_freepagetable(pagetable_t pagetable, uint64 sz)
 {
   	uvmunmap(pagetable, TRAMPOLINE, 1, 0);
@@ -192,7 +294,9 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 	uvmunmap(pagetable, USYSCALL, 1, 0);
   	uvmfree(pagetable, sz);
 }
-</code></pre></div><h2 id=参考>参考</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=参考>参考</h2>
 <p><a href=https://cs.brown.edu/courses/cs033/docs/guides/gdb.pdf>https://cs.brown.edu/courses/cs033/docs/guides/gdb.pdf</a><br>
 <a href=https://sourceware.org/gdb/onlinedocs/gdb/TUI-Commands.html>https://sourceware.org/gdb/onlinedocs/gdb/TUI-Commands.html</a></p>
 </div>
@@ -268,7 +372,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

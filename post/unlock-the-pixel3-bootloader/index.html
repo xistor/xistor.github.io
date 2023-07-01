@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Pixel3 解锁bootloader">
 <meta property="og:description" content="参考官方教程 https://source.android.com/setup/build/running step1 a. 进入手机设置(setting)->关于手机(about phone)->点击版本号(Build number) 7次 b. 输入PIN">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Pixel3 解锁bootloader">
 <meta itemprop=description content="参考官方教程 https://source.android.com/setup/build/running step1 a. 进入手机设置(setting)->关于手机(about phone)->点击版本号(Build number) 7次 b. 输入PIN"><meta itemprop=datePublished content="2020-08-15T09:55:16+08:00">
 <meta itemprop=dateModified content="2020-08-16T20:25:47+08:00">
-<meta itemprop=wordCount content="707">
+<meta itemprop=wordCount content="716">
 <meta itemprop=keywords content="Android,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Pixel3 解锁bootloader">
 <meta name=twitter:description content="参考官方教程 https://source.android.com/setup/build/running step1 a. 进入手机设置(setting)->关于手机(about phone)->点击版本号(Build number) 7次 b. 输入PIN"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -115,28 +115,79 @@ c. 系统(system)->高级->开发者选项(Developer options)->打开OEM锁和US
 <h2 id=step2>step2</h2>
 <p>USB连接手机，确保ADB已配置好，并且可以和手机正常通信。若<code>adb devices</code>报<code>no permission</code>错误，则按以下步骤处理:<br>
 a. <code>lsusb</code> 找到手机的id，即下面的<code>18d1:4ee7</code>。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>Bus 001 Device 009: ID 18d1:4ee7 Google Inc. Pixel 3
-</code></pre></div><p>b. <code>sudo nano /etc/udev/rules.d/51-android.rules</code> 编辑文件如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>SUBSYSTEM==&#34;usb&#34;, ATTR{idVendor}==&#34;18d1&#34;, ATTR{idProduct}==&#34;4ee7&#34;, MODE=&#34;0666&#34;, GROUP=&#34;plugdev&#34;
-</code></pre></div><p>c. 重启电脑<br>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>Bus 001 Device 009: ID 18d1:4ee7 Google Inc. Pixel 3
+</code></pre></td></tr></table>
+</div>
+</div><p>b. <code>sudo nano /etc/udev/rules.d/51-android.rules</code> 编辑文件如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>SUBSYSTEM==&#34;usb&#34;, ATTR{idVendor}==&#34;18d1&#34;, ATTR{idProduct}==&#34;4ee7&#34;, MODE=&#34;0666&#34;, GROUP=&#34;plugdev&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p>c. 重启电脑<br>
 d. <code>adb devices</code> 显示已连接。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>List of devices attached
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>List of devices attached
 88PX01YWW	device
-</code></pre></div><h2 id=step3>step3</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=step3>step3</h2>
 <p><strong>注意!! 解锁会使手机内数据丢失，解锁前请备份数据</strong></p>
 <p>使用<code>adb reboot bootloader</code>命令重启进入bootloader,待显示bootloader画面后执行</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>fastboot flashing unlock
-</code></pre></div><p>此处有坑，我在执行此命令后一直在<code>&lt;waiting for devices></code>并没有丝毫反映。<code>fastboot devices</code> 显示</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>no permissions (user in plugdev group; are your udev rules wrong?)
-</code></pre></div><p>原因是bootloader模式下有不同的ID,也需要添加进51-android.rules文件中，<code>lsusb</code>查看此时的ID,并按照之前的步骤编辑 51-android.rules文件，最终如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>SUBSYSTEM==&#34;usb&#34;, ATTR{idVendor}==&#34;18d1&#34;, ATTR{idProduct}==&#34;4ee7&#34;, MODE=&#34;0666&#34;, GROUP=&#34;plugdev&#34;
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>fastboot flashing unlock
+</code></pre></td></tr></table>
+</div>
+</div><p>此处有坑，我在执行此命令后一直在<code>&lt;waiting for devices></code>并没有丝毫反映。<code>fastboot devices</code> 显示</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>no permissions (user in plugdev group; are your udev rules wrong?)
+</code></pre></td></tr></table>
+</div>
+</div><p>原因是bootloader模式下有不同的ID,也需要添加进51-android.rules文件中，<code>lsusb</code>查看此时的ID,并按照之前的步骤编辑 51-android.rules文件，最终如下：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>SUBSYSTEM==&#34;usb&#34;, ATTR{idVendor}==&#34;18d1&#34;, ATTR{idProduct}==&#34;4ee7&#34;, MODE=&#34;0666&#34;, GROUP=&#34;plugdev&#34;
 SUBSYSTEM==&#34;usb&#34;, ATTR{idVendor}==&#34;18d1&#34;, ATTR{idProduct}==&#34;4ee0&#34;, MODE=&#34;0666&#34;, GROUP=&#34;plugdev&#34;
-</code></pre></div><p>然后可能需要再次重启电脑，之后<code>fastboot flashing unlock</code>命令可以顺利执行了，执行后，按照提示，使用音量上下选择是否解锁，并使用电源键选择解锁。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后可能需要再次重启电脑，之后<code>fastboot flashing unlock</code>命令可以顺利执行了，执行后，按照提示，使用音量上下选择是否解锁，并使用电源键选择解锁。</p>
 <p>解锁后手机开机之前的东西就都没有了，而且每次开机都会出现黄色感叹号提示设备被解锁，不过不影响正常使用。然后就可以烧写我们自己的镜像了。</p>
 <h2 id=重新锁bootloader>重新锁bootloader</h2>
 <p>执行命令</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>fastboot flashing lock
-</code></pre></div>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>fastboot flashing lock
+</code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -210,7 +261,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

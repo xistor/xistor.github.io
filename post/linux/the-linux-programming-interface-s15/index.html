@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记15.扩展属性">
 <meta property="og:description" content="概述 文件的扩展属性(extended attributes, EAs), 允许我们给文件添加自定义的键值对属性，可以以此记录文件版本、MMIE类型信息、或文件字符编码等。 扩展">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记15.扩展属性">
 <meta itemprop=description content="概述 文件的扩展属性(extended attributes, EAs), 允许我们给文件添加自定义的键值对属性，可以以此记录文件版本、MMIE类型信息、或文件字符编码等。 扩展"><meta itemprop=datePublished content="2020-08-17T15:25:00+08:00">
 <meta itemprop=dateModified content="2020-08-20T23:37:22+08:00">
-<meta itemprop=wordCount content="969">
+<meta itemprop=wordCount content="997">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记15.扩展属性">
 <meta name=twitter:description content="概述 文件的扩展属性(extended attributes, EAs), 允许我们给文件添加自定义的键值对属性，可以以此记录文件版本、MMIE类型信息、或文件字符编码等。 扩展"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -127,12 +127,50 @@
 </ul>
 <h2 id=设置和获取扩展属性>设置和获取扩展属性</h2>
 <p>在shell中可以使用sefattr和getfattr设置和获取扩展属性，比如我们要给文件test在user空间设置一个x属性，可以使用如下命令：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>touch <span class=nb>test</span>      <span class=c1># 新建文件test</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>touch <span class=nb>test</span>      <span class=c1># 新建文件test</span>
 setfattr -n user.x -v <span class=s2>&#34;The past is not dead.&#34;</span> <span class=nb>test</span>  <span class=c1>#设置扩展属性 -n 后面跟key, -v 后面跟value</span>
 getfattr -n user.x <span class=nb>test</span>    <span class=c1>#获取user命名空间的扩展属性x</span>
-</code></pre></div><p>其他命令详细&ndash;help查看。<br>
+</code></pre></td></tr></table>
+</div>
+</div><p>其他命令详细&ndash;help查看。<br>
 代码中可以使用系统调用</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/xattr.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=cm>/***** 设置扩展属性 *****/</span>
@@ -157,7 +195,9 @@ getfattr -n user.x <span class=nb>test</span>    <span class=c1>#获取user命�
 <span class=kt>int</span> <span class=nf>fremovexattr</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>name</span><span class=p>);</span>
 
 
-</code></pre></div><p>还是常见的系统调用三剑客，使用详见 <a href=https://man7.org/linux/man-pages/man2/setxattr.2.html>https://man7.org/linux/man-pages/man2/setxattr.2.html</a> 及 <a href=https://man7.org/linux/man-pages/man2/getxattr.2.html>https://man7.org/linux/man-pages/man2/getxattr.2.html</a></p>
+</code></pre></td></tr></table>
+</div>
+</div><p>还是常见的系统调用三剑客，使用详见 <a href=https://man7.org/linux/man-pages/man2/setxattr.2.html>https://man7.org/linux/man-pages/man2/setxattr.2.html</a> 及 <a href=https://man7.org/linux/man-pages/man2/getxattr.2.html>https://man7.org/linux/man-pages/man2/getxattr.2.html</a></p>
 <h2 id=扩展属性的限制>扩展属性的限制</h2>
 <h3 id=user-ea的限制>user EA的限制</h3>
 <p>user EA 只能用于文件和目录。原因有以下几点：</p>
@@ -247,7 +287,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

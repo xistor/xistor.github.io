@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记34. POSIX IPC">
 <meta property="og:description" content="POSIX 提供的三种IPC和System V类似，分别是消息队列、信号量、共享内存。 和System V 比较优势在于： 接口更简单,如下图 POSIX IPC API 使用名字代替">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记34. POSIX IPC">
 <meta itemprop=description content="POSIX 提供的三种IPC和System V类似，分别是消息队列、信号量、共享内存。 和System V 比较优势在于： 接口更简单,如下图 POSIX IPC API 使用名字代替"><meta itemprop=datePublished content="2020-12-31T00:05:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="2418">
+<meta itemprop=wordCount content="2578">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记34. POSIX IPC">
 <meta name=twitter:description content="POSIX 提供的三种IPC和System V类似，分别是消息队列、信号量、共享内存。 和System V 比较优势在于： 接口更简单,如下图 POSIX IPC API 使用名字代替"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -128,15 +128,41 @@
 <h2 id=posix-消息队列>POSIX 消息队列</h2>
 <p>使用流程 <code>mq_open()</code> -> <code>mq_send()</code> -> <code>mq_receive()</code> -> <code>mq_close()</code> -> <code>mq_unlink()</code>。</p>
 <h3 id=创建消息队列>创建消息队列</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c>
 <span class=cp>#include</span> <span class=cpf>&lt;fcntl.h&gt;            /* Defines O_* constants */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;         /* Defines mode constants */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;mqueue.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=n>mqd_t</span> <span class=nf>mq_open</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>name</span><span class=p>,</span> <span class=kt>int</span> <span class=n>oflag</span><span class=p>,</span> <span class=p>...</span> <span class=cm>/* mode_t mode, struct mq_attr *attr */</span><span class=p>);</span>
 <span class=c1>// Returns a message queue descriptor on success, or (mqd_t) –1 on error
-</span></code></pre></div><p>打开一个既有的消息队列，只需要name和oflag, 但如果在flag中指定了O_CREAT创建一个消息队列,那么还需要另外两个参数：mode 指定创建的消息队列的权限，attr指定新消息队列的属性，attr为NULL的话，将使用默认属性。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// mq_attr 结构体如下
+</span></code></pre></td></tr></table>
+</div>
+</div><p>打开一个既有的消息队列，只需要name和oflag, 但如果在flag中指定了O_CREAT创建一个消息队列,那么还需要另外两个参数：mode 指定创建的消息队列的权限，attr指定新消息队列的属性，attr为NULL的话，将使用默认属性。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// mq_attr 结构体如下
 </span><span class=c1></span>
 <span class=k>struct</span> <span class=n>mq_attr</span> <span class=p>{</span>
     <span class=kt>long</span> <span class=n>mq_flags</span><span class=p>;</span>       <span class=cm>/* Flags: 0 or O_NONBLOCK */</span>
@@ -145,10 +171,29 @@
     <span class=kt>long</span> <span class=n>mq_curmsgs</span><span class=p>;</span>     <span class=cm>/* # of messages currently in queue */</span>
 <span class=p>};</span>
 
-</code></pre></div><p>可以使用<code>mq_setattr()</code>和<code>mq_getattr()</code>来设置和获取队列属性。SUSv3规定<code>mq_setattr()</code>只能修改O_NONBLOCK标记的状态。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以使用<code>mq_setattr()</code>和<code>mq_getattr()</code>来设置和获取队列属性。SUSv3规定<code>mq_setattr()</code>只能修改O_NONBLOCK标记的状态。</p>
 <p><code>mq_open()</code>的返回值为mqd_t类型，在linux上是一个int。POSIX消息队列描述符和文件描述符类似，实际上Linux上也是这么做的，用虚拟文件系统中的i-node实现了POSIX队列。</p>
 <h3 id=交换消息>交换消息</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;mqueue.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;mqueue.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>mq_send</span><span class=p>(</span><span class=n>mqd_t</span> <span class=n>mqdes</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>msg_ptr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>msg_len</span><span class=p>,</span> <span class=kt>unsigned</span> <span class=kt>int</span> <span class=n>msg_prio</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or –1 on error
 </span><span class=c1></span>
@@ -161,10 +206,31 @@
 
 <span class=n>ssize_t</span> <span class=nf>mq_receive</span><span class=p>(</span><span class=n>mqd_t</span> <span class=n>mqdes</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>msg_ptr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>msg_len</span><span class=p>,</span> <span class=kt>unsigned</span> <span class=kt>int</span> <span class=o>*</span><span class=n>msg_prio</span><span class=p>);</span>
 <span class=c1>// Returns number of bytes in received message on success, or –1 on error
-</span></code></pre></div><p>如果消息队列已经满了，那么后续的<code>mq_send()</code>调用会阻塞直到队列中存在的可用空间，或者指定了O_NONBLOCK标记其作用时立即失败并返回EAGAIN。</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果消息队列已经满了，那么后续的<code>mq_send()</code>调用会阻塞直到队列中存在的可用空间，或者指定了O_NONBLOCK标记其作用时立即失败并返回EAGAIN。</p>
 <p><code>mq_revceive()</code>会从队列中删除一条优先级最高、存在时间最长的消息，并放置到msg_ptr指向的缓冲区。</p>
 <h3 id=消息通知>消息通知</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;mqueue.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;mqueue.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>mq_notify</span><span class=p>(</span><span class=n>mqd_t</span> <span class=n>mqdes</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>sigevent</span> <span class=o>*</span><span class=n>notification</span><span class=p>);</span>
 
 <span class=c1>// Returns 0 on success, or –1 on error
@@ -179,7 +245,9 @@
    <span class=kt>void</span>  <span class=o>*</span><span class=n>sigev_notify_attributes</span><span class=p>;</span>   <span class=cm>/* Really &#39;pthread_attr_t&#39; */</span>
 <span class=p>};</span>
 
-</code></pre></div><p><code>mq_notify()</code>函数注册调用进程在一条消息进入描述符mqdes引用的空队列时接收通知。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>mq_notify()</code>函数注册调用进程在一条消息进入描述符mqdes引用的空队列时接收通知。</p>
 <ul>
 <li>任何时候一个消息队列只能有一个进程注册消息通知</li>
 <li>只有当一条新消息进入之前为空的队列时注册进程才会收到通知</li>
@@ -188,7 +256,32 @@
 <li>一个进程可以在调用<code>mq_notify()</code>时传入NULL的notification参数来撤销自己在消息通知上的注册信息。</li>
 </ul>
 <p>sigevent结构体中sigev_notify指定通知方式，当以SIGEV_SIGNAL指定以信号的方式接收通知时，sigev_signo可以指定实时信号。当以SIGEV_THREAD指定以sigev_notify_function函数通知的方式，将会在新线程中启动该函数一样。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=c1>// 信号通知
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=c1>// 信号通知
 </span><span class=c1>// 主要代码
 </span><span class=c1></span><span class=n>mqd</span> <span class=o>=</span> <span class=n>mq_open</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>O_RDONLY</span> <span class=o>|</span> <span class=n>O_NONBLOCK</span><span class=p>);</span>
 
@@ -209,7 +302,9 @@
     <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;mq_receive&#34;</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><p>sigsuspend的整个原子操作过程为：</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>sigsuspend的整个原子操作过程为：</p>
 <ol>
 <li>设置新的mask阻塞当前进程;</li>
 <li>收到信号，调用该进程设置的信号处理函数;</li>
@@ -219,7 +314,68 @@
 <p>使用sigsuspend而不使用pause是为了避免丢失信号，因为sigsuspend为原子操作，退出时会重新阻塞信号。</p>
 <p>使用O_NONBLOCK打开是为了在while中全部读完消息后退出，而不是阻塞在mq_receive。</p>
 <p>其次在读取消息之前先调用mq_notify重新注册通知，是因为若写在while循环读空消息队列之后，在注册之前的一小段时间内又来了一个通知，那么注册时队列将不为空，之后将再也收不到消息通知。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=c1>// 线程通知的主要代码
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=c1>// 线程通知的主要代码
 </span><span class=c1></span>
 <span class=k>static</span> <span class=kt>void</span> <span class=cm>/* Thread notification function */</span>
 <span class=n>threadFunc</span><span class=p>(</span><span class=k>union</span> <span class=nc>sigval</span> <span class=n>sv</span><span class=p>)</span>
@@ -276,7 +432,9 @@
     <span class=n>notifySetup</span><span class=p>(</span><span class=o>&amp;</span><span class=n>mqd</span><span class=p>);</span>
     <span class=n>pause</span><span class=p>();</span> <span class=cm>/* Wait for notifications via thread function */</span>
 <span class=p>}</span>
-</code></pre></div><h2 id=posix-信号量>POSIX 信号量</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=posix-信号量>POSIX 信号量</h2>
 <p>相关API和POSIX消息队列的类似，和System V 信号量有点区别：</p>
 <ul>
 <li><code>sem_post()</code>和<code>sem_wait()</code>一个只操作一个信号量，而且每次只递增或递减1。</li>
@@ -285,17 +443,65 @@
 <p>对于命名信号量，使用<code>sem_open()</code>创建。</p>
 <p>对于无名信号量：</p>
 <p>使用<code>sem_init()</code>可以初始化一个无名信号量，并且可以通过参数pshared指定信号量sem是在线程间共享还是在进程间共享。线程间共享时sem一般是一个全局变量或者堆上分配的变量，进程间共享时，sem需要是一个共享内存或者共享内存映射的地址。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;semaphore.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;semaphore.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>sem_init</span><span class=p>(</span><span class=n>sem_t</span> <span class=o>*</span><span class=n>sem</span><span class=p>,</span> <span class=kt>int</span> <span class=n>pshared</span><span class=p>,</span> <span class=kt>unsigned</span> <span class=kt>int</span> <span class=n>value</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></div><h2 id=posix-共享内存>POSIX 共享内存</h2>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=posix-共享内存>POSIX 共享内存</h2>
 <p>使用POSIX共享内存分两步：</p>
 <ul>
 <li>使用<code>shm_open()</code>以指定名字打开一个共享内存对象。</li>
 <li>将上一步打开的文件描述符传递给mmap(),使用 MAP_SHARED flag将其映射到进程的虚拟内存空间。</li>
 </ul>
 <p>使用要点：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp>    <span class=c1>// 写东西到共享内存中
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp>    <span class=c1>// 写东西到共享内存中
 </span><span class=c1></span>    <span class=n>fd</span> <span class=o>=</span> <span class=n>shm_open</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>O_RDWR</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span> <span class=cm>/* Open existing object */</span>
     <span class=k>if</span> <span class=p>(</span><span class=n>fd</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
         <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;shm_open&#34;</span><span class=p>);</span>
@@ -330,7 +536,9 @@
     <span class=c1>// 删除共享内存
 </span><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>shm_unlink</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
         <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;shm_unlink&#34;</span><span class=p>);</span>
-</code></pre></div>
+</code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -404,7 +612,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

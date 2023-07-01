@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的">
+<meta name=author content="xistor"><meta name=description content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 1 2 3 #include &amp;lt;sys/time.h&amp;gt;int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定">
 <meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s20/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -20,21 +20,21 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记20.定时器与休眠">
-<meta property="og:description" content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include <sys/time.h>int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的">
+<meta property="og:description" content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 1 2 3 #include <sys/time.h>int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s20/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2020-09-02T18:21:00+08:00">
 <meta property="article:modified_time" content="2020-09-25T18:09:20+08:00">
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记20.定时器与休眠">
-<meta itemprop=description content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include <sys/time.h>int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的"><meta itemprop=datePublished content="2020-09-02T18:21:00+08:00">
+<meta itemprop=description content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 1 2 3 #include <sys/time.h>int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定"><meta itemprop=datePublished content="2020-09-02T18:21:00+08:00">
 <meta itemprop=dateModified content="2020-09-25T18:09:20+08:00">
-<meta itemprop=wordCount content="2095">
+<meta itemprop=wordCount content="2216">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记20.定时器与休眠">
-<meta name=twitter:description content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 #include <sys/time.h>int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定不同的"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="间隔计时器 使用setitimer()，一个进程可以创建三种不同类型的定时器。 1 2 3 #include <sys/time.h>int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value); // Returns 0 on success, or –1 on error 参数which指定"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -115,17 +115,39 @@
 <div class=post-content>
 <h2 id=间隔计时器>间隔计时器</h2>
 <p>使用setitimer()，一个进程可以创建三种不同类型的定时器。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/time.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/time.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>setitimer</span><span class=p>(</span><span class=kt>int</span> <span class=n>which</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>itimerval</span> <span class=o>*</span><span class=n>new_value</span><span class=p>,</span><span class=k>struct</span> <span class=n>itimerval</span> <span class=o>*</span><span class=n>old_value</span><span class=p>);</span>
                     <span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></div><p>参数<code>which</code>指定不同的timer类型：</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>参数<code>which</code>指定不同的timer类型：</p>
 <ul>
 <li>ITIMER_REAL：计时器以真实时间计时</li>
 <li>ITIMER_VIRTUAL： 计时器以进程使用的用户态时间计时</li>
 <li>ITIMER_PROF： 计时器以进程使用的用户态和内核态时间计时</li>
 </ul>
 <p><code>itimerval</code>结构体如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>itimerval</span> <span class=p>{</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>itimerval</span> <span class=p>{</span>
     <span class=k>struct</span> <span class=n>timeval</span> <span class=n>it_interval</span><span class=p>;</span> <span class=cm>/* Interval for periodic timer */</span>
     <span class=k>struct</span> <span class=n>timeval</span> <span class=n>it_value</span><span class=p>;</span> <span class=cm>/* Current value (time until next expiration) */</span>
 <span class=p>};</span>
@@ -134,7 +156,9 @@
  <span class=n>time_t</span> <span class=n>tv_sec</span><span class=p>;</span> <span class=cm>/* Seconds */</span>
  <span class=n>suseconds_t</span> <span class=n>tv_usec</span><span class=p>;</span> <span class=cm>/* Microseconds (long int) */</span>
 <span class=p>};</span>
-</code></pre></div><p><code>new_value</code>中<code>it_value</code>指定计时器到期的延时，<code>it_interval</code>指定当前计时器是否是周期计时器，如果<code>it_interval</code>都为0则计时器只发生一次，否则就是一个周期计时器。<br>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>new_value</code>中<code>it_value</code>指定计时器到期的延时，<code>it_interval</code>指定当前计时器是否是周期计时器，如果<code>it_interval</code>都为0则计时器只发生一次，否则就是一个周期计时器。<br>
 一个进程只能有三种计时器中的一种，第二次调用<code>setitimer()</code>会改变现有的计时器。<br>
 若<code>old_value</code>非<code>NULL</code>,那么它将返回之前一个计时器的的信息。</p>
 <p>计时器时间到了，进程会收到SIGALRM信号，在信号处理函数中做想做的操作。</p>
@@ -153,13 +177,25 @@
 <li>使用<code>timer_delete()</code>删除定时器。</li>
 </ol>
 <h3 id=创建定时器>创建定时器</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _POSIX_C_SOURCE 199309
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _POSIX_C_SOURCE 199309
 </span><span class=cp>#include</span> <span class=cpf>&lt;signal.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;time.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>timer_create</span><span class=p>(</span><span class=n>clockid_t</span> <span class=n>clockid</span><span class=p>,</span> <span class=k>struct</span> <span class=n>sigevent</span> <span class=o>*</span><span class=n>evp</span><span class=p>,</span> <span class=n>timer_t</span> <span class=o>*</span><span class=n>timerid</span><span class=p>);</span>
 <span class=c1>//  Returns 0 on success, or –1 on error
-</span></code></pre></div><p>clockid的取值如下表</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>clockid的取值如下表</p>
 <table>
 <thead>
 <tr>
@@ -187,7 +223,32 @@
 </tbody>
 </table>
 <p>sigevent这个结构体还挺TM复杂，描述如下：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=k>union</span> <span class=nc>sigval</span> <span class=p>{</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=k>union</span> <span class=nc>sigval</span> <span class=p>{</span>
  <span class=kt>int</span> <span class=n>sival_int</span><span class=p>;</span> <span class=cm>/* Integer value for accompanying data */</span>
  <span class=kt>void</span> <span class=o>*</span><span class=n>sival_ptr</span><span class=p>;</span> <span class=cm>/* Pointer value for accompanying data */</span>
 <span class=p>};</span>
@@ -208,7 +269,9 @@
 <span class=cp>#define sigev_notify_function _sigev_un._sigev_thread._function
 </span><span class=cp>#define sigev_notify_attributes _sigev_un._sigev_thread._attribute
 </span><span class=cp>#define sigev_notify_thread_id _sigev_un._tid
-</span></code></pre></div><p>sigev_notify指定通知方法，</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>sigev_notify指定通知方法，</p>
 <table>
 <thead>
 <tr>
@@ -238,21 +301,113 @@
 <p>前两种比较好理解，第三种SIGEV_THREAD，当定时器到期时，会启动一个新线程调用sigev_notify_function指定的函数来处理信号，sigev_value 保存了传入 sigev_notify_function 的参数。sigev_notify_attributes 如果非空，则应该是一个指向 pthread_attr_t 的指针，用来设置线程的属性（比如 stack 大小,detach 状态等）。<br>
 SIGEV_THREAD_ID和SIGEV_SIGNAL类似，定时器到期将会向指定的sigev_notify_thread_id线程发送信号。</p>
 <h3 id=设置定时器>设置定时器</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _POSIX_C_SOURCE 199309
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _POSIX_C_SOURCE 199309
 </span><span class=cp>#include</span> <span class=cpf>&lt;time.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>timer_settime</span><span class=p>(</span><span class=n>timer_t</span> <span class=n>timerid</span><span class=p>,</span> <span class=kt>int</span> <span class=n>flags</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>itimerspec</span> <span class=o>*</span><span class=n>value</span><span class=p>,</span>
  <span class=k>struct</span> <span class=n>itimerspec</span> <span class=o>*</span><span class=n>old_value</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></div><p>timerid 是前一步timer_create时返回的那个，flag指定为0则参数value.it_value value理解为相对timer_settime调用时的时间，flag指定为TIMER_ABSTIME，则将参数value.it_value value理解为绝对时间（从时钟0点开始。和old_value分别上新旧定时器设置值。想要停止定时器，就把value.it_value设为0即可。</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>timerid 是前一步timer_create时返回的那个，flag指定为0则参数value.it_value value理解为相对timer_settime调用时的时间，flag指定为TIMER_ABSTIME，则将参数value.it_value value理解为绝对时间（从时钟0点开始。和old_value分别上新旧定时器设置值。想要停止定时器，就把value.it_value设为0即可。</p>
 <h3 id=删除定时器>删除定时器</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _POSIX_C_SOURCE 199309
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _POSIX_C_SOURCE 199309
 </span><span class=cp>#include</span> <span class=cpf>&lt;time.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>timer_delete</span><span class=p>(</span><span class=n>timer_t</span> <span class=n>timerid</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></div><p>下面是一个使用timer的例子，通知方法使用SIGEV_THREAD：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;  /* for puts() */</span><span class=cp>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>下面是一个使用timer的例子，通知方法使用SIGEV_THREAD：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;  /* for puts() */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;string.h&gt; /* for memset() */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt; /* for sleep() */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt; /* for EXIT_SUCCESS */</span><span class=cp>
@@ -317,7 +472,9 @@ SIGEV_THREAD_ID和SIGEV_SIGNAL类似，定时器到期将会向指定的sigev_no
         <span class=k>return</span> <span class=n>EXIT_SUCCESS</span><span class=p>;</span>
 <span class=p>}</span>
 
-</code></pre></div><h3 id=timer-overruns>Timer Overruns</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=timer-overruns>Timer Overruns</h3>
 <p>使用信号来获取定时器到期信息存在一个问题：标准信号在信号阻塞期间，多次到达也只会通知一次，无法知道定时器到期了几次，而实时信号会把信号队列化，我的理解是在信号不再阻塞后，这些阻塞序列中的定时器到期信号也就没用了，因为它们已经是过去式了。我们只需要知道在阻塞期间定时器到期了几次即可。可以使用下面两种方式获取到期次数：</p>
 <ul>
 <li>调用 timer_getoverrun()</li>
@@ -327,13 +484,25 @@ SIGEV_THREAD_ID和SIGEV_SIGNAL类似，定时器到期将会向指定的sigev_no
 <h2 id=timerfd定时器>timerfd定时器</h2>
 <p>timerfd是Linux为用户程序提供的一个定时器接口。这个接口基于文件描述符，通过文件描述符的可读事件进行超时通知，一般是被用于select/poll/epoll的应用场景。</p>
 <p>使用的API和前面的类似</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/timerfd.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/timerfd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>timerfd_create</span><span class=p>(</span><span class=kt>int</span> <span class=n>clockid</span><span class=p>,</span> <span class=kt>int</span> <span class=n>flags</span><span class=p>);</span>
  
 <span class=kt>int</span> <span class=nf>timerfd_settime</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=kt>int</span> <span class=n>flags</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>itimerspec</span> <span class=o>*</span><span class=n>new_value</span><span class=p>,</span> <span class=k>struct</span> <span class=n>itimerspec</span> <span class=o>*</span><span class=n>old_value</span><span class=p>);</span>
  
 <span class=kt>int</span> <span class=nf>timerfd_gettime</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=k>struct</span> <span class=n>itimerspec</span> <span class=o>*</span><span class=n>curr_value</span><span class=p>);</span>
-</code></pre></div><p>timerfd_settime()调用之后，我们就可以使用<code> read(fd, &numExp, sizeof(uint64_t))</code>去读定时器是否到期,读出的是一个64位无符号数，代表的是到期次数。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>timerfd_settime()调用之后，我们就可以使用<code> read(fd, &numExp, sizeof(uint64_t))</code>去读定时器是否到期,读出的是一个64位无符号数，代表的是到期次数。</p>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -407,7 +576,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

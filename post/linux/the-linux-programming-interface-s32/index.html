@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记32. System V 共享内存">
 <meta property="og:description" content="共享内存的读写比较简单，而且速度快，但需要访问同步手段，一般和信号量一起使用。 使用System V 共享内存步骤,一般分以下几个步骤： 调用shm">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记32. System V 共享内存">
 <meta itemprop=description content="共享内存的读写比较简单，而且速度快，但需要访问同步手段，一般和信号量一起使用。 使用System V 共享内存步骤,一般分以下几个步骤： 调用shm"><meta itemprop=datePublished content="2020-12-23T18:30:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="716">
+<meta itemprop=wordCount content="722">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记32. System V 共享内存">
 <meta name=twitter:description content="共享内存的读写比较简单，而且速度快，但需要访问同步手段，一般和信号量一起使用。 使用System V 共享内存步骤,一般分以下几个步骤： 调用shm"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -122,13 +122,25 @@
 </figure>
 <p>共享内存被attach到虚拟内存中的未分配区域，也就是堆的生长方向和栈的生长方向之间。</p>
 <p><code>shmat()</code>的函数原型如下，参数<code>shmaddr</code>可以指定attach的地址，但是最好设为null,由内核attach到合适的地址。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/shm.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>void</span> <span class=o>*</span><span class=nf>shmat</span><span class=p>(</span><span class=kt>int</span> <span class=n>shmid</span><span class=p>,</span> <span class=k>const</span> <span class=kt>void</span> <span class=o>*</span><span class=n>shmaddr</span><span class=p>,</span> <span class=kt>int</span> <span class=n>shmflg</span><span class=p>);</span>
 
 <span class=c1>// Returns address at which shared memory is attached on success, or (void *) –1 on error
-</span></code></pre></div><h2 id=在共享内存中保存指针>在共享内存中保存指针</h2>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=在共享内存中保存指针>在共享内存中保存指针</h2>
 <p>共享内存在不同进程中attach的内存地址不同，所以当在共享内存中保存一个指向共享内存中另一地址的指针时，需要使用相对地址，而不是绝对地址。</p>
 <figure class=center><img src=/img/the-linux-programming-interface-s32/share_mem_location.png width=500><figcaption>
 <h4>共享内存中保存指针</h4>
@@ -209,7 +221,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

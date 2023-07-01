@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： #define _XOPEN_SOURCE #include &amp;lt;unistd.h&amp;gt;char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */ crypt">
+<meta name=author content="xistor"><meta name=description content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： 1 2 3 4 5 #define _XOPEN_SOURCE #include &amp;lt;unistd.h&amp;gt;char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */">
 <meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s7/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -20,21 +20,21 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记7.用户和组">
-<meta property="og:description" content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： #define _XOPEN_SOURCE #include <unistd.h>char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */ crypt">
+<meta property="og:description" content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： 1 2 3 4 5 #define _XOPEN_SOURCE #include <unistd.h>char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s7/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2020-07-27T10:53:00+08:00">
 <meta property="article:modified_time" content="2020-11-18T19:36:36+08:00">
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记7.用户和组">
-<meta itemprop=description content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： #define _XOPEN_SOURCE #include <unistd.h>char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */ crypt"><meta itemprop=datePublished content="2020-07-27T10:53:00+08:00">
+<meta itemprop=description content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： 1 2 3 4 5 #define _XOPEN_SOURCE #include <unistd.h>char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */"><meta itemprop=datePublished content="2020-07-27T10:53:00+08:00">
 <meta itemprop=dateModified content="2020-11-18T19:36:36+08:00">
-<meta itemprop=wordCount content="502">
+<meta itemprop=wordCount content="541">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记7.用户和组">
-<meta name=twitter:description content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： #define _XOPEN_SOURCE #include <unistd.h>char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */ crypt"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别： 1 2 3 4 5 #define _XOPEN_SOURCE #include <unistd.h>char *crypt(const char *key, const char *salt); /* Returns pointer to statically allocated string containing encrypted password on success, or NULL on error */"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -109,12 +109,23 @@
 </div>
 <div class=post-content>
 <p>本章没啥好说的，比较有意思的的是crypt()函数，可以用来做用户身份鉴别：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _XOPEN_SOURCE
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _XOPEN_SOURCE
 </span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>char</span> <span class=o>*</span><span class=nf>crypt</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>key</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>salt</span><span class=p>);</span>
     <span class=cm>/* Returns pointer to statically allocated string containing
 </span><span class=cm>    encrypted password on success, or NULL on error */</span>
-</code></pre></div><p>crypt接受一个最长8个字符的密钥，并施之以数据加密算法（DES）的一种变体。slat参数指向一个两字符的字符串，用来扰动DES算法。。函数会返回一个指针，指向长度为13个字节的字符串。该字符串为静态分配的。内容即为经过加密处理的密码。和/etc/shadow里的加密密码记录做比较就能知道当前输入的密码是否正确。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>crypt接受一个最长8个字符的密钥，并施之以数据加密算法（DES）的一种变体。slat参数指向一个两字符的字符串，用来扰动DES算法。。函数会返回一个指针，指向长度为13个字节的字符串。该字符串为静态分配的。内容即为经过加密处理的密码。和/etc/shadow里的加密密码记录做比较就能知道当前输入的密码是否正确。</p>
 <p>加密候选密码时，能够从已加密的密码(/etc/shadow)中获取salt值。在crypt()函数的参数salt只有前两位有意义。因此，可以直接将已加密密码指定为salt参数。</p>
 <h3 id=exercises>Exercises</h3>
 <ol start=2>
@@ -127,7 +138,45 @@
 </ul>
 <p>需要实现的getpwnam()的功能是: 获取指定登录名的密码记录信息。
 其实就是书中介绍这几个函数的时给的示例代码段。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;fcntl.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;pwd.h&gt;</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&#34;tlpi_hdr.h&#34;</span><span class=cp>
@@ -161,7 +210,9 @@
     <span class=n>endpwent</span><span class=p>();</span>
     <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
 <span class=p>}</span>
-</code></pre></div>
+</code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -235,7 +286,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

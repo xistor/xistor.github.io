@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="小主机配置笔记">
 <meta property="og:description" content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="小主机配置笔记">
 <meta itemprop=description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><meta itemprop=datePublished content="2023-06-21T22:03:16+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1312">
+<meta itemprop=wordCount content="1393">
 <meta itemprop=keywords content="x86,eq12,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="小主机配置笔记">
 <meta name=twitter:description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -119,68 +119,293 @@
 <p>决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系统安装略。</p>
 <h2 id=挂载硬盘>挂载硬盘</h2>
 <p>暂时还是外置usb硬盘。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo mkdir /media/disk1
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo mkdir /media/disk1
 sudo chown x:x /media/disk1
-</code></pre></div><p>查看UUID</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ sudo blkid 
+</code></pre></td></tr></table>
+</div>
+</div><p>查看UUID</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ sudo blkid 
 
 /dev/sda1: <span class=nv>UUID</span><span class=o>=</span><span class=s2>&#34;31c2f09d-e3e6-4e46-bb08-0370165c4f96&#34;</span> <span class=nv>BLOCK_SIZE</span><span class=o>=</span><span class=s2>&#34;4096&#34;</span> <span class=nv>TYPE</span><span class=o>=</span><span class=s2>&#34;ext4&#34;</span> <span class=nv>PARTLABEL</span><span class=o>=</span><span class=s2>&#34;LVM&#34;</span> <span class=nv>PARTUUID</span><span class=o>=</span><span class=s2>&#34;522e1944-2b81-4574-90f5-9da62a622ddd&#34;</span>
-</code></pre></div><p>添加到/etc/fstab， 开机挂载</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>UUID=31c2f09d-e3e6-4e46-bb08-0370165c4f96 /media/disk ext4 defaults,auto,users,rw,nofail 0 0
-</code></pre></div><p>重启。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>添加到/etc/fstab， 开机挂载</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>UUID=31c2f09d-e3e6-4e46-bb08-0370165c4f96 /media/disk ext4 defaults,auto,users,rw,nofail 0 0
+</code></pre></td></tr></table>
+</div>
+</div><p>重启。</p>
 <h2 id=ftp-server>FTP Server</h2>
 <p>安装 vsftpd</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo apt install vsftpd
-</code></pre></div><p>修改ftp用户的home目录，也就是ftp登录的时候看到的目录。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo usermod -d /media/disk3/ ftp
-</code></pre></div><p>限制ftp只能访问其home目录
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo apt install vsftpd
+</code></pre></td></tr></table>
+</div>
+</div><p>修改ftp用户的home目录，也就是ftp登录的时候看到的目录。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo usermod -d /media/disk3/ ftp
+</code></pre></td></tr></table>
+</div>
+</div><p>限制ftp只能访问其home目录
 编辑/etc/vsftpd.conf</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>chroot_local_user=YES
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>chroot_local_user=YES
 chroot_list_file=/etc/vsftpd.chroot_list
-</code></pre></div><p>创建 vsftpd.chroot_list, 添加ftp用户</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ cat /etc/vsftpd.chroot_list
+</code></pre></td></tr></table>
+</div>
+</div><p>创建 vsftpd.chroot_list, 添加ftp用户</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ cat /etc/vsftpd.chroot_list
 ftp
 
-</code></pre></div><p>修改ftp密码</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo passwd ftp
-</code></pre></div><p>登了下报错500</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>500 OOPS: vsftpd: refusing to run with writable root inside chroot()
-</code></pre></div><p>解决方法是修改 /etc/pam.d/vsftpd, 将</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_shells.so
-</code></pre></div><p>修改为</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_nologin.so
-</code></pre></div><p>最后重启ftp服务</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo systemctl restart vsftpd.service
-</code></pre></div><p>使用用户名：ftp和前面设置的密码登录。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>修改ftp密码</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo passwd ftp
+</code></pre></td></tr></table>
+</div>
+</div><p>登了下报错500</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>500 OOPS: vsftpd: refusing to run with writable root inside chroot()
+</code></pre></td></tr></table>
+</div>
+</div><p>解决方法是修改 /etc/pam.d/vsftpd, 将</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_shells.so
+</code></pre></td></tr></table>
+</div>
+</div><p>修改为</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>auth	required	pam_nologin.so
+</code></pre></td></tr></table>
+</div>
+</div><p>最后重启ftp服务</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo systemctl restart vsftpd.service
+</code></pre></td></tr></table>
+</div>
+</div><p>使用用户名：ftp和前面设置的密码登录。</p>
 <h2 id=安装docker>安装Docker</h2>
 <p>官网步骤 <a href=https://docs.docker.com/engine/install/ubuntu/>https://docs.docker.com/engine/install/ubuntu/</a></p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell> sudo apt-get update
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell> sudo apt-get update
  sudo apt-get install ca-certificates curl gnupg
-</code></pre></div><p>添加 Docker GPG key:</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell> sudo install -m <span class=m>0755</span> -d /etc/apt/keyrings
+</code></pre></td></tr></table>
+</div>
+</div><p>添加 Docker GPG key:</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell> sudo install -m <span class=m>0755</span> -d /etc/apt/keyrings
 
  curl -fsSL https://download.docker.com/linux/ubuntu/gpg <span class=p>|</span> sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
  sudo chmod a+r /etc/apt/keyrings/docker.gpg
-</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=nb>echo</span> <span class=se>\
+</code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=nb>echo</span> <span class=se>\
 </span><span class=se></span>  <span class=s2>&#34;deb [arch=&#34;</span><span class=k>$(</span>dpkg --print-architecture<span class=k>)</span><span class=s2>&#34; signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
 </span><span class=s2>  &#34;</span><span class=k>$(</span>. /etc/os-release <span class=o>&amp;&amp;</span> <span class=nb>echo</span> <span class=s2>&#34;</span><span class=nv>$VERSION_CODENAME</span><span class=s2>&#34;</span><span class=k>)</span><span class=s2>&#34; stable&#34;</span> <span class=p>|</span> <span class=se>\
 </span><span class=se></span>  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
 
-</code></pre></div><p>安装</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo apt-get update
+</code></pre></td></tr></table>
+</div>
+</div><p>安装</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo apt-get update
 
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-</code></pre></div><p>添加权限</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo groupadd docker
+</code></pre></td></tr></table>
+</div>
+</div><p>添加权限</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>sudo groupadd docker
 sudo usermod -aG docker <span class=nv>$USER</span>
 
-</code></pre></div><p>验证</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>docker run hello-world
-</code></pre></div><h2 id=配置服务>配置服务</h2>
+</code></pre></td></tr></table>
+</div>
+</div><p>验证</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>docker run hello-world
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=配置服务>配置服务</h2>
 <p>使用docker-compose同时启动多个服务， 按照功能分成了几块，每种服务对应一个 docker-compose.yml</p>
 <h3 id=存储服务>存储服务</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
 </span><span class=w>
 </span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span><span class=nt>db</span><span class=p>:</span><span class=w>
@@ -256,21 +481,63 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
 </span><span class=w>
 </span><span class=w>  
-</span></code></pre></div><p>包括nextcloud、transmission、syncthing这几个服务。</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>包括nextcloud、transmission、syncthing这几个服务。</p>
 <p>transmission的 web ui需要单独下载 <a href=https://github.com/6c65726f79/Transmissionic/releases>https://github.com/6c65726f79/Transmissionic/releases</a>， 解压后放到./transmission/ui目录下。</p>
 <p>启动各项服务：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>docker compose up -d
-</code></pre></div><p>修改nextcloud/config/config.php， 添加信任域名</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=s1>&#39;trusted_domains&#39;</span> <span class=o>=&gt;</span> 
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>docker compose up -d
+</code></pre></td></tr></table>
+</div>
+</div><p>修改nextcloud/config/config.php， 添加信任域名</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=s1>&#39;trusted_domains&#39;</span> <span class=o>=&gt;</span> 
   <span class=k>array</span> <span class=p>(</span>
     <span class=mi>0</span> <span class=o>=&gt;</span> <span class=s1>&#39;192.168.123.201:8000&#39;</span><span class=p>,</span>
     <span class=mi>1</span> <span class=o>=&gt;</span> <span class=s1>&#39;nc.xistor.top&#39;</span><span class=p>,</span>
   <span class=p>),</span>
 
 
-</code></pre></div><h3 id=导航>导航</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=导航>导航</h3>
 <p>Heimdall导航页</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.5&#34;</span><span class=w>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.5&#34;</span><span class=w>
 </span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span><span class=nt>heimdall</span><span class=p>:</span><span class=w>
 </span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>lscr.io/linuxserver/heimdall:latest</span><span class=w>
@@ -286,9 +553,37 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>      </span>- <span class=m>8007</span><span class=p>:</span><span class=m>443</span><span class=w>
 </span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
 </span><span class=w>
-</span></code></pre></div><h3 id=媒体>媒体</h3>
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id=媒体>媒体</h3>
 <p>jellyfin 媒体中心</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
 </span><span class=w>
 </span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
 </span><span class=w>  </span><span class=nt>jellyfin</span><span class=p>:</span><span class=w>
@@ -310,9 +605,33 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>      </span>- <span class=m>1900</span><span class=p>:</span><span class=m>1900</span><span class=l>/udp</span><span class=w> </span><span class=c>#optional</span><span class=w>
 </span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
 </span><span class=w>
-</span></code></pre></div><h3 id=笔记>笔记</h3>
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id=笔记>笔记</h3>
 <p>为知笔记</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
 </span><span class=w>
 </span><span class=w></span><span class=nt>service</span><span class=p>:</span><span class=w>
 </span><span class=w>
@@ -330,14 +649,38 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>    </span><span class=nt>tty</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
 </span><span class=w>
 </span><span class=w>
-</span></code></pre></div><h2 id=定时任务>定时任务</h2>
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id=定时任务>定时任务</h2>
 <p>定时更新证书， vps那边使用acme.sh申请的免费证书，会定时更新，这边定时同步。需要放到/root下所以使用sudo</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ sudo mkdir /root/certs
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ sudo mkdir /root/certs
 $ sudo crontab -e
 
 <span class=m>35</span> <span class=m>8</span>   <span class=m>22</span>  *  * bash /home/x/bin/update_key.sh
-</code></pre></div><p>update_key.sh的内容</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=cp>#!/bin/bash
+</code></pre></td></tr></table>
+</div>
+</div><p>update_key.sh的内容</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=cp>#!/bin/bash
 </span><span class=cp></span>
 scp -i /home/x/.ssh/id_rsa root@123.123.123.123:/root/certs/xistor.top* /root/certs/
 
@@ -345,11 +688,31 @@ scp -i /home/x/.ssh/id_rsa root@123.123.123.123:/root/certs/xistor.top* /root/ce
 service frpc restart 
 <span class=nb>cd</span> /opt/docker-comp/stroge/ <span class=o>&amp;&amp;</span>  docker-compose restart
 ...
-</code></pre></div><h2 id=frp>FRP</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id=frp>FRP</h2>
 <p>仅涉及客户端配置</p>
 <p>下载frpc <a href=https://github.com/fatedier/frp/releases>https://github.com/fatedier/frp/releases</a></p>
 <p>开机启动frpc, 新建systemd 服务 /etc/systemd/system/frpc.service</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=k>[Unit]</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=k>[Unit]</span>
 <span class=na>Description</span><span class=o>=</span><span class=s>Frp Client Service</span>
 <span class=na>After</span><span class=o>=</span><span class=s>network.target</span>
 
@@ -363,8 +726,63 @@ service frpc restart
 
 <span class=k>[Install]</span>
 <span class=na>WantedBy</span><span class=o>=</span><span class=s>multi-user.target</span>
-</code></pre></div><p>使用frpc 内网穿透，并将http转成https, 下面是frpc.ini 的配置。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=k>[common]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>使用frpc 内网穿透，并将http转成https, 下面是frpc.ini 的配置。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=k>[common]</span>
 
 <span class=c1>#frps 服务器地址、端口</span>
 <span class=na>server_addr</span> <span class=o>=</span> <span class=s>xxx.xx</span>
@@ -413,11 +831,27 @@ service frpc restart
 <span class=na>plugin_crt_path</span> <span class=o>=</span> <span class=s>/root/certs/xistor.top.cer</span>
 <span class=na>plugin_key_path</span> <span class=o>=</span> <span class=s>/root/certs/xistor.top.key</span>
 
-</code></pre></div><p>启动服务</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>systemctl start  frpc.service
-</code></pre></div><p>开机启动</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>systemctl <span class=nb>enable</span>  frpc.service
-</code></pre></div>
+</code></pre></td></tr></table>
+</div>
+</div><p>启动服务</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>systemctl start  frpc.service
+</code></pre></td></tr></table>
+</div>
+</div><p>开机启动</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>systemctl <span class=nb>enable</span>  frpc.service
+</code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -487,7 +921,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记5.进程">
 <meta property="og:description" content="进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记5.进程">
 <meta itemprop=description content="进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述"><meta itemprop=datePublished content="2020-07-16T14:01:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="2817">
+<meta itemprop=wordCount content="2838">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记5.进程">
 <meta name=twitter:description content="进程和程序 进程是一个运行中的程序实例，一个程序中包含了如何构建一个进程的信息，这些信息包括： 二进制格式识别信息：每个程序都包含了元信息来描述"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -129,11 +129,21 @@
 </ul>
 <p>从系统角度来看，一个进程包括一段用户空间内存，里面有程序的代码和用到的变量等等，以及一段内核空间内存，里面维护了程序状态等信息（PID, 虚拟内存表，open file descriptors, 信号传递和处理的相关信息， 进程资源使用及限制，当前工作目录，以及其他信息）。</p>
 <h3 id=进程id和父进程id>进程ID和父进程ID</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=n>pid_t</span> <span class=nf>getpid</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span> <span class=cm>/*获取进程ID*/</span>
 
 <span class=n>pid_t</span> <span class=nf>getppid</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span> <span class=cm>/*获取父进程ID*/</span>    
-</code></pre></div><p>Linux 内核限制PID小于等于32767,当分配的PID到达了32767，会从300开始再次分配，因为较小的PID多数为系统进程或守护进程。Linux 2.6之后可以通过/proc/sys/kernel/pid_max来调整，在64位系统上可以到2^22。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>Linux 内核限制PID小于等于32767,当分配的PID到达了32767，会从300开始再次分配，因为较小的PID多数为系统进程或守护进程。Linux 2.6之后可以通过/proc/sys/kernel/pid_max来调整，在64位系统上可以到2^22。</p>
 <p>如果一个进程的父进程终止，它会变为孤儿进程，会被init“领养”，getppid()会返回init的进程号，也就是1。</p>
 <h3 id=进程的内存布局>进程的内存布局</h3>
 <ul>
@@ -144,11 +154,21 @@
 <li>堆(heap): 运行时动态分配的内存。</li>
 </ul>
 <p>size命令可以查看可执行文件的各段的大小：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>~/cpp/test/$ size
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>~/cpp/test/$ size
 text data bss dec hex filename
 2194 616 280 3090 c12 a.out
 
-</code></pre></div><h3 id=虚拟内存管理>虚拟内存管理</h3>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id=虚拟内存管理>虚拟内存管理</h3>
 <p>引入虚拟内存是为了更高效的利用CPU和RAM,因为程序存在局部性。</p>
 <ul>
 <li>空间局部性：程序会趋向于访问最近访问过的内存地址附近的数据，因为程序指令连续，还有数据一般也是连续存储。</li>
@@ -160,8 +180,15 @@ text data bss dec hex filename
 </figure>
 <p>图中的argv和environ是命令行输入的参数和进程环境变量。 etext, edata, 和end可以获得程序段的地址。
 使用方法,在程序中声明：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>extern</span> <span class=kt>char</span> <span class=n>etext</span><span class=p>,</span> <span class=n>edata</span><span class=p>,</span> <span class=n>end</span><span class=p>;</span>
-</code></pre></div><p>虚拟内存会将程序使用的内存分成等大小的单元，称为“页”(pages)。在任意时刻只有程序需要的页才会在内存中，成为常驻内存集，其他未用的页放在硬盘上的swap区域。当程序访问到了不在物理内存上的页时会触发page fault,内核会挂起程序，将所需的页从硬盘读入到内存中。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>extern</span> <span class=kt>char</span> <span class=n>etext</span><span class=p>,</span> <span class=n>edata</span><span class=p>,</span> <span class=n>end</span><span class=p>;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>虚拟内存会将程序使用的内存分成等大小的单元，称为“页”(pages)。在任意时刻只有程序需要的页才会在内存中，成为常驻内存集，其他未用的页放在硬盘上的swap区域。当程序访问到了不在物理内存上的页时会触发page fault,内核会挂起程序，将所需的页从硬盘读入到内存中。</p>
 <figure class=center><img src=/img/the-linux-programming-interface-s5/overview_of_vm.png width=600><figcaption>
 <h4>虚拟内存</h4>
 </figcaption>
@@ -190,21 +217,48 @@ user 栈里主要有两种信息：</p>
 <li>使用全局变量 <code>char **environ</code> 访问环境列表。</li>
 <li>在main()函数参数中添加声明</li>
 </ul>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>int</span> <span class=n>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[],</span> <span class=kt>char</span> <span class=o>*</span><span class=n>envp</span><span class=p>[])</span>
-</code></pre></div><ul>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>int</span> <span class=n>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[],</span> <span class=kt>char</span> <span class=o>*</span><span class=n>envp</span><span class=p>[])</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
 <li>getenv()函数从进程环境中检索单个值</li>
 </ul>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>char</span> <span class=o>*</span><span class=nf>getenv</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>name</span><span class=p>);</span> <span class=c1>// 返回指向字符串的指针，若没找到为NULL
-</span></code></pre></div><h3 id=非局部跳转>非局部跳转</h3>
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id=非局部跳转>非局部跳转</h3>
 <p>c 中的goto语句可以在函数内部跳转，setjmp()和longjmp()提供跨越函数跳转的功能。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;setjmp.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;setjmp.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>int</span> <span class=nf>setjmp</span><span class=p>(</span><span class=n>jmp_buf</span> <span class=n>env</span><span class=p>);</span>  <span class=cm>/*第一次调用返回0， 通过longjmp()返回的为longjmp()的参数val指定的非零值*/</span>
 
 <span class=kt>void</span> <span class=nf>longjmp</span><span class=p>(</span><span class=n>jmp_buf</span> <span class=n>env</span><span class=p>,</span> <span class=kt>int</span> <span class=n>val</span><span class=p>);</span> <span class=cm>/*若val为0会被替换成1*/</span>
-</code></pre></div><p>setjmp()调用为后续由longjmp()调用执行的跳转确立了跳转目标，即调用longjmp()会跳到setjmp()调用的位置。setjmp()两次被调用的区别在于返回值不同。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>setjmp()调用为后续由longjmp()调用执行的跳转确立了跳转目标，即调用longjmp()会跳到setjmp()调用的位置。setjmp()两次被调用的区别在于返回值不同。</p>
 <p>setjmp函数的使用限制：</p>
 <ul>
 <li>构成选择或迭代语句中(if、switch、while等)的整个控制表达式</li>
@@ -222,11 +276,26 @@ longjmp()的调用不能跳转到一个已经返回的函数，因为函数返�
 <ol>
 <li>编译后的mem_segments使用ll查看结果：</li>
 </ol>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>-rwxr-xr-x  1 x x 11624 Jul 20 23:35 mem_segments*
-</code></pre></div><p>使用命令<code>size mem_segments</code>查看：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>text	   data	    bss	        dec	        hex	    filename
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>-rwxr-xr-x  1 x x 11624 Jul 20 23:35 mem_segments*
+</code></pre></td></tr></table>
+</div>
+</div><p>使用命令<code>size mem_segments</code>查看：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>text	   data	    bss	        dec	        hex	    filename
 1918	   636	    10305568	10308122	9d4a1a	mem_segments
-</code></pre></div><p>可见bss区的大小已经10305568字节(大约9.8M)了,原因是bss段保存未初始化的全局变量和静态变量，当程序保存在硬盘上的时候是不需要保存这些没初始化的变量的，其空间是在程序载入内存的时候才会分配。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>可见bss区的大小已经10305568字节(大约9.8M)了,原因是bss段保存未初始化的全局变量和静态变量，当程序保存在硬盘上的时候是不需要保存这些没初始化的变量的，其空间是在程序载入内存的时候才会分配。</p>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -300,7 +369,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

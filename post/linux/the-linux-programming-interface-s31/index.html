@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记31. System V 信号量">
 <meta property="og:description" content="信号量和其他sys v IPC不同，它不是用来传输数据的，它是用来进程间同步的。 信号量是一个由内核维护的整数，其值被限制为大于等于0。下图是两个">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记31. System V 信号量">
 <meta itemprop=description content="信号量和其他sys v IPC不同，它不是用来传输数据的，它是用来进程间同步的。 信号量是一个由内核维护的整数，其值被限制为大于等于0。下图是两个"><meta itemprop=datePublished content="2020-12-17T18:30:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1397">
+<meta itemprop=wordCount content="1433">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记31. System V 信号量">
 <meta name=twitter:description content="信号量和其他sys v IPC不同，它不是用来传输数据的，它是用来进程间同步的。 信号量是一个由内核维护的整数，其值被限制为大于等于0。下图是两个"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -126,18 +126,55 @@
 </ul>
 <h2 id=api>API</h2>
 <h3 id=创建或打开一个信号量>创建或打开一个信号量</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/sem.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>semget</span><span class=p>(</span><span class=n>key_t</span> <span class=n>key</span><span class=p>,</span> <span class=kt>int</span> <span class=n>nsems</span><span class=p>,</span> <span class=kt>int</span> <span class=n>semflg</span><span class=p>);</span>
 <span class=c1>// Returns semaphore set identifier on success, or –1 on error
-</span></code></pre></div><p>如果是使用<code>semget()</code>来创建一个新的信号量集合，则<code>nsems</code>指定了集合中信号量数目，若是获取一个已存在的信号量集合，则<code>nsems</code>要小于等于集合大小。不能改变一个已存在的信号量集合的大小。</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>如果是使用<code>semget()</code>来创建一个新的信号量集合，则<code>nsems</code>指定了集合中信号量数目，若是获取一个已存在的信号量集合，则<code>nsems</code>要小于等于集合大小。不能改变一个已存在的信号量集合的大小。</p>
 <h3 id=信号量控制>信号量控制</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/sem.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>semctl</span><span class=p>(</span><span class=kt>int</span> <span class=n>semid</span><span class=p>,</span> <span class=kt>int</span> <span class=n>semnum</span><span class=p>,</span> <span class=kt>int</span> <span class=n>cmd</span><span class=p>,</span> <span class=p>...</span> <span class=cm>/* union semun arg */</span><span class=p>);</span>
 <span class=c1>// Returns nonnegative integer on success (see text); returns –1 on error
-</span></code></pre></div><p>参数<code>semid</code>是信号量的标识符，<code>semmum</code>指定当前操作的为信号量集中的第几个信号量。<code>cmd</code>为指定的操作, <code>arg</code>是一个如下的union, 根据<code>cmd</code>的不同，用作不同用途。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#ifndef SEMUN_H
+</span></code></pre></td></tr></table>
+</div>
+</div><p>参数<code>semid</code>是信号量的标识符，<code>semmum</code>指定当前操作的为信号量集中的第几个信号量。<code>cmd</code>为指定的操作, <code>arg</code>是一个如下的union, 根据<code>cmd</code>的不同，用作不同用途。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#ifndef SEMUN_H
 </span><span class=cp>#define SEMUN_H </span><span class=cm>/* Prevent accidental double inclusion */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/sem.h&gt;</span><span class=cp>
@@ -150,7 +187,9 @@
 <span class=cp>#endif
 </span><span class=cp></span><span class=p>};</span>
 <span class=cp>#endif
-</span></code></pre></div><p><code>cmd</code>可取的值：</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>cmd</code>可取的值：</p>
 <ul>
 <li>IRC_RMID : 删除信号量,和相关的 semid_ds数据结构（这里面记录信号量的一些权限啊、操作时间等）</li>
 <li>IPC_STAT : 拷贝semid_ds到arg.buf中</li>
@@ -164,13 +203,25 @@
 <li>GETZCNT : 返回当前在等待信号量变为0的进程数</li>
 </ul>
 <p>前面提到的semid_ds数据结构如下，每个信号量都有一个对应的此数据结构：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>semid_ds</span> <span class=p>{</span>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>semid_ds</span> <span class=p>{</span>
     <span class=k>struct</span> <span class=n>ipc_perm</span> <span class=n>sem_perm</span><span class=p>;</span> <span class=cm>/* Ownership and permissions */</span>
     <span class=n>time_t</span> <span class=n>sem_otime</span><span class=p>;</span> <span class=cm>/* Time of last semop() */</span>
     <span class=n>time_t</span> <span class=n>sem_ctime</span><span class=p>;</span> <span class=cm>/* Time of last change */</span>
     <span class=kt>unsigned</span> <span class=kt>long</span> <span class=n>sem_nsems</span><span class=p>;</span> <span class=cm>/* Number of semaphores in set */</span>
 <span class=p>};</span>
-</code></pre></div><p>函数返回值根据<code>cmd</code>的不同有不同的意义：</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>函数返回值根据<code>cmd</code>的不同有不同的意义：</p>
 <ul>
 <li>GETNCNT ：semncnt的值</li>
 <li>GETPID ：sempid的值</li>
@@ -188,17 +239,38 @@ the system.)</li>
 <li>其他 ：0 on success.</li>
 </ul>
 <h3 id=操作信号量>操作信号量</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
 </span><span class=cp>#include</span> <span class=cpf>&lt;sys/sem.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>semop</span><span class=p>(</span><span class=kt>int</span> <span class=n>semid</span><span class=p>,</span> <span class=k>struct</span> <span class=n>sembuf</span> <span class=o>*</span><span class=n>sops</span><span class=p>,</span> <span class=kt>unsigned</span> <span class=kt>int</span> <span class=n>nsops</span><span class=p>);</span>
 <span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></div><p>此操作是原子操作。参数<code>sops</code>指向一个包含操作的数组，<code>nsops</code>表示数组大小。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>sembuf</span> <span class=p>{</span>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>此操作是原子操作。参数<code>sops</code>指向一个包含操作的数组，<code>nsops</code>表示数组大小。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>sembuf</span> <span class=p>{</span>
     <span class=kt>unsigned</span> <span class=kt>short</span> <span class=n>sem_num</span><span class=p>;</span> <span class=cm>/* Semaphore number */</span>
     <span class=kt>short</span> <span class=n>sem_op</span><span class=p>;</span> <span class=cm>/* Operation to be performed */</span>
     <span class=kt>short</span> <span class=n>sem_flg</span><span class=p>;</span> <span class=cm>/* Operation flags (IPC_NOWAIT and SEM_UNDO) */</span>
 <span class=p>};</span>
-</code></pre></div><p><code>sem_op</code>是在指定信号量上加或减的值，若为0就检查信号量是否为0，不为0就会阻塞至为0。
+</code></pre></td></tr></table>
+</div>
+</div><p><code>sem_op</code>是在指定信号量上加或减的值，若为0就检查信号量是否为0，不为0就会阻塞至为0。
 <code>sem_flg</code>， IPC_NOWAIT不阻塞，SEM_UNDO在进程退出后自动复归此进程对信号量的操作。但这个SEM_UNDO是存在局限的，第一点是即使信号量可以复归，和它对应的共享资源并不一定被恢复至之前状态。第二点是信号量复归也可能不能操作成功，这期间若其他进程操作过信号量，那么复归后的信号量就可能小于0，这个时候正在退出的进程是不是要阻塞住？在Linux上只会尽可能将信号量减到0就退出了，SUSv3标准并没有规定此种情况。</p>
 </div>
 <div class=post-copyright>
@@ -273,7 +345,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

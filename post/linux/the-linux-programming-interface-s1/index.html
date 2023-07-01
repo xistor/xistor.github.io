@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记1.基本概念">
 <meta property="og:description" content="简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记1.基本概念">
 <meta itemprop=description content="简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有"><meta itemprop=datePublished content="2020-05-28T22:01:00+08:00">
 <meta itemprop=dateModified content="2020-06-16T00:20:32+08:00">
-<meta itemprop=wordCount content="2463">
+<meta itemprop=wordCount content="2474">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记1.基本概念">
 <meta name=twitter:description content="简要记录整理下。 内核的职责 进程调度：Linux 属于抢占式多任务操作系统，由内核按照一定规则分配调度CPU给程序使用。 内存管理：物理内存属于有"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -133,12 +133,23 @@
 <a href=https://zh.wikipedia.org/zh-hans/%E5%88%86%E7%BA%A7%E4%BF%9D%E6%8A%A4%E5%9F%9F>https://zh.wikipedia.org/zh-hans/%E5%88%86%E7%BA%A7%E4%BF%9D%E6%8A%A4%E5%9F%9F</a></p>
 <h3 id=用户和组>用户和组</h3>
 <p>系统密码文件/etc/passwd为每个用户都定义有一行记录：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>root:x:0:0:root:/root:/bin/bash
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>root:x:0:0:root:/root:/bin/bash
 daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
 bin:x:2:2:bin:/bin:/usr/sbin/nologin
 sys:x:3:3:sys:/dev:/usr/sbin/nologin
 
-</code></pre></div><p>冒号分割的几项分别是</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>冒号分割的几项分别是</p>
 <ul>
 <li>登录名</li>
 <li>密码:x 表示加密后的密码保存在/etc/shadow)</li>
@@ -149,13 +160,25 @@ sys:x:3:3:sys:/dev:/usr/sbin/nologin
 <li>登录shell:执行以解释用户命令的程序名称</li>
 </ul>
 <p>一个用户可以同时属于多个组，每个用户组都对应着/etc/group中的一行记录.</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>root:x:0:
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>root:x:0:
 daemon:x:1:
 bin:x:2:
 sys:x:3:
 adm:x:4:syslog,x
 
-</code></pre></div><p>每一项分别为：</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>每一项分别为：</p>
 <ul>
 <li>组名</li>
 <li>组密码</li>
@@ -308,7 +331,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

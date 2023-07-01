@@ -20,7 +20,7 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记12.文件I/O缓冲">
 <meta property="og:description" content="Overview 首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： 文件I/O 由图所示I/O缓冲分两个层次 用户空间缓冲区，stdio的输入输出函数内部">
@@ -31,7 +31,7 @@
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记12.文件I/O缓冲">
 <meta itemprop=description content="Overview 首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： 文件I/O 由图所示I/O缓冲分两个层次 用户空间缓冲区，stdio的输入输出函数内部"><meta itemprop=datePublished content="2020-08-10T10:53:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="2252">
+<meta itemprop=wordCount content="2284">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记12.文件I/O缓冲">
 <meta name=twitter:description content="Overview 首先看书中的一张图，就对文件I/O缓冲有个大概的了解了： 文件I/O 由图所示I/O缓冲分两个层次 用户空间缓冲区，stdio的输入输出函数内部"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -125,10 +125,19 @@
 </ul>
 <h2 id=控制stdio-io缓冲>控制stdio I/O缓冲</h2>
 <p>想要改变stdio I/O缓冲的的相关参数，可以使用如下函数：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>setvbuf</span><span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=n>stream</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>buf</span><span class=p>,</span> <span class=kt>int</span> <span class=n>mode</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>size</span><span class=p>);</span>
                 <span class=c1>// Returns 0 on success, or nonzero on error
-</span></code></pre></div><p><code>buf</code>和<code>size</code>指定了stream 使用的buffer和大小。跟据参数<code>buf</code>的不同，又分以下两种情况：</p>
+</span></code></pre></td></tr></table>
+</div>
+</div><p><code>buf</code>和<code>size</code>指定了stream 使用的buffer和大小。跟据参数<code>buf</code>的不同，又分以下两种情况：</p>
 <ul>
 <li><code>buf</code>非NULL, 则将<code>buf</code>指向的内存块给stream作为缓冲使用，<code>buf</code>所指向的内存必须从堆上分配。</li>
 <li><code>buf</code>为NULL, stdio库将会自动分配一块内存作为缓冲(除非使用非缓冲I/O), <code>size</code>参数会被忽略(glibc)。</li>
@@ -140,24 +149,56 @@
 <li>IOFBF 全缓冲，读、写数据(调用read, write)的大小与缓冲区大小一致，输出为文件时默认使用此模式。</li>
 </ul>
 <p><strong>另外的控制函数</strong></p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>void</span> <span class=nf>setbuf</span><span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=n>stream</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>buf</span><span class=p>);</span>
 
 <span class=c1>// 此函数相当于：
 </span><span class=c1></span><span class=n>setvbuf</span><span class=p>(</span><span class=n>fp</span><span class=p>,</span> <span class=n>buf</span><span class=p>,</span> <span class=p>(</span><span class=n>buf</span> <span class=o>!=</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>?</span> <span class=nl>_IOFBF</span><span class=p>:</span> <span class=n>_IONBF</span><span class=p>,</span> <span class=n>BUFSIZ</span><span class=p>);</span>
                         <span class=c1>// BUFSIZ 定义在&lt;stdio.h&gt;中
-</span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _BSD_SOURCE
+</span></code></pre></td></tr></table>
+</div>
+</div><div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _BSD_SOURCE
 </span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>void</span> <span class=nf>setbuffer</span><span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=n>stream</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>buf</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>size</span><span class=p>);</span>
 
 <span class=c1>// 此函数相当于：
 </span><span class=c1></span><span class=n>setvbuf</span><span class=p>(</span><span class=n>fp</span><span class=p>,</span> <span class=n>buf</span><span class=p>,</span> <span class=p>(</span><span class=n>buf</span> <span class=o>!=</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>?</span> <span class=nl>_IOFBF</span> <span class=p>:</span> <span class=n>_IONBF</span><span class=p>,</span> <span class=n>size</span><span class=p>);</span>
-</code></pre></div><p>这两个函数都是setvbuf()包装了一下，根据情况采用一种即可。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>这两个函数都是setvbuf()包装了一下，根据情况采用一种即可。</p>
 <p><strong>刷新stdio buffer</strong></p>
 <p><code>fflush</code>将强制将stdio缓冲区的数据写入到内核缓冲区。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>fflush</span><span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=n>stream</span><span class=p>);</span>
-</code></pre></div><p>如果参数<code>stream</code>为NULL, <code>fflush</code>将刷新所有stdio缓冲区。<code>fflush</code>用于读文件流时会把读缓冲区中的数据全部丢弃。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>如果参数<code>stream</code>为NULL, <code>fflush</code>将刷新所有stdio缓冲区。<code>fflush</code>用于读文件流时会把读缓冲区中的数据全部丢弃。</p>
 <p><strong>stdio缓冲区刷新时机</strong><br>
 除了 无缓冲、行缓冲、全缓冲这三个模式下规定的刷新时机，还有以下两种情况。</p>
 <ul>
@@ -166,11 +207,21 @@
 </ul>
 <h2 id=控制内核io缓冲>控制内核I/O缓冲</h2>
 <p><strong>刷新内核缓冲</strong></p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>fsync</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>);</span>
 <span class=kt>int</span> <span class=nf>fdatasync</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>);</span>
 <span class=kt>void</span> <span class=nf>sync</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
-</code></pre></div><p><code>fdatasync</code>和<code>fsync</code>区别在<code>fdatasync</code>在文件元信息(大小、权限)未改变的情况下只同步文件数据，若文件大小、权限改变了才会同步文件元信息。sync()系统调用会使包含更新文件信息的所有内核缓冲区（即数据块、指针、元数据等）刷新到磁盘上，sync()在所有数据已传递到磁盘上时返回。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>fdatasync</code>和<code>fsync</code>区别在<code>fdatasync</code>在文件元信息(大小、权限)未改变的情况下只同步文件数据，若文件大小、权限改变了才会同步文件元信息。sync()系统调用会使包含更新文件信息的所有内核缓冲区（即数据块、指针、元数据等）刷新到磁盘上，sync()在所有数据已传递到磁盘上时返回。</p>
 <p>内核缓冲保存在文件系统的Page cache中， Page cache中被修改的页称为脏页(Dirty Page)。</p>
 <p><strong>内核缓冲写入磁盘的的时机和条件:</strong></p>
 <ol>
@@ -179,14 +230,27 @@
 <li>用户进程调用sync(2)、fsync(2)、fdatasync(2)系统调用时，内核会执行相应的写回操作。</li>
 </ol>
 <p><strong>Dirty page可配置参数详细</strong></p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sysctl -a <span class=p>|</span> grep dirty
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sysctl -a <span class=p>|</span> grep dirty
 vm.dirty_background_ratio <span class=o>=</span> <span class=m>10</span>
 vm.dirty_background_bytes <span class=o>=</span> <span class=m>0</span>
 vm.dirty_ratio <span class=o>=</span> <span class=m>20</span>
 vm.dirty_bytes <span class=o>=</span> <span class=m>0</span>
 vm.dirty_writeback_centisecs <span class=o>=</span> <span class=m>500</span>
 vm.dirty_expire_centisecs <span class=o>=</span> <span class=m>3000</span>
-</code></pre></div><p>每个参数的详细介绍从别处摘抄如下，就不翻译了：</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>每个参数的详细介绍从别处摘抄如下，就不翻译了：</p>
 <blockquote>
 <p>vm.dirty_background_ratio： is the percentage of system memory that can be filled with “dirty” pages — memory pages that still need to be written to disk — before the pdflush/flush/kdmflush background processes kick in to write it to disk. My example is 10%, so if my virtual server has 32 GB of memory that’s 3.2 GB of data that can be sitting in RAM before something is done.</p>
 </blockquote>
@@ -203,8 +267,15 @@ vm.dirty_expire_centisecs <span class=o>=</span> <span class=m>3000</span>
 <p>vm.dirty_writeback_centisecs: is how often the pdflush/flush/kdmflush processes wake up and check to see if work needs to be done.</p>
 </blockquote>
 <p><strong>O_SYNC</strong></p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=n>fd</span> <span class=o>=</span> <span class=n>open</span><span class=p>(</span><span class=n>pathname</span><span class=p>,</span> <span class=n>O_WRONLY</span> <span class=o>|</span> <span class=n>O_SYNC</span><span class=p>);</span>
-</code></pre></div><p>open后后续每个write()调用会自动将文件数据和元数据直接写入磁盘。</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=n>fd</span> <span class=o>=</span> <span class=n>open</span><span class=p>(</span><span class=n>pathname</span><span class=p>,</span> <span class=n>O_WRONLY</span> <span class=o>|</span> <span class=n>O_SYNC</span><span class=p>);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>open后后续每个write()调用会自动将文件数据和元数据直接写入磁盘。</p>
 <p><strong>O_DSYNC和O_RSYNC</strong></p>
 <p>O_DSYNC标志的效果类似与fdatasync()，而O_SYNC类似于fsync()。<br>
 O_RSYNC标志与O_SYNC标志或O_DSYNC标志配合一起使用的，将这些标志对写操作的作用结合到读操作中。</p>
@@ -219,10 +290,19 @@ O_RSYNC标志与O_SYNC标志或O_DSYNC标志配合一起使用的，将这些标
 </ul>
 <h2 id=混合使用库函数和系统调用>混合使用库函数和系统调用</h2>
 <p>使用以下两个函数可以在文件描述符和文件流之间转换。也就使混合使用I/O成了可能。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
 </span><span class=cp></span><span class=kt>int</span> <span class=nf>fileno</span><span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=n>stream</span><span class=p>);</span>
 <span class=n>FILE</span> <span class=o>*</span><span class=nf>fdopen</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>mode</span><span class=p>);</span>
-</code></pre></div><p>在使用时需要考虑到两个缓冲区的存在导致的输出先后问题。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>在使用时需要考虑到两个缓冲区的存在导致的输出先后问题。</p>
 <h3 id=exercises>Exercises</h3>
 </div>
 <div class=post-copyright>
@@ -297,7 +377,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>

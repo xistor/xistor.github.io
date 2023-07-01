@@ -11,7 +11,7 @@
 <meta name=msapplication-navbutton-color content="#f8f5ec">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()">
+<meta name=author content="xistor"><meta name=description content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() 1 2 3 4 int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error b">
 <meta name=generator content="Hugo 0.92.2 with theme even">
 <link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s6/>
 <link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
@@ -20,21 +20,21 @@
 <link rel=manifest href=/manifest.json>
 <link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
 <script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.1e27da02e2d7a1d849e4aa97915669dba08909fddd7853d8b5d583d81e98661a.css rel=stylesheet>
+<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
 <meta property="og:title" content="Linux/Unix系统编程手册-笔记6.内存分配">
-<meta property="og:description" content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()">
+<meta property="og:description" content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() 1 2 3 4 int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error b">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s6/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2020-07-25T10:53:00+08:00">
 <meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
 <meta itemprop=name content="Linux/Unix系统编程手册-笔记6.内存分配">
-<meta itemprop=description content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()"><meta itemprop=datePublished content="2020-07-25T10:53:00+08:00">
+<meta itemprop=description content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() 1 2 3 4 int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error b"><meta itemprop=datePublished content="2020-07-25T10:53:00+08:00">
 <meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="2465">
+<meta itemprop=wordCount content="2581">
 <meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Linux/Unix系统编程手册-笔记6.内存分配">
-<meta name=twitter:description content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error brk()"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<meta name=twitter:description content="在堆上分配内存 系统提供了两个改变堆大小的系统调用：brk()和sbrk() 1 2 3 4 int brk(void *end_data_segment); // return 0 on success or -1 on error void *sbrk(intptr_t increment); // return previous progrom break on success, or (void *) -1 on error b"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
 <script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
@@ -113,11 +113,21 @@
 <div class=post-content>
 <h3 id=在堆上分配内存>在堆上分配内存</h3>
 <p>系统提供了两个改变堆大小的系统调用：brk()和sbrk()</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp>    <span class=kt>int</span> <span class=nf>brk</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>end_data_segment</span><span class=p>);</span> <span class=c1>// return 0 on success or -1 on error
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp>    <span class=kt>int</span> <span class=nf>brk</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>end_data_segment</span><span class=p>);</span> <span class=c1>// return 0 on success or -1 on error
 </span><span class=c1></span>
     <span class=kt>void</span> <span class=o>*</span><span class=nf>sbrk</span><span class=p>(</span><span class=n>intptr_t</span> <span class=n>increment</span><span class=p>);</span>     
         <span class=c1>// return previous progrom break on success, or (void *) -1 on error
-</span></code></pre></div><p>brk()会将program break设置为参数end_data_segment所指定的位置（实际会四舍五入到下一个内存页的边界处）。<br>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>brk()会将program break设置为参数end_data_segment所指定的位置（实际会四舍五入到下一个内存页的边界处）。<br>
 sbrk()会将program break 在原有地址上增加increment 大小。</p>
 <ul>
 <li>program break指进程数据段的末尾(end of process&rsquo;s data segment)</li>
@@ -170,18 +180,83 @@ sbrk()会将program break 在原有地址上增加increment 大小。</p>
 </li>
 </ul>
 <h3 id=在堆上分配内存的其他方法>在堆上分配内存的其他方法</h3>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp>
 </span><span class=cp></span>
 <span class=kt>void</span><span class=o>*</span> <span class=nf>calloc</span><span class=p>(</span><span class=n>size_t</span> <span class=n>numitems</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>size</span><span class=p>);</span>
 
 <span class=kt>void</span><span class=o>*</span> <span class=nf>realloc</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>ptr</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>size</span><span class=p>);</span>
-</code></pre></div><p>calloc()与malloc()的区别是calloc()会将已分配的内存初始化为0。<br>
+</code></pre></td></tr></table>
+</div>
+</div><p>calloc()与malloc()的区别是calloc()会将已分配的内存初始化为0。<br>
 realloc()函数来调整一块内存的大小，此块内存应是之前malloc包中函数分配的。</p>
 <h3 id=exercises>Exercises</h3>
 <ol>
 <li>修改free_and_sbrk.c如下，</li>
 </ol>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _BSD_SOURCE
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#define _BSD_SOURCE
 </span><span class=cp>#include</span> <span class=cpf>&#34;tlpi_hdr.h&#34;</span><span class=cp>
 </span><span class=cp></span>
 <span class=cp>#define MAX_ALLOCS 1000000
@@ -231,8 +306,71 @@ realloc()函数来调整一块内存的大小，此块内存应是之前malloc�
     <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
 <span class=p>}</span>
 
-</code></pre></div><p>运行结果：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>$./malloc_and_sbrk 50 10240
+</code></pre></td></tr></table>
+</div>
+</div><p>运行结果：</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback>$./malloc_and_sbrk 50 10240
 
 Initial program break:          0x56289c0f8000
 Allocating 50*10240 bytes
@@ -289,7 +427,9 @@ Program break is now:           0x56289c15f000
 After free(), program break is: 0x56289c15f000
 re malloc, program break is: 0x56289c15f000
 
-</code></pre></div><p>符合预期，malloc()不会每次申请内存都去调用sbrk()，而且free()后的内存会保存在空闲内存链表中，在malloc()再次申请时返回给调用者。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>符合预期，malloc()不会每次申请内存都去调用sbrk()，而且free()后的内存会保存在空闲内存链表中，在malloc()再次申请时返回给调用者。</p>
 </div>
 <div class=post-copyright>
 <p class=copyright-item>
@@ -363,7 +503,6 @@ Theme -
 <i class="iconfont icon-up"></i>
 </div>
 </div>
-<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
 <script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
 <script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
