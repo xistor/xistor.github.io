@@ -27,11 +27,11 @@
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://xistor.github.io/post/home-server-config/"><meta property="article:section" content="post">
 <meta property="article:published_time" content="2023-06-21T22:03:16+08:00">
-<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
+<meta property="article:modified_time" content="2023-07-08T01:19:42+08:00">
 <meta itemprop=name content="小主机配置笔记">
 <meta itemprop=description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><meta itemprop=datePublished content="2023-06-21T22:03:16+08:00">
-<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1393">
+<meta itemprop=dateModified content="2023-07-08T01:19:42+08:00">
+<meta itemprop=wordCount content="1849">
 <meta itemprop=keywords content="x86,eq12,"><meta name=twitter:card content="summary">
 <meta name=twitter:title content="小主机配置笔记">
 <meta name=twitter:description content="决定淘汰树梅派4B，上x86小主机了，整理下配置过程，免的下次重装系统再从头开始。暂时没有win的需求，所以只装了Ubuntu22.04，系"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
@@ -100,13 +100,15 @@
 <ul>
 <li><a href=#挂载硬盘>挂载硬盘</a></li>
 <li><a href=#ftp-server>FTP Server</a></li>
-<li><a href=#安装docker>安装Docker</a></li>
-<li><a href=#配置服务>配置服务</a>
+<li><a href=#docker-服务>Docker 服务</a>
 <ul>
-<li><a href=#存储服务>存储服务</a></li>
+<li><a href=#安装-docker>安装 Docker</a></li>
+<li><a href=#存储>存储</a></li>
 <li><a href=#导航>导航</a></li>
 <li><a href=#媒体>媒体</a></li>
 <li><a href=#笔记>笔记</a></li>
+<li><a href=#智能家居>智能家居</a></li>
+<li><a href=#电子书>电子书</a></li>
 </ul>
 </li>
 <li><a href=#定时任务>定时任务</a></li>
@@ -242,7 +244,8 @@ ftp
 </code></pre></td></tr></table>
 </div>
 </div><p>使用用户名：ftp和前面设置的密码登录。</p>
-<h2 id=安装docker>安装Docker</h2>
+<h2 id=docker-服务>Docker 服务</h2>
+<h3 id=安装-docker>安装 Docker</h3>
 <p>官网步骤 <a href=https://docs.docker.com/engine/install/ubuntu/>https://docs.docker.com/engine/install/ubuntu/</a></p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -322,9 +325,8 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 <pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>docker run hello-world
 </code></pre></td></tr></table>
 </div>
-</div><h2 id=配置服务>配置服务</h2>
-<p>使用docker-compose同时启动多个服务， 按照功能分成了几块，每种服务对应一个 docker-compose.yml</p>
-<h3 id=存储服务>存储服务</h3>
+</div><p>使用docker-compose同时启动多个服务， 按照功能分成了几块，每种服务对应一个 docker-compose.yml</p>
+<h3 id=存储>存储</h3>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
 <pre tabindex=0 class=chroma><code><span class=lnt> 1
@@ -581,6 +583,10 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=lnt>20
 </span><span class=lnt>21
 </span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
 </span></code></pre></td>
 <td class=lntd>
 <pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3.5&#39;</span><span class=w>
@@ -593,6 +599,7 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>      </span>- <span class=l>PUID=1000</span><span class=w>
 </span><span class=w>      </span>- <span class=l>PGID=1000</span><span class=w>
 </span><span class=w>      </span>- <span class=l>TZ=Asia/Shanghai</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel</span><span class=w>
 </span><span class=w>      </span><span class=c># - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional</span><span class=w>
 </span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
 </span><span class=w>      </span>- <span class=l>./jellyfin/library:/config</span><span class=w>
@@ -603,11 +610,24 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>      </span>- <span class=m>8920</span><span class=p>:</span><span class=m>8920</span><span class=w> </span><span class=c>#optional</span><span class=w>
 </span><span class=w>      </span>- <span class=m>7359</span><span class=p>:</span><span class=m>7359</span><span class=l>/udp</span><span class=w> </span><span class=c>#optional</span><span class=w>
 </span><span class=w>      </span>- <span class=m>1900</span><span class=p>:</span><span class=m>1900</span><span class=l>/udp</span><span class=w> </span><span class=c>#optional</span><span class=w>
+</span><span class=w>    </span><span class=nt>devices</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>dev/dri:/dev/dri</span><span class=w>
+</span><span class=w>
 </span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
 </span><span class=w>
 </span></code></pre></td></tr></table>
 </div>
-</div><h3 id=笔记>笔记</h3>
+</div><p>在TV上观看的话需要安装kodi以及jellyfin插件， 下载 <a href=https://kodi.jellyfin.org/repository.jellyfin.kodi.zip>jellyfin repository installer</a>， 在kodi中安装此插件，这个插件只是仓库，并不是jellfin插件，然后再选择<code>从库中安装</code> -> <code>视频插件</code> 安装jellfin插件，添加服务器后就可以观看了。 具体的流程参考<a href=https://post.smzdm.com/p/a99vlpmp/>这个</a>。</p>
+<p><strong>硬件加速</strong></p>
+<p>由于使用的Intel 的CPU 和核显， 前面的<code>DOCKER_MODS</code>使用了<code>jellyfin-opencl-intel</code></p>
+<p>jellyfin也需要如下配置下： <code>控制台</code> -> <code>播放</code> -> <code>转码</code> <code>硬件加速选择</code> <code>Intel QuickSync(QSV)</code></p>
+<figure class=center><img src=/img/home-server/jellyfin-hwacc.png><figcaption>
+<h4>jellyfin 硬件加速</h4>
+</figcaption>
+</figure>
+<p>勾选所有格式，以及 <code>启用 VPP 色调映射</code> 和 <code>启用色调映射</code> 。</p>
+<p>这样在客户端播放不支持的视频格式时，jellyfin转码可以使用硬件加速，降低cpu使用率。</p>
+<h3 id=笔记>笔记</h3>
 <p>为知笔记</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -651,7 +671,115 @@ sudo usermod -aG docker <span class=nv>$USER</span>
 </span><span class=w>
 </span></code></pre></td></tr></table>
 </div>
-</div><h2 id=定时任务>定时任务</h2>
+</div><h3 id=智能家居>智能家居</h3>
+<p>HomeAssissant</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.5&#34;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>homeassistant</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>lscr.io/linuxserver/homeassistant:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>homeassistant</span><span class=w>
+</span><span class=w>    </span><span class=nt>network_mode</span><span class=p>:</span><span class=w> </span><span class=l>host</span><span class=w>
+</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>PUID=1000</span><span class=w>
+</span><span class=w>      </span>- <span class=l>PGID=1000</span><span class=w>
+</span><span class=w>      </span>- <span class=l>TZ=Asia/Shanghai</span><span class=w>
+</span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>./homeassistant/config:/config</span><span class=w>
+</span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
+</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>安装hacs</p>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ mkdir www
+$ mkdir custom_components
+$ mkdir custom_components/hacs
+$ <span class=nb>cd</span> custom_components/hacs/
+$ wget https://github.com/hacs/integration/releases/download/1.32.1/hacs.zip
+$ unzip
+$ 
+</code></pre></td></tr></table>
+</div>
+</div><p>重启homaassistant</p>
+<p>进入集成搜索hacs, 这时候就能搜到了，按照提示继续完成安装。</p>
+<h3 id=电子书>电子书</h3>
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.5&#34;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>calibre-web</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>lscr.io/linuxserver/calibre-web:latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>container_name</span><span class=p>:</span><span class=w> </span><span class=l>calibre-web</span><span class=w>
+</span><span class=w>    </span><span class=nt>environment</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>PUID=1000</span><span class=w>
+</span><span class=w>      </span>- <span class=l>PGID=1000</span><span class=w>
+</span><span class=w>      </span>- <span class=l>TZ=Asia/Shanghai</span><span class=w>
+</span><span class=w>      </span>- <span class=l>DOCKER_MODS=linuxserver/mods:universal-calibre</span><span class=w> </span><span class=c>#optional</span><span class=w>
+</span><span class=w>      </span>- <span class=l>OAUTHLIB_RELAX_TOKEN_SCOPE=1</span><span class=w> </span><span class=c>#optional</span><span class=w>
+</span><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>./calibre-web/data:/config</span><span class=w>
+</span><span class=w>      </span>- <span class=l>./calibre-web/library:/books</span><span class=w>
+</span><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=m>8020</span><span class=p>:</span><span class=m>8083</span><span class=w>
+</span><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=l>unless-stopped</span><span class=w>
+</span><span class=w>
+</span></code></pre></td></tr></table>
+</div>
+</div><p>默认用户名和密码 Username: admin Password: admin123。<br>
+配置过程参考<a href=https://blog.mokeedev.com/2022/06/1113/>这个</a>。</p>
+<h2 id=定时任务>定时任务</h2>
 <p>定时更新证书， vps那边使用acme.sh申请的免费证书，会定时更新，这边定时同步。需要放到/root下所以使用sudo</p>
 <div class=highlight><div class=chroma>
 <table class=lntable><tr><td class=lntd>
@@ -861,8 +989,8 @@ service frpc restart
 <p class=copyright-item>
 <span class=item-title>LastMod</span>
 <span class=item-content>
-2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
+2023-07-08
+<a href=https://github.com/xistor/My-blog-source/commit/038e767edbac40f4d42c90476b70b1e3cef05256 title="update home server config">(038e767)</a>
 </span>
 </p>
 <p class=copyright-item>
