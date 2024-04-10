@@ -1,137 +1,9 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Linux/Unix系统编程手册-笔记28. 管道 - xistor's notes</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s28/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记28. 管道">
-<meta property="og:description" content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s28/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2020-11-27T18:30:00+08:00">
-<meta property="article:modified_time" content="2020-12-01T22:49:59+08:00">
-<meta itemprop=name content="Linux/Unix系统编程手册-笔记28. 管道">
-<meta itemprop=description content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不"><meta itemprop=datePublished content="2020-11-27T18:30:00+08:00">
-<meta itemprop=dateModified content="2020-12-01T22:49:59+08:00">
-<meta itemprop=wordCount content="1477">
-<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Linux/Unix系统编程手册-笔记28. 管道">
-<meta name=twitter:description content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记28. 管道 - xistor's notes</title>
+<meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不"><meta name=generator content="Hugo 0.124.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s28/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记28. 管道"><meta property="og:description" content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s28/"><meta property="article:section" content="post"><meta property="article:published_time" content="2020-11-27T18:30:00+08:00"><meta property="article:modified_time" content="2020-12-01T22:49:59+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记28. 管道"><meta itemprop=description content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不"><meta itemprop=datePublished content="2020-11-27T18:30:00+08:00"><meta itemprop=dateModified content="2020-12-01T22:49:59+08:00"><meta itemprop=wordCount content="1477"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记28. 管道"><meta name=twitter:description content="管道的概念 管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如 1 $ ls | wc -l 管道是一个字节流，只能按顺序读取任意大小的数据，不"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>Home</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>Archives</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>Tags</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>Categories</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>Home</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>Archives</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>Tags</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>Categories</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Linux/Unix系统编程手册-笔记28. 管道</h1>
-<div class=post-meta>
-<span class=post-time> 2020-11-27 </span>
-<div class=post-category>
-<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
-</div>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>Contents</h2>
-<div class="post-toc-content always-active">
-<nav id=TableOfContents>
-<ul>
-<li><a href=#管道的概念>管道的概念</a></li>
-<li><a href=#创建和使用管道>创建和使用管道</a>
-<ul>
-<li><a href=#popen>popen</a></li>
-</ul>
-</li>
-<li><a href=#管道和stdio缓冲>管道和stdio缓冲</a></li>
-<li><a href=#fifo-命名管道>FIFO 命名管道</a></li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<h2 id=管道的概念>管道的概念</h2>
-<p>管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>$ ls <span class=p>|</span> wc -l
-</code></pre></td></tr></table>
-</div>
-</div><p>管道是一个字节流，只能按顺序读取任意大小的数据，不能使用fseek()随机读取。</p>
-<p>从当前是空的管道内读取数据会阻塞，直到有数据写入管道，如果管道的写入端已关闭，读管道的进程读完管道内剩余的数据后将会读到end of file。</p>
-<p>管道的数据传输是单向的。</p>
-<p>往管道内写数据到PIPE_BUF个字节前肯定是原子操作。当写入数据大于PIPE_BUF时，内核会把数据分割成任意大小写入管道，当多个进程同时写入时，数据就可能混合。</p>
-<p>管道写满后（Linux 2.6.11 后管道大小为65536），<code>write()</code>会阻塞，直到<code>read()</code>从管道删除部分数据。</p>
-<p>管道可以让两个相关的进程进行通信，相关指的是两个进程有同一个祖先，因为管道的文件描述符是通过<code>pipe()</code>返回的，通过继承在各个进程中传递。一个普遍的场景是，父进程创建管道，之后兄弟进程利用管道通信。</p>
-<h2 id=创建和使用管道>创建和使用管道</h2>
-<p>下面是例子，使用<code>pipe()</code>创建管道后，调用<code>fork()</code>,在父进程中往管道写数据，在另一端的子进程从管道中读出数据。父进程往管道写完数据后，会关闭管道，子进程在循环读出的过程中碰到EOF就退出循环。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记28. 管道</h1><div class=post-meta><span class=post-time>2020-11-27</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#管道的概念>管道的概念</a></li><li><a href=#创建和使用管道>创建和使用管道</a><ul><li><a href=#popen>popen</a></li></ul></li><li><a href=#管道和stdio缓冲>管道和stdio缓冲</a></li><li><a href=#fifo-命名管道>FIFO 命名管道</a></li></ul></nav></div></div><div class=post-content><h2 id=管道的概念>管道的概念</h2><p>管道一般用于在shell中将一个进程的输出作为另一个进程的输入。比如</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>$ ls <span class=p>|</span> wc -l
+</span></span></code></pre></td></tr></table></div></div><p>管道是一个字节流，只能按顺序读取任意大小的数据，不能使用fseek()随机读取。</p><p>从当前是空的管道内读取数据会阻塞，直到有数据写入管道，如果管道的写入端已关闭，读管道的进程读完管道内剩余的数据后将会读到end of file。</p><p>管道的数据传输是单向的。</p><p>往管道内写数据到PIPE_BUF个字节前肯定是原子操作。当写入数据大于PIPE_BUF时，内核会把数据分割成任意大小写入管道，当多个进程同时写入时，数据就可能混合。</p><p>管道写满后（Linux 2.6.11 后管道大小为65536），<code>write()</code>会阻塞，直到<code>read()</code>从管道删除部分数据。</p><p>管道可以让两个相关的进程进行通信，相关指的是两个进程有同一个祖先，因为管道的文件描述符是通过<code>pipe()</code>返回的，通过继承在各个进程中传递。一个普遍的场景是，父进程创建管道，之后兄弟进程利用管道通信。</p><h2 id=创建和使用管道>创建和使用管道</h2><p>下面是例子，使用<code>pipe()</code>创建管道后，调用<code>fork()</code>,在父进程中往管道写数据，在另一端的子进程从管道中读出数据。父进程往管道写完数据后，会关闭管道，子进程在循环读出的过程中碰到EOF就退出循环。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -173,188 +45,87 @@
 </span><span class=lnt>40
 </span><span class=lnt>41
 </span><span class=lnt>42
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=kt>int</span> <span class=n>pfd</span><span class=p>[</span><span class=mi>2</span><span class=p>];</span>                             <span class=cm>/* Pipe file descriptors */</span>
-<span class=kt>char</span> <span class=n>buf</span><span class=p>[</span><span class=n>BUF_SIZE</span><span class=p>];</span>
-<span class=n>ssize_t</span> <span class=n>numRead</span><span class=p>;</span>
-
-<span class=k>if</span> <span class=p>(</span><span class=n>pipe</span><span class=p>(</span><span class=n>pfd</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>                    <span class=cm>/* Create the pipe， pfd[0] 读管道， pfd[1] 写管道*/</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;pipe&#34;</span><span class=p>);</span>
-
-<span class=k>switch</span> <span class=p>(</span><span class=n>fork</span><span class=p>())</span> <span class=p>{</span>
-    <span class=k>case</span> <span class=o>-</span><span class=mi>1</span><span class=o>:</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;fork&#34;</span><span class=p>);</span>
-
-    <span class=k>case</span> <span class=mi>0</span><span class=o>:</span>             <span class=cm>/* Child  - reads from pipe */</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>            <span class=cm>/* Write end is unused */</span>
-            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close - child&#34;</span><span class=p>);</span>
-
-        <span class=k>for</span> <span class=p>(;;)</span> <span class=p>{</span>              <span class=cm>/* Read data from pipe, echo on stdout */</span>
-            <span class=n>numRead</span> <span class=o>=</span> <span class=n>read</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>buf</span><span class=p>,</span> <span class=n>BUF_SIZE</span><span class=p>);</span>
-            <span class=k>if</span> <span class=p>(</span><span class=n>numRead</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-                <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;read&#34;</span><span class=p>);</span>
-            <span class=k>if</span> <span class=p>(</span><span class=n>numRead</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span>
-                <span class=k>break</span><span class=p>;</span>                      <span class=cm>/* End-of-file */</span>
-            <span class=k>if</span> <span class=p>(</span><span class=n>write</span><span class=p>(</span><span class=n>STDOUT_FILENO</span><span class=p>,</span> <span class=n>buf</span><span class=p>,</span> <span class=n>numRead</span><span class=p>)</span> <span class=o>!=</span> <span class=n>numRead</span><span class=p>)</span>
-                <span class=n>fatal</span><span class=p>(</span><span class=s>&#34;child - partial/failed write&#34;</span><span class=p>);</span>
-        <span class=p>}</span>
-
-        <span class=n>write</span><span class=p>(</span><span class=n>STDOUT_FILENO</span><span class=p>,</span> <span class=s>&#34;</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close&#34;</span><span class=p>);</span>
-        <span class=n>_exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
-
-    <span class=k>default</span><span class=o>:</span>            <span class=cm>/* Parent - writes to pipe */</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>            <span class=cm>/* Read end is unused */</span>
-            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close - parent&#34;</span><span class=p>);</span>
-
-        <span class=k>if</span> <span class=p>(</span><span class=n>write</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=s>&#34;hello&#34;</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span> <span class=o>!=</span> <span class=mi>5</span><span class=p>)</span>
-            <span class=n>fatal</span><span class=p>(</span><span class=s>&#34;parent - partial/failed write&#34;</span><span class=p>);</span>
-
-        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>            <span class=cm>/* Child will see EOF */</span>
-            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close&#34;</span><span class=p>);</span>
-        <span class=n>wait</span><span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>                         <span class=cm>/* Wait for child to finish */</span>
-        <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
-    <span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>实现shell中的连接符，比如<code>ls | wc -l</code>这样，主要操作就是将标准输入输出冲定向到管道，使用<code>dup2()</code>复制文件描述符实现，然后在两端分别关闭重复的文件描述符。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=kt>int</span> <span class=n>pfd</span><span class=p>[</span><span class=mi>2</span><span class=p>];</span>                             <span class=cm>/* Pipe file descriptors */</span>
+</span></span><span class=line><span class=cl><span class=kt>char</span> <span class=n>buf</span><span class=p>[</span><span class=n>BUF_SIZE</span><span class=p>];</span>
+</span></span><span class=line><span class=cl><span class=n>ssize_t</span> <span class=n>numRead</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=n>pipe</span><span class=p>(</span><span class=n>pfd</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>                    <span class=cm>/* Create the pipe， pfd[0] 读管道， pfd[1] 写管道*/</span>
+</span></span><span class=line><span class=cl>        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;pipe&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>switch</span> <span class=p>(</span><span class=n>fork</span><span class=p>())</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=o>-</span><span class=mi>1</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;fork&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=mi>0</span><span class=o>:</span>             <span class=cm>/* Child  - reads from pipe */</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>            <span class=cm>/* Write end is unused */</span>
+</span></span><span class=line><span class=cl>            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close - child&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(;;)</span> <span class=p>{</span>              <span class=cm>/* Read data from pipe, echo on stdout */</span>
+</span></span><span class=line><span class=cl>            <span class=n>numRead</span> <span class=o>=</span> <span class=n>read</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>buf</span><span class=p>,</span> <span class=n>BUF_SIZE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>numRead</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;read&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>numRead</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span><span class=p>;</span>                      <span class=cm>/* End-of-file */</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>write</span><span class=p>(</span><span class=n>STDOUT_FILENO</span><span class=p>,</span> <span class=n>buf</span><span class=p>,</span> <span class=n>numRead</span><span class=p>)</span> <span class=o>!=</span> <span class=n>numRead</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=n>fatal</span><span class=p>(</span><span class=s>&#34;child - partial/failed write&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>write</span><span class=p>(</span><span class=n>STDOUT_FILENO</span><span class=p>,</span> <span class=s>&#34;</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>_exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>default</span><span class=o>:</span>            <span class=cm>/* Parent - writes to pipe */</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>            <span class=cm>/* Read end is unused */</span>
+</span></span><span class=line><span class=cl>            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close - parent&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>write</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=s>&#34;hello&#34;</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span> <span class=o>!=</span> <span class=mi>5</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>fatal</span><span class=p>(</span><span class=s>&#34;parent - partial/failed write&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>            <span class=cm>/* Child will see EOF */</span>
+</span></span><span class=line><span class=cl>            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;close&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>wait</span><span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>                         <span class=cm>/* Wait for child to finish */</span>
+</span></span><span class=line><span class=cl>        <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>实现shell中的连接符，比如<code>ls | wc -l</code>这样，主要操作就是将标准输入输出冲定向到管道，使用<code>dup2()</code>复制文件描述符实现，然后在两端分别关闭重复的文件描述符。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>if</span> <span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>!=</span> <span class=n>STDOUT_FILENO</span><span class=p>)</span> <span class=p>{</span>
-    <span class=n>dup2</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>STDOUT_FILENO</span><span class=p>);</span>
-    <span class=n>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>]);</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><h3 id=popen>popen</h3>
-<p><code>popen()</code>用来执行一个shell命令，并且可以通过管道读取其输出或发给它一个输入。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>!=</span> <span class=n>STDOUT_FILENO</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nf>dup2</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>STDOUT_FILENO</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nf>close</span><span class=p>(</span><span class=n>pfd</span><span class=p>[</span><span class=mi>1</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=popen>popen</h3><p><code>popen()</code>用来执行一个shell命令，并且可以通过管道读取其输出或发给它一个输入。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span><span class=cp></span>
-<span class=n>FILE</span> <span class=o>*</span><span class=nf>popen</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>command</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>mode</span><span class=p>);</span>
-
-<span class=kt>int</span> <span class=nf>pclose</span><span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=n>stream</span><span class=p>);</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><code>command</code>为想要执行的命令，<code>mode</code>为<code>r</code>或<code>w</code>。<code>popen()</code>返回的描述符只能用<code>pclose()</code>关闭，而不能用<code>fclose()</code>关闭，因为<code>popen()</code>在执行过程中会创建两个进程，<code>pclose()</code>会wait子进程，而使用<code>fclose()</code>会产生僵尸进程。</p>
-<h2 id=管道和stdio缓冲>管道和stdio缓冲</h2>
-<p>文件流是块缓冲的，所以stdio对待<code>popen()</code>返回的管道也是块缓冲的，一般向管道写入时问题不大，我们可以fflush()刷新缓冲区，或者setbuf(fp, NULL)关闭stdio缓冲。但当我们作为管道的读取端时，就不太好控制了，只能看写入端的代码怎么写的了。这种情况可以使用伪终端，在伪终端的情况下，stdio缓冲为行缓冲。</p>
-<h2 id=fifo-命名管道>FIFO 命名管道</h2>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=n>FILE</span> <span class=o>*</span><span class=nf>popen</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>command</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>mode</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>pclose</span><span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=n>stream</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>command</code>为想要执行的命令，<code>mode</code>为<code>r</code>或<code>w</code>。<code>popen()</code>返回的描述符只能用<code>pclose()</code>关闭，而不能用<code>fclose()</code>关闭，因为<code>popen()</code>在执行过程中会创建两个进程，<code>pclose()</code>会wait子进程，而使用<code>fclose()</code>会产生僵尸进程。</p><h2 id=管道和stdio缓冲>管道和stdio缓冲</h2><p>文件流是块缓冲的，所以stdio对待<code>popen()</code>返回的管道也是块缓冲的，一般向管道写入时问题不大，我们可以fflush()刷新缓冲区，或者setbuf(fp, NULL)关闭stdio缓冲。但当我们作为管道的读取端时，就不太好控制了，只能看写入端的代码怎么写的了。这种情况可以使用伪终端，在伪终端的情况下，stdio缓冲为行缓冲。</p><h2 id=fifo-命名管道>FIFO 命名管道</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
-</span><span class=cp></span>
-<span class=kt>int</span> <span class=nf>mkfifo</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>,</span> <span class=n>mode_t</span> <span class=n>mode</span><span class=p>);</span>
-<span class=c1>// mode 指定权限
-</span></code></pre></td></tr></table>
-</div>
-</div><p>FIFO和管道的类似，只不过FIFO在文件系统中会有一个路径，所以也被叫做命名管道。</p>
-<p>一般来说FIFO只会一个读进程和一个写进程，因此，当以只读打开一个FIFO时会阻塞，直到另一端的进程以只写打开FIFO。同样的，以只写打开一个FIFO也会阻塞至另一端以只读打开。</p>
-<p>想要在open的时候不阻塞，最好使用<code>O_NONBLOCK</code>标志。以此标志读FIFO时，若此时没有进程在写端打开，则马上成功结束调用，以此标志写FIFO时，若此时没有进程在对端读，则返回错误ENXIO。</p>
-<p>有了<code>O_NONBLOCK</code>，就可以在一个进程内打开一个FIFO的两端。其次能防止打开两个FIFO的进程发生死锁。</p>
-</div>
-<div class=post-copyright>
-<p class=copyright-item>
-<span class=item-title>Author</span>
-<span class=item-content>xistor</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>LastMod</span>
-<span class=item-content>
-2020-12-01
-<a href=https://github.com/xistor/My-blog-source/commit/7f44e3169e491dad4eda67b637ab473b88db66cf title=update>(7f44e31)</a>
-</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
-</p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/linux/>Linux</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/linux/the-linux-programming-interface-s29/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>mkfifo</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span><span class=n>pathname</span><span class=p>,</span> <span class=kt>mode_t</span> <span class=n>mode</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// mode 指定权限
+</span></span></span></code></pre></td></tr></table></div></div><p>FIFO和管道的类似，只不过FIFO在文件系统中会有一个路径，所以也被叫做命名管道。</p><p>一般来说FIFO只会一个读进程和一个写进程，因此，当以只读打开一个FIFO时会阻塞，直到另一端的进程以只写打开FIFO。同样的，以只写打开一个FIFO也会阻塞至另一端以只读打开。</p><p>想要在open的时候不阻塞，最好使用<code>O_NONBLOCK</code>标志。以此标志读FIFO时，若此时没有进程在写端打开，则马上成功结束调用，以此标志写FIFO时，若此时没有进程在对端读，则返回错误ENXIO。</p><p>有了<code>O_NONBLOCK</code>，就可以在一个进程内打开一个FIFO的两端。其次能防止打开两个FIFO的进程发生死锁。</p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2020-12-01
+<a href=https://github.com/xistor/My-blog-source/commit/7f44e3169e491dad4eda67b637ab473b88db66cf title=update>(7f44e31)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s29/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记29. System V IPC</span>
 <span class="prev-text nav-mobile">Prev</span>
-</a>
-<a class=next href=/post/linux/the-linux-programming-interface-s27/>
-<span class="next-text nav-default">Linux/Unix系统编程手册-笔记27. 共享库</span>
+</a><a class=next href=/post/linux/the-linux-programming-interface-s27/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记27. 共享库</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=disqus_thread></div>
-<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
-<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
-<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
-</span>
-<span class=division>|</span>
-<span class=theme-info>
-Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<div class=busuanzi-footer>
-<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-<span class=division>|</span>
-<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-</div>
-<span class=copyright-year>
-&copy;
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==="localhost")return;var t,e=document.createElement("script");e.type="text/javascript",e.async=!0,t="xistor",e.src="//"+t+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)})()</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span><span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span><span class=division>|</span>
+<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
 2018 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
-<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-M23R6PBNFE','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</body>
-</html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]]}}</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script><script>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-M23R6PBNFE","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

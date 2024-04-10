@@ -1,124 +1,7 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Android 使用AIDL添加 native service - xistor's notes</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://xistor.github.io/post/add-native-service/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Android 使用AIDL添加 native service">
-<meta property="og:description" content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://xistor.github.io/post/add-native-service/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2020-05-27T23:03:16+08:00">
-<meta property="article:modified_time" content="2020-08-15T15:32:43+08:00">
-<meta itemprop=name content="Android 使用AIDL添加 native service">
-<meta itemprop=description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><meta itemprop=datePublished content="2020-05-27T23:03:16+08:00">
-<meta itemprop=dateModified content="2020-08-15T15:32:43+08:00">
-<meta itemprop=wordCount content="1501">
-<meta itemprop=keywords content="Android,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Android 使用AIDL添加 native service">
-<meta name=twitter:description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Android 使用AIDL添加 native service - xistor's notes</title>
+<meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><meta name=generator content="Hugo 0.124.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/add-native-service/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Android 使用AIDL添加 native service"><meta property="og:description" content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/add-native-service/"><meta property="article:section" content="post"><meta property="article:published_time" content="2020-05-27T23:03:16+08:00"><meta property="article:modified_time" content="2020-08-15T15:32:43+08:00"><meta itemprop=name content="Android 使用AIDL添加 native service"><meta itemprop=description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><meta itemprop=datePublished content="2020-05-27T23:03:16+08:00"><meta itemprop=dateModified content="2020-08-15T15:32:43+08:00"><meta itemprop=wordCount content="1512"><meta itemprop=keywords content="Android,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Android 使用AIDL添加 native service"><meta name=twitter:description content="1. 下载 AOSP源码，配置编译环境 略 2. 目录结构 device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个s"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>Home</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>Archives</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>Tags</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>Categories</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>Home</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>Archives</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>Tags</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>Categories</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Android 使用AIDL添加 native service</h1>
-<div class=post-meta>
-<span class=post-time> 2020-05-27 </span>
-<div class=post-category>
-<a href=/categories/android/> Android </a>
-</div>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>Contents</h2>
-<div class="post-toc-content always-active">
-<nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li><a href=#1-下载-aosp源码配置编译环境>1. 下载 AOSP源码，配置编译环境</a></li>
-<li><a href=#2-目录结构>2. 目录结构</a></li>
-<li><a href=#3-编写aidl文件>3. 编写AIDL文件</a></li>
-<li><a href=#4-实现-sampleservice>4. 实现 sampleService</a></li>
-<li><a href=#6-实现客户端>6. 实现客户端</a></li>
-<li><a href=#7-测试>7. 测试</a></li>
-<li><a href=#8-参考>8. 参考</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<h3 id=1-下载-aosp源码配置编译环境>1. 下载 AOSP源码，配置编译环境</h3>
-<p>略</p>
-<h3 id=2-目录结构>2. 目录结构</h3>
-<p>device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个service将在sample目录中实现。</p>
-<pre><code>    device
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Android 使用AIDL添加 native service</h1><div class=post-meta><span class=post-time>2020-05-27</span><div class=post-category><a href=/categories/android/>Android</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#1-下载-aosp源码配置编译环境>1. 下载 AOSP源码，配置编译环境</a></li><li><a href=#2-目录结构>2. 目录结构</a></li><li><a href=#3-编写aidl文件>3. 编写AIDL文件</a></li><li><a href=#4-实现-sampleservice>4. 实现 sampleService</a></li><li><a href=#6-实现客户端>6. 实现客户端</a></li><li><a href=#7-测试>7. 测试</a></li><li><a href=#8-参考>8. 参考</a></li></ul></li></ul></nav></div></div><div class=post-content><h3 id=1-下载-aosp源码配置编译环境>1. 下载 AOSP源码，配置编译环境</h3><p>略</p><h3 id=2-目录结构>2. 目录结构</h3><p>device下新建一个sample目录保存我们即将写的native服务,我的目录结构如下，这个service将在sample目录中实现。</p><pre><code>    device
         |
         | -xx
             |-service
@@ -129,29 +12,17 @@
                     |-service
                     |-test
                     Android.mk
-</code></pre>
-<h3 id=3-编写aidl文件>3. 编写AIDL文件</h3>
-<p>新建AIDL文件ISample.aidl,声明接口，接口名称要与文件名一致。 in/out来表示是输入/输出参数，默认是in，out参数在最终生成的从C++源文件会以指针实现。这里定义了一个DoSomething接口，有两个参数:n和一个内含string的vector，功能是返回n个"Hello"在ouput数组中。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</code></pre><h3 id=3-编写aidl文件>3. 编写AIDL文件</h3><p>新建AIDL文件ISample.aidl,声明接口，接口名称要与文件名一致。 in/out来表示是输入/输出参数，默认是in，out参数在最终生成的从C++源文件会以指针实现。这里定义了一个DoSomething接口，有两个参数:n和一个内含string的vector，功能是返回n个"Hello"在ouput数组中。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kn>package</span> <span class=nx>sample</span><span class=p>;</span>
-
-<span class=kd>interface</span> <span class=nx>ISample</span> <span class=p>{</span>
-<span class=nx>void</span> <span class=nf>DoSomething</span><span class=p>(</span><span class=kt>int</span> <span class=nx>n</span><span class=p>,</span> <span class=nx>out</span> <span class=nx>List</span><span class=p>&lt;</span><span class=nx>String</span><span class=p>&gt;</span> <span class=nx>output</span><span class=p>);</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>新建一个Android.mk文件,编译生成对应的lib库以及头文件。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>sample</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>interface</span> <span class=nx>ISample</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=nx>void</span> <span class=nf>DoSomething</span><span class=p>(</span><span class=kt>int</span> <span class=nx>n</span><span class=p>,</span> <span class=nx>out</span> <span class=nx>List</span><span class=p>&lt;</span><span class=nx>String</span><span class=p>&gt;</span> <span class=nx>output</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>新建一个Android.mk文件,编译生成对应的lib库以及头文件。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -173,38 +44,67 @@
 </span><span class=lnt>20
 </span><span class=lnt>21
 </span><span class=lnt>22
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
-<span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
-
-<span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
-</span><span class=se></span>            sample/ISample.aidl <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
-
-<span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
-</span><span class=se></span>            libbinder <span class=se>\
-</span><span class=se></span>            libcutils <span class=se>\
-</span><span class=se></span>            liblog <span class=se>\
-</span><span class=se></span>            libutils <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_MODULE</span><span class=o>:=</span>libsample-aidl
-
-
-<span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_SHARED_LIBRARY</span><span class=k>)</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>编译会生成BnSample.h,BpSample.h和ISample.h三个头文件，在out/target/product/generic_x86_64/obj/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated 目录下。同级的src目录下还有对应的cpp源文件ISample.cpp,AIDL帮我们实现好了这些格式化的文件，自己手写实现也是可以的。</p>
-<h3 id=4-实现-sampleservice>4. 实现 sampleService</h3>
-<p>sampleService.h, sampleService继承自BnSample。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=line><span class=cl><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            sample/ISample.aidl <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libbinder <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libcutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            liblog <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE</span><span class=o>:=</span>libsample-aidl
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_SHARED_LIBRARY</span><span class=k>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>编译会生成BnSample.h,BpSample.h和ISample.h三个头文件，在out/target/product/generic_x86_64/obj/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated 目录下。同级的src目录下还有对应的cpp源文件ISample.cpp,AIDL帮我们实现好了这些格式化的文件，自己手写实现也是可以的。</p><h3 id=4-实现-sampleservice>4. 实现 sampleService</h3><p>sampleService.h, sampleService继承自BnSample。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#ifndef SAMPLE_SERVICE_H
+</span></span></span><span class=line><span class=cl><span class=cp>#define SAMPLE_SERVICE_H
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=cp>#include&lt;BnSample.h&gt;
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;vector&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>namespace</span> <span class=n>android</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>sampleService</span> <span class=o>:</span> <span class=k>public</span> <span class=n>sample</span><span class=o>::</span><span class=n>BnSample</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=k>public</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>sampleService</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=o>~</span><span class=n>sampleService</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=k>virtual</span> <span class=o>::</span><span class=n>android</span><span class=o>::</span><span class=n>binder</span><span class=o>::</span><span class=n>Status</span> <span class=n>DoSomething</span><span class=p>(</span><span class=kt>int32_t</span> <span class=n>n</span><span class=p>,</span> <span class=o>::</span><span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;::</span><span class=n>android</span><span class=o>::</span><span class=n>String16</span><span class=o>&gt;*</span> <span class=n>output</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>};</span> 
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#endif  </span><span class=c1>// SAMPLE_SERVICE_H
+</span></span></span></code></pre></td></tr></table></div></div><p>sampleService.cpp，在此实现DoSomething的逻辑，这里就简单的把n个"Hello"塞到vector中返回。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -224,81 +124,27 @@
 </span><span class=lnt>18
 </span><span class=lnt>19
 </span><span class=lnt>20
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#ifndef SAMPLE_SERVICE_H
-</span><span class=cp>#define SAMPLE_SERVICE_H
-</span><span class=cp></span>
-<span class=cp>#include</span><span class=cpf>&lt;BnSample.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;vector&gt;</span><span class=cp>
-</span><span class=cp></span>
-<span class=k>namespace</span> <span class=n>android</span> <span class=p>{</span>
-
-<span class=k>class</span> <span class=nc>sampleService</span> <span class=o>:</span> <span class=k>public</span> <span class=n>sample</span><span class=o>::</span><span class=n>BnSample</span> <span class=p>{</span>
-<span class=k>public</span><span class=o>:</span>
-
-    <span class=n>sampleService</span><span class=p>();</span>
-    <span class=o>~</span><span class=n>sampleService</span><span class=p>();</span>
-    <span class=k>virtual</span> <span class=o>::</span><span class=n>android</span><span class=o>::</span><span class=n>binder</span><span class=o>::</span><span class=n>Status</span> <span class=n>DoSomething</span><span class=p>(</span><span class=kt>int32_t</span> <span class=n>n</span><span class=p>,</span> <span class=o>::</span><span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;::</span><span class=n>android</span><span class=o>::</span><span class=n>String16</span><span class=o>&gt;*</span> <span class=n>output</span><span class=p>);</span>
-<span class=p>};</span> 
-
-<span class=p>}</span>
-
-<span class=cp>#endif  </span><span class=c1>// SAMPLE_SERVICE_H
-</span><span class=c1></span>
-</code></pre></td></tr></table>
-</div>
-</div><p>sampleService.cpp，在此实现DoSomething的逻辑，这里就简单的把n个"Hello"塞到vector中返回。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span><span class=cpf>&#34;sampleService.h&#34;</span><span class=cp>
-</span><span class=cp></span>
-<span class=k>using</span> <span class=k>namespace</span> <span class=n>android</span><span class=p>;</span>
-
-<span class=n>sampleService</span><span class=o>::</span><span class=n>sampleService</span><span class=p>()</span> <span class=p>{</span>
-
-<span class=p>}</span>
-
-<span class=n>sampleService</span><span class=o>::~</span><span class=n>sampleService</span><span class=p>()</span> <span class=p>{</span>
-    
-<span class=p>}</span>
-
-<span class=o>::</span><span class=n>android</span><span class=o>::</span><span class=n>binder</span><span class=o>::</span><span class=n>Status</span> <span class=n>sampleService</span><span class=o>::</span><span class=n>DoSomething</span><span class=p>(</span><span class=kt>int32_t</span> <span class=n>n</span><span class=p>,</span> <span class=o>::</span><span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;::</span><span class=n>android</span><span class=o>::</span><span class=n>String16</span><span class=o>&gt;*</span> <span class=n>output</span><span class=p>)</span> <span class=p>{</span>
-
-    <span class=k>for</span><span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>n</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>output</span><span class=o>-&gt;</span><span class=n>push_back</span><span class=p>(</span><span class=n>String16</span><span class=p>(</span><span class=s>&#34;Hello&#34;</span><span class=p>));</span>
-    <span class=p>}</span>
-
-    <span class=k>return</span> <span class=o>::</span><span class=n>android</span><span class=o>::</span><span class=n>binder</span><span class=o>::</span><span class=n>Status</span><span class=o>::</span><span class=n>ok</span><span class=p>();</span> 
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>service的Android.mk 如下：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include&#34;sampleService.h&#34;
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=k>namespace</span> <span class=n>android</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>sampleService</span><span class=o>::</span><span class=n>sampleService</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>sampleService</span><span class=o>::~</span><span class=n>sampleService</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>::</span><span class=n>android</span><span class=o>::</span><span class=n>binder</span><span class=o>::</span><span class=n>Status</span> <span class=n>sampleService</span><span class=o>::</span><span class=n>DoSomething</span><span class=p>(</span><span class=kt>int32_t</span> <span class=n>n</span><span class=p>,</span> <span class=o>::</span><span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;::</span><span class=n>android</span><span class=o>::</span><span class=n>String16</span><span class=o>&gt;*</span> <span class=n>output</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span><span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>n</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>output</span><span class=o>-&gt;</span><span class=n>push_back</span><span class=p>(</span><span class=n>String16</span><span class=p>(</span><span class=s>&#34;Hello&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=o>::</span><span class=n>android</span><span class=o>::</span><span class=n>binder</span><span class=o>::</span><span class=n>Status</span><span class=o>::</span><span class=n>ok</span><span class=p>();</span> 
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>service的Android.mk 如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -322,40 +168,31 @@
 </span><span class=lnt>22
 </span><span class=lnt>23
 </span><span class=lnt>24
-</span><span class=lnt>25
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
-<span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
-
-<span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
-</span><span class=se></span>            sampleService.cpp <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
-
-<span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/device/x/eva0/framerworks/service/sample/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TARGET_OUT_INTERMEDIATES<span class=k>)</span>/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
-
-<span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
-</span><span class=se></span>            libbinder <span class=se>\
-</span><span class=se></span>            libcutils <span class=se>\
-</span><span class=se></span>            liblog <span class=se>\
-</span><span class=se></span>            libutils <span class=se>\
-</span><span class=se></span>            libsample-aidl <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_MODULE</span><span class=o>:=</span>libsampleservice
-
-<span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_SHARED_LIBRARY</span><span class=k>)</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><p>然后我们需要一个进程来承载我们的service，在process目录下新建sample_main.cpp文件，在main函数中调用serviceManager的addService方法将我们的service注册进去，以便客户端可以找到。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=line><span class=cl><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            sampleService.cpp <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/device/x/eva0/framerworks/service/sample/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TARGET_OUT_INTERMEDIATES<span class=k>)</span>/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libbinder <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libcutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            liblog <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libsample-aidl <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE</span><span class=o>:=</span>libsampleservice
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_SHARED_LIBRARY</span><span class=k>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>然后我们需要一个进程来承载我们的service，在process目录下新建sample_main.cpp文件，在main函数中调用serviceManager的addService方法将我们的service注册进去，以便客户端可以找到。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -381,40 +218,33 @@
 </span><span class=lnt>24
 </span><span class=lnt>25
 </span><span class=lnt>26
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;binder/IPCThreadState.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;binder/ProcessState.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;binder/IServiceManager.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;cutils/log.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&#34;sampleService.h&#34;</span><span class=cp>
-</span><span class=cp></span>
-<span class=k>using</span> <span class=k>namespace</span> <span class=n>android</span><span class=p>;</span>
-
-<span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span><span class=o>**</span> <span class=n>argv</span><span class=p>)</span> <span class=p>{</span>
-
-    <span class=n>sp</span><span class=o>&lt;</span><span class=n>ProcessState</span><span class=o>&gt;</span> <span class=n>proc</span><span class=p>(</span><span class=n>ProcessState</span><span class=o>::</span><span class=n>self</span><span class=p>());</span>
-
-    <span class=n>sp</span><span class=o>&lt;</span><span class=n>IServiceManager</span><span class=o>&gt;</span> <span class=n>sm</span> <span class=o>=</span> <span class=n>defaultServiceManager</span><span class=p>();</span>
-
-    <span class=n>ALOGI</span><span class=p>(</span><span class=s>&#34;ServiceManager: %p&#34;</span><span class=p>,</span> <span class=n>sm</span><span class=p>.</span><span class=n>get</span><span class=p>());</span>
-
-    <span class=n>sm</span><span class=o>-&gt;</span><span class=n>addService</span><span class=p>(</span><span class=n>String16</span><span class=p>(</span><span class=s>&#34;sampleService&#34;</span><span class=p>),</span> <span class=k>new</span> <span class=n>sampleService</span><span class=p>());</span>
-
-    <span class=n>ProcessState</span><span class=o>::</span><span class=n>self</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>startThreadPool</span><span class=p>();</span>
-
-    <span class=n>IPCThreadState</span><span class=o>::</span><span class=n>self</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>joinThreadPool</span><span class=p>();</span>
-
-    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>对应的的mk如下，编译生成的sampleService就是我们service的可执行文件。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;binder/IPCThreadState.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;binder/ProcessState.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;binder/IServiceManager.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;cutils/log.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;sampleService.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=k>namespace</span> <span class=n>android</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span><span class=o>**</span> <span class=n>argv</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>sp</span><span class=o>&lt;</span><span class=n>ProcessState</span><span class=o>&gt;</span> <span class=n>proc</span><span class=p>(</span><span class=n>ProcessState</span><span class=o>::</span><span class=n>self</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>sp</span><span class=o>&lt;</span><span class=n>IServiceManager</span><span class=o>&gt;</span> <span class=n>sm</span> <span class=o>=</span> <span class=n>defaultServiceManager</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ALOGI</span><span class=p>(</span><span class=s>&#34;ServiceManager: %p&#34;</span><span class=p>,</span> <span class=n>sm</span><span class=p>.</span><span class=n>get</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>sm</span><span class=o>-&gt;</span><span class=n>addService</span><span class=p>(</span><span class=n>String16</span><span class=p>(</span><span class=s>&#34;sampleService&#34;</span><span class=p>),</span> <span class=k>new</span> <span class=n>sampleService</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ProcessState</span><span class=o>::</span><span class=n>self</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>startThreadPool</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>IPCThreadState</span><span class=o>::</span><span class=n>self</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>joinThreadPool</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>对应的的mk如下，编译生成的sampleService就是我们service的可执行文件。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -440,41 +270,33 @@
 </span><span class=lnt>24
 </span><span class=lnt>25
 </span><span class=lnt>26
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
-<span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
- 
-<span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
-</span><span class=se></span>			sample_main.cpp <span class=se>\
-</span><span class=se></span> 
-<span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
- 
-<span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
-</span><span class=se></span>			<span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
-</span><span class=se></span>			<span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
-</span><span class=se></span>			<span class=k>$(</span>TOP<span class=k>)</span>/device/x/eva0/framerworks/service/sample/include <span class=se>\
-</span><span class=se></span>			<span class=k>$(</span>TARGET_OUT_INTERMEDIATES<span class=k>)</span>/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
-
-<span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
-</span><span class=se></span>			libbinder <span class=se>\
-</span><span class=se></span>			libcutils <span class=se>\
-</span><span class=se></span>			liblog <span class=se>\
-</span><span class=se></span>			libutils <span class=se>\
-</span><span class=se></span>			libsample-aidl <span class=se>\
-</span><span class=se></span>			libsampleservice <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_MODULE</span><span class=o>:=</span> sampleService
- 
-<span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_EXECUTABLE</span><span class=k>)</span>	
-	
-</code></pre></td></tr></table>
-</div>
-</div><h3 id=6-实现客户端>6. 实现客户端</h3>
-<p>客户端就是通过serviceManager取得sampleService的指针后，简单的调用下DoSomething接口, n值传入3，并把返回的vector打印出来。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=line><span class=cl><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			sample_main.cpp <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span> 
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			<span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			<span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			<span class=k>$(</span>TOP<span class=k>)</span>/device/x/eva0/framerworks/service/sample/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			<span class=k>$(</span>TARGET_OUT_INTERMEDIATES<span class=k>)</span>/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			libbinder <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			libcutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			liblog <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			libutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			libsample-aidl <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>			libsampleservice <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE</span><span class=o>:=</span> sampleService
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_EXECUTABLE</span><span class=k>)</span>	
+</span></span><span class=line><span class=cl>	
+</span></span></code></pre></td></tr></table></div></div><h3 id=6-实现客户端>6. 实现客户端</h3><p>客户端就是通过serviceManager取得sampleService的指针后，简单的调用下DoSomething接口, n值传入3，并把返回的vector打印出来。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -499,41 +321,32 @@
 </span><span class=lnt>23
 </span><span class=lnt>24
 </span><span class=lnt>25
-</span><span class=lnt>26
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;binder/IServiceManager.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;binder/Parcel.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;utils/Errors.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;String16.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;String8.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;vector&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&#34;sampleService.h&#34;</span><span class=cp>
-</span><span class=cp></span>
-<span class=k>using</span> <span class=k>namespace</span> <span class=n>android</span><span class=p>;</span>
-
-<span class=kt>int</span> <span class=nf>main</span> <span class=p>()</span> <span class=p>{</span>
-
-    <span class=n>sp</span><span class=o>&lt;</span><span class=n>sample</span><span class=o>::</span><span class=n>ISample</span><span class=o>&gt;</span> <span class=n>sample_srv</span> <span class=o>=</span> <span class=n>interface_cast</span><span class=o>&lt;</span><span class=n>sample</span><span class=o>::</span><span class=n>ISample</span><span class=o>&gt;</span><span class=p>(</span><span class=n>defaultServiceManager</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>getService</span><span class=p>(</span><span class=n>String16</span><span class=p>(</span><span class=s>&#34;sampleService&#34;</span><span class=p>)));</span>
-
-    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>String16</span><span class=o>&gt;</span> <span class=n>hellos</span><span class=p>;</span>
-    <span class=n>sample_srv</span><span class=o>-&gt;</span><span class=n>DoSomething</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>hellos</span><span class=p>);</span>
-
-    <span class=k>for</span> <span class=p>(</span><span class=n>String16</span> <span class=nl>s</span><span class=p>:</span><span class=n>hellos</span> <span class=p>)</span> <span class=p>{</span>
-        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>String8</span><span class=p>(</span><span class=n>s</span><span class=p>.</span><span class=n>string</span><span class=p>()).</span><span class=n>string</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
-    <span class=p>}</span>
-
-    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
-<span class=p>}</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><p>客户端的mk文件</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;binder/IServiceManager.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;binder/Parcel.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;utils/Errors.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;String16.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;String8.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;vector&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;sampleService.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>using</span> <span class=k>namespace</span> <span class=n>android</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>sp</span><span class=o>&lt;</span><span class=n>sample</span><span class=o>::</span><span class=n>ISample</span><span class=o>&gt;</span> <span class=n>sample_srv</span> <span class=o>=</span> <span class=n>interface_cast</span><span class=o>&lt;</span><span class=n>sample</span><span class=o>::</span><span class=n>ISample</span><span class=o>&gt;</span><span class=p>(</span><span class=n>defaultServiceManager</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>getService</span><span class=p>(</span><span class=n>String16</span><span class=p>(</span><span class=s>&#34;sampleService&#34;</span><span class=p>)));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>String16</span><span class=o>&gt;</span> <span class=n>hellos</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>sample_srv</span><span class=o>-&gt;</span><span class=n>DoSomething</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>hellos</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=n>String16</span> <span class=nl>s</span><span class=p>:</span><span class=n>hellos</span> <span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>String8</span><span class=p>(</span><span class=n>s</span><span class=p>.</span><span class=n>string</span><span class=p>()).</span><span class=n>string</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>客户端的mk文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -560,133 +373,50 @@
 </span><span class=lnt>25
 </span><span class=lnt>26
 </span><span class=lnt>27
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
-<span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
-
-<span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
-</span><span class=se></span>            sample_test.cpp <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
-
-<span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/device/x/service/sample/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/include/utils <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/device/x/eva0/framerworks/service/sample/include <span class=se>\
-</span><span class=se></span>            <span class=k>$(</span>TARGET_OUT_INTERMEDIATES<span class=k>)</span>/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
-
-<span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
-</span><span class=se></span>            libbinder <span class=se>\
-</span><span class=se></span>            libcutils <span class=se>\
-</span><span class=se></span>            liblog <span class=se>\
-</span><span class=se></span>            libutils <span class=se>\
-</span><span class=se></span>            libsample-aidl <span class=se>\
-</span><span class=se></span>            libsampleservice <span class=se>\
-</span><span class=se></span>
-<span class=nv>LOCAL_MODULE</span><span class=o>:=</span> sampletest
-
-<span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_EXECUTABLE</span><span class=k>)</span>	
-</code></pre></td></tr></table>
-</div>
-</div><h3 id=7-测试>7. 测试</h3>
-<p>lunch之后输入emulator启动模拟器，将sampleService和Sampletest push进模拟器。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=line><span class=cl><span class=nv>LOCAL_PATH</span><span class=o>:=</span> <span class=k>$(</span>call my-dir<span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>CLEAR_VARS</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SRC_FILES</span><span class=o>:=</span><span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            sample_test.cpp <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE_TAGS</span> <span class=o>:=</span> optional
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_C_INCLUDES</span> <span class=o>:=</span>             <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/frameworks/native/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/base/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/device/x/service/sample/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/system/core/include/utils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TOP<span class=k>)</span>/device/x/eva0/framerworks/service/sample/include <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            <span class=k>$(</span>TARGET_OUT_INTERMEDIATES<span class=k>)</span>/SHARED_LIBRARIES/libsample-aidl_intermediates/aidl-generated/include/sample
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_SHARED_LIBRARIES</span> <span class=o>:=</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libbinder <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libcutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            liblog <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libutils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libsample-aidl <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>            libsampleservice <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl><span class=nv>LOCAL_MODULE</span><span class=o>:=</span> sampletest
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>include</span> <span class=k>$(</span><span class=nv>BUILD_EXECUTABLE</span><span class=k>)</span>	
+</span></span></code></pre></td></tr></table></div></div><h3 id=7-测试>7. 测试</h3><p>lunch之后输入emulator启动模拟器，将sampleService和Sampletest push进模拟器。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>sampleService <span class=p>&amp;</span>
-sampletest
-</code></pre></td></tr></table>
-</div>
-</div><p>我们客户端传入的参数是3，所以输出三行Hello就代表成功了。</p>
-<h3 id=8-参考>8. 参考</h3>
-<p><a href=https://android.googlesource.com/platform/system/tools/aidl/+/brillo-m10-dev/docs/aidl-cpp.md>https://android.googlesource.com/platform/system/tools/aidl/+/brillo-m10-dev/docs/aidl-cpp.md</a></p>
-</div>
-<div class=post-copyright>
-<p class=copyright-item>
-<span class=item-title>Author</span>
-<span class=item-content>xistor</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>LastMod</span>
-<span class=item-content>
-2020-08-15
-<a href=https://github.com/xistor/My-blog-source/commit/2917313c5d0c014fbb972565504992059bd8e369 title="fix typo">(2917313)</a>
-</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
-</p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/android/>Android</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/linux/the-linux-programming-interface-s1/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>sampleService <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl>sampletest
+</span></span></code></pre></td></tr></table></div></div><p>我们客户端传入的参数是3，所以输出三行Hello就代表成功了。</p><h3 id=8-参考>8. 参考</h3><p><a href=https://android.googlesource.com/platform/system/tools/aidl/+/brillo-m10-dev/docs/aidl-cpp.md>https://android.googlesource.com/platform/system/tools/aidl/+/brillo-m10-dev/docs/aidl-cpp.md</a></p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2020-08-15
+<a href=https://github.com/xistor/My-blog-source/commit/2917313c5d0c014fbb972565504992059bd8e369 title="fix typo">(2917313)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/android/>Android</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s1/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记1.基本概念</span>
 <span class="prev-text nav-mobile">Prev</span>
-</a>
-<a class=next href=/post/rpi4-boot-from-usb/>
-<span class="next-text nav-default">树莓派4B USB硬盘启动</span>
+</a><a class=next href=/post/rpi4-boot-from-usb/><span class="next-text nav-default">树莓派4B USB硬盘启动</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=disqus_thread></div>
-<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
-<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
-<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
-</span>
-<span class=division>|</span>
-<span class=theme-info>
-Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<div class=busuanzi-footer>
-<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-<span class=division>|</span>
-<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-</div>
-<span class=copyright-year>
-&copy;
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==="localhost")return;var t,e=document.createElement("script");e.type="text/javascript",e.async=!0,t="xistor",e.src="//"+t+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)})()</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span><span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span><span class=division>|</span>
+<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
 2018 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
-<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-M23R6PBNFE','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</body>
-</html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]]}}</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script><script>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-M23R6PBNFE","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

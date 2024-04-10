@@ -1,175 +1,25 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度 - xistor's notes</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s25/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度">
-<meta property="og:description" content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s25/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2020-11-05T18:30:00+08:00">
-<meta property="article:modified_time" content="2021-01-12T20:09:38+08:00">
-<meta itemprop=name content="Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度">
-<meta itemprop=description content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用"><meta itemprop=datePublished content="2020-11-05T18:30:00+08:00">
-<meta itemprop=dateModified content="2021-01-12T20:09:38+08:00">
-<meta itemprop=wordCount content="2372">
-<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度">
-<meta name=twitter:description content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度 - xistor's notes</title>
+<meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用"><meta name=generator content="Hugo 0.124.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s25/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度"><meta property="og:description" content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s25/"><meta property="article:section" content="post"><meta property="article:published_time" content="2020-11-05T18:30:00+08:00"><meta property="article:modified_time" content="2021-01-12T20:09:38+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度"><meta itemprop=description content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用"><meta itemprop=datePublished content="2020-11-05T18:30:00+08:00"><meta itemprop=dateModified content="2021-01-12T20:09:38+08:00"><meta itemprop=wordCount content="2383"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度"><meta name=twitter:description content="nice值 nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>Home</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>Archives</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>Tags</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>Categories</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>Home</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>Archives</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>Tags</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>Categories</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度</h1>
-<div class=post-meta>
-<span class=post-time> 2020-11-05 </span>
-<div class=post-category>
-<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
-</div>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>Contents</h2>
-<div class="post-toc-content always-active">
-<nav id=TableOfContents>
-<ul>
-<li><a href=#nice值>nice值</a></li>
-<li><a href=#实时进程调度>实时进程调度</a>
-<ul>
-<li><a href=#sched_rr和sched_fifo策略>SCHED_RR和SCHED_FIFO策略</a></li>
-<li><a href=#sched_batch-和-sched_idle策略>SCHED_BATCH 和 SCHED_IDLE策略</a></li>
-</ul>
-</li>
-<li><a href=#进程调度相关api>进程调度相关API</a></li>
-<li><a href=#cpu-affinity>CPU Affinity</a></li>
-<li><a href=#exercises>Exercises</a></li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<h2 id=nice值>nice值</h2>
-<p>nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用户只能设置更低的优先级。</p>
-<p>调用fork()后，子进程会继承其父进程的nice值，exec()后，nice值会保留。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记25. 进程优先级和进程调度</h1><div class=post-meta><span class=post-time>2020-11-05</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#nice值>nice值</a></li><li><a href=#实时进程调度>实时进程调度</a><ul><li><a href=#sched_rr和sched_fifo策略>SCHED_RR和SCHED_FIFO策略</a></li><li><a href=#sched_batch-和-sched_idle策略>SCHED_BATCH 和 SCHED_IDLE策略</a></li></ul></li><li><a href=#进程调度相关api>进程调度相关API</a></li><li><a href=#cpu-affinity>CPU Affinity</a></li><li><a href=#exercises>Exercises</a></li></ul></nav></div></div><div class=post-content><h2 id=nice值>nice值</h2><p>nice值是进程的一个属性，可以间接影响内核调度，其值的范围为-20到+19，默认值为0。只有特权用户可以设置更高的优先级，其他用户只能设置更低的优先级。</p><p>调用fork()后，子进程会继承其父进程的nice值，exec()后，nice值会保留。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/resource.h&gt;</span><span class=cp>
-</span><span class=cp></span><span class=kt>int</span> <span class=nf>getpriority</span><span class=p>(</span><span class=kt>int</span> <span class=n>which</span><span class=p>,</span> <span class=n>id_t</span> <span class=n>who</span><span class=p>);</span>
-<span class=c1>// Returns (possibly negative) nice value of specified process on success, or –1 on error
-</span><span class=c1></span><span class=kt>int</span> <span class=nf>setpriority</span><span class=p>(</span><span class=kt>int</span> <span class=n>which</span><span class=p>,</span> <span class=n>id_t</span> <span class=n>who</span><span class=p>,</span> <span class=kt>int</span> <span class=n>prio</span><span class=p>);</span>
-<span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></td></tr></table>
-</div>
-</div><p>参数who代表取或设置的对象，which参数指定如何理解who,由which的不同，who可以理解为进程号、进程组号或用户id。<br>
-<code>getpriority()</code>系统调用返回值范围实际为1-40(通过20-nice转换),为了避免返回负值，因为负值在系统调用中通常代表出错。我们实际调用的<code>getpriority()</code>函数经过了c函数库的包装，返回值为-20到+19。正因为返回负值是合法的所以判断函数是否出错，通常需要像下面这样：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/resource.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=kt>int</span> <span class=nf>getpriority</span><span class=p>(</span><span class=kt>int</span> <span class=n>which</span><span class=p>,</span> <span class=kt>id_t</span> <span class=n>who</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// Returns (possibly negative) nice value of specified process on success, or –1 on error
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kt>int</span> <span class=nf>setpriority</span><span class=p>(</span><span class=kt>int</span> <span class=n>which</span><span class=p>,</span> <span class=kt>id_t</span> <span class=n>who</span><span class=p>,</span> <span class=kt>int</span> <span class=n>prio</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// Returns 0 on success, or –1 on error
+</span></span></span></code></pre></td></tr></table></div></div><p>参数who代表取或设置的对象，which参数指定如何理解who,由which的不同，who可以理解为进程号、进程组号或用户id。<br><code>getpriority()</code>系统调用返回值范围实际为1-40(通过20-nice转换),为了避免返回负值，因为负值在系统调用中通常代表出错。我们实际调用的<code>getpriority()</code>函数经过了c函数库的包装，返回值为-20到+19。正因为返回负值是合法的所以判断函数是否出错，通常需要像下面这样：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c>    <span class=n>errno</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=cm>/* Because successful call may return -1 */</span>
-    <span class=n>prio</span> <span class=o>=</span> <span class=n>getpriority</span><span class=p>(</span><span class=n>which</span><span class=p>,</span> <span class=n>who</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>prio</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span> <span class=o>&amp;&amp;</span> <span class=n>errno</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;getpriority&#34;</span><span class=p>);</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><code>setpriorty()</code>参数中<code>prio</code>的范围为-20到+19，就算给的值不在这个范围内，给的值大于19的也会被置为19，小于-20的会被置为-20。</p>
-<h2 id=实时进程调度>实时进程调度</h2>
-<p>实时进程对调度有更严格的要求，须满足：</p>
-<ul>
-<li>在指定时间内必须对外部输入做出响应。</li>
-<li>一个高优先级进程可以保持对CPU的独占，直到它运行结束或者自愿放弃CPU。</li>
-<li>实时进程应该能够精确的控制其组件进程的调度顺序。</li>
-</ul>
-<p>SUSv3提供了两种实时调度策略SCHED_RR和SCHED_FIFO。处于这两种策略的进程优先级总高于其他处于标准策略(SCHED_OTHER)的进程。每种调度策略内又有不同的优先级，Linux提供了99个实时优先级（1（低）~99（高）），不同调度策略里的相同优先级的进程是平等的。</p>
-<h3 id=sched_rr和sched_fifo策略>SCHED_RR和SCHED_FIFO策略</h3>
-<p>这两种策略比较相似，区别在于SCHED_RR策略中，同优先级的进程调度采用时间片轮转，而SCHED_FIFO中，当一个进程获得了CPU,除非它自己释放或终止，或者被I/O阻塞，或者被其他高优先级进程抢占，否则将一直占有CPU。</p>
-<p>SCHED_RR策略又和普通的进程调度类似，但是实时调度策略的区别在于，高优先级的进程总是会抢占CPU。其时间片轮转也仅仅是在同优先级的进程内。</p>
-<h3 id=sched_batch-和-sched_idle策略>SCHED_BATCH 和 SCHED_IDLE策略</h3>
-<p>这两个并非实时调度策略，和SCHED_OTHER类似。</p>
-<ul>
-<li>SCHED_BATCH：适用于非交互、CPU密集型的批处理进程，此策略下，时间片更长(默认1.5s)，可以更好的利用缓存。nice值决定了进程（非kernel-mode）相对的CPU占用时间百分比。</li>
-<li>SCHED_IDLE：优先级最低（比+19还低），nice值对这些进程来说也没有意义，只有在系统空闲的时候才会分到CPU。</li>
-</ul>
-<h2 id=进程调度相关api>进程调度相关API</h2>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl>    <span class=n>errno</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=cm>/* Because successful call may return -1 */</span>
+</span></span><span class=line><span class=cl>    <span class=n>prio</span> <span class=o>=</span> <span class=nf>getpriority</span><span class=p>(</span><span class=n>which</span><span class=p>,</span> <span class=n>who</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>prio</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span> <span class=o>&amp;&amp;</span> <span class=n>errno</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;getpriority&#34;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>setpriorty()</code>参数中<code>prio</code>的范围为-20到+19，就算给的值不在这个范围内，给的值大于19的也会被置为19，小于-20的会被置为-20。</p><h2 id=实时进程调度>实时进程调度</h2><p>实时进程对调度有更严格的要求，须满足：</p><ul><li>在指定时间内必须对外部输入做出响应。</li><li>一个高优先级进程可以保持对CPU的独占，直到它运行结束或者自愿放弃CPU。</li><li>实时进程应该能够精确的控制其组件进程的调度顺序。</li></ul><p>SUSv3提供了两种实时调度策略SCHED_RR和SCHED_FIFO。处于这两种策略的进程优先级总高于其他处于标准策略(SCHED_OTHER)的进程。每种调度策略内又有不同的优先级，Linux提供了99个实时优先级（1（低）~99（高）），不同调度策略里的相同优先级的进程是平等的。</p><h3 id=sched_rr和sched_fifo策略>SCHED_RR和SCHED_FIFO策略</h3><p>这两种策略比较相似，区别在于SCHED_RR策略中，同优先级的进程调度采用时间片轮转，而SCHED_FIFO中，当一个进程获得了CPU,除非它自己释放或终止，或者被I/O阻塞，或者被其他高优先级进程抢占，否则将一直占有CPU。</p><p>SCHED_RR策略又和普通的进程调度类似，但是实时调度策略的区别在于，高优先级的进程总是会抢占CPU。其时间片轮转也仅仅是在同优先级的进程内。</p><h3 id=sched_batch-和-sched_idle策略>SCHED_BATCH 和 SCHED_IDLE策略</h3><p>这两个并非实时调度策略，和SCHED_OTHER类似。</p><ul><li>SCHED_BATCH：适用于非交互、CPU密集型的批处理进程，此策略下，时间片更长(默认1.5s)，可以更好的利用缓存。nice值决定了进程（非kernel-mode）相对的CPU占用时间百分比。</li><li>SCHED_IDLE：优先级最低（比+19还低），nice值对这些进程来说也没有意义，只有在系统空闲的时候才会分到CPU。</li></ul><h2 id=进程调度相关api>进程调度相关API</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -180,58 +30,28 @@
 </span><span class=lnt> 9
 </span><span class=lnt>10
 </span><span class=lnt>11
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
-</span><span class=cp></span><span class=kt>int</span> <span class=nf>sched_setscheduler</span><span class=p>(</span><span class=n>pid_t</span> <span class=n>pid</span><span class=p>,</span> <span class=kt>int</span> <span class=n>policy</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>sched_param</span> <span class=o>*</span><span class=n>param</span><span class=p>);</span>
-<span class=c1>//  Returns 0 on success, or –1 on error
-</span><span class=c1></span>
-<span class=kt>int</span> <span class=nf>sched_setparam</span><span class=p>(</span><span class=n>pid_t</span> <span class=n>pid</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>sched_param</span> <span class=o>*</span><span class=n>param</span><span class=p>);</span>
-<span class=c1>// Returns 0 on success, or –1 on error
-</span><span class=c1></span>
-
-<span class=k>struct</span> <span class=n>sched_param</span> <span class=p>{</span>
- <span class=kt>int</span> <span class=n>sched_priority</span><span class=p>;</span> <span class=cm>/* Scheduling priority */</span>
-<span class=p>};</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><code>sched_setscheduler()</code>能同时改变调度策略和进程优先级。<code>sched_setparam()</code>只改变进程优先级。</p>
-<p>fork()后的子进程会继承调度策略，exec()后调度策略会保留。</p>
-<p>修改进程nice值需要合适的权限，特权进程(CAP_SYS_NICE)可以设置调度策略优先级，或者EUID相同可以设置SCHED_OTHER策略。Linux2.6.12之后，资源限制RLIMIT_RTPRIO定义了进程修改优先级的上限，若RLIMIT_RTPRIO非0，则优先级不能高于当前优先级且不能高于RLIMIT_RTPRIO，RLIMIT_RTPRIO为0，进程只能降低其实时调度优先级，或者切换到非实时调度策略。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=kt>int</span> <span class=nf>sched_setscheduler</span><span class=p>(</span><span class=kt>pid_t</span> <span class=n>pid</span><span class=p>,</span> <span class=kt>int</span> <span class=n>policy</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>sched_param</span> <span class=o>*</span><span class=n>param</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>//  Returns 0 on success, or –1 on error
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>sched_setparam</span><span class=p>(</span><span class=kt>pid_t</span> <span class=n>pid</span><span class=p>,</span> <span class=k>const</span> <span class=k>struct</span> <span class=n>sched_param</span> <span class=o>*</span><span class=n>param</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// Returns 0 on success, or –1 on error
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=n>sched_param</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl> <span class=kt>int</span> <span class=n>sched_priority</span><span class=p>;</span> <span class=cm>/* Scheduling priority */</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>sched_setscheduler()</code>能同时改变调度策略和进程优先级。<code>sched_setparam()</code>只改变进程优先级。</p><p>fork()后的子进程会继承调度策略，exec()后调度策略会保留。</p><p>修改进程nice值需要合适的权限，特权进程(CAP_SYS_NICE)可以设置调度策略优先级，或者EUID相同可以设置SCHED_OTHER策略。Linux2.6.12之后，资源限制RLIMIT_RTPRIO定义了进程修改优先级的上限，若RLIMIT_RTPRIO非0，则优先级不能高于当前优先级且不能高于RLIMIT_RTPRIO，RLIMIT_RTPRIO为0，进程只能降低其实时调度优先级，或者切换到非实时调度策略。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
-</span><span class=cp></span><span class=kt>int</span> <span class=nf>sched_yield</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
-</code></pre></td></tr></table>
-</div>
-</div><p><code>sched_yield()</code>可以主动放弃CPU,若在同一优先级队列内没有其他运行的进程，那么进程就当什么都没发生，继续运行，否则将被放到队列最后。这只适用于处于实时调度策略的进程。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=kt>int</span> <span class=nf>sched_yield</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>sched_yield()</code>可以主动放弃CPU,若在同一优先级队列内没有其他运行的进程，那么进程就当什么都没发生，继续运行，否则将被放到队列最后。这只适用于处于实时调度策略的进程。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
-</span><span class=cp></span><span class=kt>int</span> <span class=nf>sched_rr_get_interval</span><span class=p>(</span><span class=n>pid_t</span> <span class=n>pid</span><span class=p>,</span> <span class=k>struct</span> <span class=n>timespec</span> <span class=o>*</span><span class=n>tp</span><span class=p>);</span>
-<span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></td></tr></table>
-</div>
-</div><p><code>sched_rr_get_interval()</code>能获取一个SCHED_RR进程的时间片大小，Linux 3.9之后写<code>/proc/sys/kernel/sched_rr_timeslice_ms</code>可以修改。</p>
-<h2 id=cpu-affinity>CPU Affinity</h2>
-<p>进程在等待调度的时候不必每次都在同一个CPU内核上运行，但为了提高性能，避免缓存迁移，Linux实行了软CPU亲和力，一个进程只要有可能，就会在同一个CPU上调度运行。</p>
-<p>Linux 也可以通过<code> sched_setaffinity()</code>来实现硬CPU亲和力，限制进程严格运行在某个或某几个CPU核上。</p>
-<h2 id=exercises>Exercises</h2>
-<ol>
-<li>实现nice(1)命令,简单实现了下，主要利用了nice在exec后会保留这一特点，先设置nice,再exec指定的命令即可。</li>
-</ol>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=kt>int</span> <span class=nf>sched_rr_get_interval</span><span class=p>(</span><span class=kt>pid_t</span> <span class=n>pid</span><span class=p>,</span> <span class=k>struct</span> <span class=n>timespec</span> <span class=o>*</span><span class=n>tp</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// Returns 0 on success, or –1 on error
+</span></span></span></code></pre></td></tr></table></div></div><p><code>sched_rr_get_interval()</code>能获取一个SCHED_RR进程的时间片大小，Linux 3.9之后写<code>/proc/sys/kernel/sched_rr_timeslice_ms</code>可以修改。</p><h2 id=cpu-affinity>CPU Affinity</h2><p>进程在等待调度的时候不必每次都在同一个CPU内核上运行，但为了提高性能，避免缓存迁移，Linux实行了软CPU亲和力，一个进程只要有可能，就会在同一个CPU上调度运行。</p><p>Linux 也可以通过<code> sched_setaffinity()</code>来实现硬CPU亲和力，限制进程严格运行在某个或某几个CPU核上。</p><h2 id=exercises>Exercises</h2><ol><li>实现nice(1)命令,简单实现了下，主要利用了nice在exec后会保留这一特点，先设置nice,再exec指定的命令即可。</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -274,68 +94,52 @@
 </span><span class=lnt>41
 </span><span class=lnt>42
 </span><span class=lnt>43
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;sys/resource.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
-</span><span class=cp></span>
-<span class=kt>int</span> <span class=nf>_nice</span><span class=p>(</span><span class=kt>int</span> <span class=n>n</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[]);</span>
-
-<span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
-
-    <span class=kt>char</span> <span class=n>opt</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>n</span> <span class=o>=</span> <span class=mi>10</span><span class=p>;</span>
-    <span class=k>if</span> <span class=p>((</span><span class=n>opt</span> <span class=o>=</span> <span class=n>getopt</span><span class=p>(</span><span class=n>argc</span><span class=p>,</span> <span class=n>argv</span><span class=p>,</span> <span class=s>&#34;n:&#34;</span><span class=p>))</span> <span class=o>!=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>switch</span> <span class=p>(</span><span class=n>opt</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>case</span> <span class=sc>&#39;n&#39;</span><span class=o>:</span>
-            <span class=n>n</span> <span class=o>=</span> <span class=n>atoi</span><span class=p>(</span><span class=n>optarg</span><span class=p>);</span>
-            <span class=k>break</span><span class=p>;</span>
-        <span class=k>default</span><span class=o>:</span> <span class=cm>/* &#39;?&#39; */</span>
-            <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s [-n] Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
-                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-                   <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-
-    <span class=k>if</span><span class=p>(</span><span class=n>optind</span> <span class=o>&gt;=</span> <span class=n>argc</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s [-n] Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
-                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-                   <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
-    <span class=p>}</span>
-    <span class=n>_nice</span><span class=p>(</span><span class=n>n</span><span class=p>,</span> <span class=n>argv</span> <span class=o>+</span> <span class=n>optind</span><span class=p>);</span>
-<span class=p>}</span>
-
-<span class=kt>int</span> <span class=nf>_nice</span><span class=p>(</span><span class=kt>int</span> <span class=n>n</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
-
-    <span class=c1>// printf(&#34;exec %s at priority %d\n&#34;, argv[0], n);
-</span><span class=c1></span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>setpriority</span><span class=p>(</span><span class=n>PRIO_PROCESS</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>n</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;setpriority error&#34;</span><span class=p>);</span>
-    <span class=p>}</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>execvp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>argv</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span><span class=s>&#34;ERROR: exec  %s failed</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-        <span class=n>exit</span><span class=p>(</span><span class=mi>1</span><span class=p>);</span>
-    <span class=p>};</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><ol start=2>
-<li>实现一个set-user-ID程序，设置调度策略和优先级：</li>
-</ol>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh> ./rtsched policy priority <span class=nb>command</span> arg...
-</code></pre></td></tr></table>
-</div>
-</div><p>和练习1差不多，设置好调度策略和优先级后，再执行exec运行指定命令。程序如下：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/resource.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>_nice</span><span class=p>(</span><span class=kt>int</span> <span class=n>n</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[]);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kt>char</span> <span class=n>opt</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>n</span> <span class=o>=</span> <span class=mi>10</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>((</span><span class=n>opt</span> <span class=o>=</span> <span class=n>getopt</span><span class=p>(</span><span class=n>argc</span><span class=p>,</span> <span class=n>argv</span><span class=p>,</span> <span class=s>&#34;n:&#34;</span><span class=p>))</span> <span class=o>!=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>switch</span> <span class=p>(</span><span class=n>opt</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=sc>&#39;n&#39;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>n</span> <span class=o>=</span> <span class=n>atoi</span><span class=p>(</span><span class=n>optarg</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>default</span><span class=o>:</span> <span class=cm>/* &#39;?&#39; */</span>
+</span></span><span class=line><span class=cl>            <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s [-n] Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>                   <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=n>optind</span> <span class=o>&gt;=</span> <span class=n>argc</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s [-n] Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>                   <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=n>_nice</span><span class=p>(</span><span class=n>n</span><span class=p>,</span> <span class=n>argv</span> <span class=o>+</span> <span class=n>optind</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>_nice</span><span class=p>(</span><span class=kt>int</span> <span class=n>n</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// printf(&#34;exec %s at priority %d\n&#34;, argv[0], n);
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>setpriority</span><span class=p>(</span><span class=n>PRIO_PROCESS</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>n</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;setpriority error&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>execvp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>argv</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span><span class=s>&#34;ERROR: exec  %s failed</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=n>exit</span><span class=p>(</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>};</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><ol start=2><li>实现一个set-user-ID程序，设置调度策略和优先级：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl> ./rtsched policy priority <span class=nb>command</span> arg...
+</span></span></code></pre></td></tr></table></div></div><p>和练习1差不多，设置好调度策略和优先级后，再执行exec运行指定命令。程序如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -394,151 +198,78 @@
 </span><span class=lnt>57
 </span><span class=lnt>58
 </span><span class=lnt>59
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;sys/resource.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;string.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;errno.h&gt;</span><span class=cp>
-</span><span class=cp></span>
-<span class=kt>int</span> <span class=nf>sched</span><span class=p>(</span><span class=kt>int</span> <span class=n>policy</span><span class=p>,</span> <span class=kt>int</span> <span class=n>pri</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[]);</span>
-
-<span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
-
-    <span class=kt>char</span> <span class=n>opt</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>policy</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>pri</span><span class=p>;</span>
-
-    <span class=k>if</span> <span class=p>((</span><span class=n>opt</span> <span class=o>=</span> <span class=n>getopt</span><span class=p>(</span><span class=n>argc</span><span class=p>,</span> <span class=n>argv</span><span class=p>,</span> <span class=s>&#34;rf&#34;</span><span class=p>))</span> <span class=o>!=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>switch</span> <span class=p>(</span><span class=n>opt</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>case</span> <span class=sc>&#39;r&#39;</span><span class=o>:</span>
-            <span class=n>policy</span> <span class=o>=</span> <span class=n>SCHED_RR</span><span class=p>;</span>
-            <span class=k>break</span><span class=p>;</span>
-        <span class=k>case</span> <span class=sc>&#39;f&#39;</span><span class=o>:</span>
-            <span class=n>policy</span> <span class=o>=</span> <span class=n>SCHED_FIFO</span><span class=p>;</span>
-            <span class=k>break</span><span class=p>;</span>
-        <span class=k>default</span><span class=o>:</span> <span class=cm>/* &#39;?&#39; */</span>
-            <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s -option priority Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
-                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-                   <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-
-    <span class=k>if</span><span class=p>(</span><span class=n>optind</span> <span class=o>&gt;</span> <span class=n>argc</span> <span class=o>-</span> <span class=mi>2</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s -option priority Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
-                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-                   <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
-    <span class=p>}</span>
-
-    <span class=n>pri</span> <span class=o>=</span> <span class=n>atoi</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=n>optind</span><span class=p>]);</span>
-    <span class=n>sched</span><span class=p>(</span><span class=n>policy</span><span class=p>,</span> <span class=n>pri</span><span class=p>,</span> <span class=n>argv</span> <span class=o>+</span> <span class=n>optind</span> <span class=o>+</span><span class=mi>1</span><span class=p>);</span>
-<span class=p>}</span>
-
-<span class=kt>int</span> <span class=nf>sched</span><span class=p>(</span><span class=kt>int</span> <span class=n>policy</span><span class=p>,</span> <span class=kt>int</span> <span class=n>pri</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
-
-    <span class=c1>// printf(&#34;exec %s policy %d priority %d\n&#34;, argv[0], policy, pri);
-</span><span class=c1></span>
-    <span class=k>struct</span> <span class=n>sched_param</span>  <span class=n>sp</span><span class=p>;</span>
-    <span class=n>sp</span><span class=p>.</span><span class=n>__sched_priority</span> <span class=o>=</span> <span class=n>pri</span><span class=p>;</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>sched_setscheduler</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>policy</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>sp</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-        <span class=kt>int</span> <span class=n>pri_min</span> <span class=o>=</span> <span class=n>sched_get_priority_min</span><span class=p>(</span><span class=n>policy</span><span class=p>);</span>
-        <span class=kt>int</span> <span class=n>pri_max</span> <span class=o>=</span> <span class=n>sched_get_priority_max</span><span class=p>(</span><span class=n>policy</span><span class=p>);</span>
-
-        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;sched_setscheduler error : %s , the priority must in range %d~%d&#34;</span><span class=p>,</span> <span class=n>strerror</span><span class=p>(</span><span class=n>errno</span><span class=p>),</span> <span class=n>pri_min</span><span class=p>,</span> <span class=n>pri_max</span><span class=p>);</span>
-    <span class=p>}</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>execvp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>argv</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span><span class=s>&#34;ERROR: exec  %s failed</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-        <span class=n>exit</span><span class=p>(</span><span class=mi>1</span><span class=p>);</span>
-    <span class=p>};</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div>
-</div>
-<div class=post-copyright>
-<p class=copyright-item>
-<span class=item-title>Author</span>
-<span class=item-content>xistor</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>LastMod</span>
-<span class=item-content>
-2021-01-12
-<a href=https://github.com/xistor/My-blog-source/commit/d3d25b675ede6facbe11348786cd330008ead9ed title=update>(d3d25b6)</a>
-</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
-</p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/linux/>Linux</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/linux/the-linux-programming-interface-s26/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/resource.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;string.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;errno.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>sched</span><span class=p>(</span><span class=kt>int</span> <span class=n>policy</span><span class=p>,</span> <span class=kt>int</span> <span class=n>pri</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[]);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kt>char</span> <span class=n>opt</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>policy</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>pri</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>((</span><span class=n>opt</span> <span class=o>=</span> <span class=nf>getopt</span><span class=p>(</span><span class=n>argc</span><span class=p>,</span> <span class=n>argv</span><span class=p>,</span> <span class=s>&#34;rf&#34;</span><span class=p>))</span> <span class=o>!=</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>switch</span> <span class=p>(</span><span class=n>opt</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=sc>&#39;r&#39;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>policy</span> <span class=o>=</span> <span class=n>SCHED_RR</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=sc>&#39;f&#39;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>policy</span> <span class=o>=</span> <span class=n>SCHED_FIFO</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>default</span><span class=o>:</span> <span class=cm>/* &#39;?&#39; */</span>
+</span></span><span class=line><span class=cl>            <span class=nf>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s -option priority Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>                   <span class=nf>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=n>optind</span> <span class=o>&gt;</span> <span class=n>argc</span> <span class=o>-</span> <span class=mi>2</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nf>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;Usage: %s -option priority Cmd</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                           <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>                   <span class=nf>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>pri</span> <span class=o>=</span> <span class=nf>atoi</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=n>optind</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>    <span class=nf>sched</span><span class=p>(</span><span class=n>policy</span><span class=p>,</span> <span class=n>pri</span><span class=p>,</span> <span class=n>argv</span> <span class=o>+</span> <span class=n>optind</span> <span class=o>+</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>sched</span><span class=p>(</span><span class=kt>int</span> <span class=n>policy</span><span class=p>,</span> <span class=kt>int</span> <span class=n>pri</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// printf(&#34;exec %s policy %d priority %d\n&#34;, argv[0], policy, pri);
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>sched_param</span>  <span class=n>sp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>sp</span><span class=p>.</span><span class=n>__sched_priority</span> <span class=o>=</span> <span class=n>pri</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>sched_setscheduler</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>policy</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>sp</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>int</span> <span class=n>pri_min</span> <span class=o>=</span> <span class=nf>sched_get_priority_min</span><span class=p>(</span><span class=n>policy</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=kt>int</span> <span class=n>pri_max</span> <span class=o>=</span> <span class=nf>sched_get_priority_max</span><span class=p>(</span><span class=n>policy</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nf>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;sched_setscheduler error : %s , the priority must in range %d~%d&#34;</span><span class=p>,</span> <span class=nf>strerror</span><span class=p>(</span><span class=n>errno</span><span class=p>),</span> <span class=n>pri_min</span><span class=p>,</span> <span class=n>pri_max</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>execvp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>argv</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nf>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span><span class=s>&#34;ERROR: exec  %s failed</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=nf>exit</span><span class=p>(</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>};</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2021-01-12
+<a href=https://github.com/xistor/My-blog-source/commit/d3d25b675ede6facbe11348786cd330008ead9ed title=update>(d3d25b6)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s26/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记26. 守护进程</span>
 <span class="prev-text nav-mobile">Prev</span>
-</a>
-<a class=next href=/post/linux/the-linux-programming-interface-s24/>
-<span class="next-text nav-default">Linux/Unix系统编程手册-笔记24. 进程组、会话和作业控制</span>
+</a><a class=next href=/post/linux/the-linux-programming-interface-s24/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记24. 进程组、会话和作业控制</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=disqus_thread></div>
-<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
-<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
-<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
-</span>
-<span class=division>|</span>
-<span class=theme-info>
-Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<div class=busuanzi-footer>
-<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-<span class=division>|</span>
-<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-</div>
-<span class=copyright-year>
-&copy;
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==="localhost")return;var t,e=document.createElement("script");e.type="text/javascript",e.async=!0,t="xistor",e.src="//"+t+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)})()</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span><span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span><span class=division>|</span>
+<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
 2018 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
-<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-M23R6PBNFE','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</body>
-</html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]]}}</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script><script>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-M23R6PBNFE","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

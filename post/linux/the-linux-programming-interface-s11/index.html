@@ -1,120 +1,7 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Linux/Unix系统编程手册-笔记11.系统和进程信息 - xistor's notes</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s11/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记11.系统和进程信息">
-<meta property="og:description" content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s11/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2020-08-09T16:57:00+08:00">
-<meta property="article:modified_time" content="2020-11-18T19:36:36+08:00">
-<meta itemprop=name content="Linux/Unix系统编程手册-笔记11.系统和进程信息">
-<meta itemprop=description content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘"><meta itemprop=datePublished content="2020-08-09T16:57:00+08:00">
-<meta itemprop=dateModified content="2020-11-18T19:36:36+08:00">
-<meta itemprop=wordCount content="1739">
-<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Linux/Unix系统编程手册-笔记11.系统和进程信息">
-<meta name=twitter:description content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记11.系统和进程信息 - xistor's notes</title>
+<meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘"><meta name=generator content="Hugo 0.124.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s11/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记11.系统和进程信息"><meta property="og:description" content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s11/"><meta property="article:section" content="post"><meta property="article:published_time" content="2020-08-09T16:57:00+08:00"><meta property="article:modified_time" content="2020-11-18T19:36:36+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记11.系统和进程信息"><meta itemprop=description content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘"><meta itemprop=datePublished content="2020-08-09T16:57:00+08:00"><meta itemprop=dateModified content="2020-11-18T19:36:36+08:00"><meta itemprop=wordCount content="1742"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记11.系统和进程信息"><meta name=twitter:description content="现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>Home</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>Archives</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>Tags</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>Categories</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>Home</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>Archives</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>Tags</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>Categories</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Linux/Unix系统编程手册-笔记11.系统和进程信息</h1>
-<div class=post-meta>
-<span class=post-time> 2020-08-09 </span>
-<div class=post-category>
-<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
-</div>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>Contents</h2>
-<div class="post-toc-content always-active">
-<nav id=TableOfContents>
-<ul>
-<li>
-<ul>
-<li><a href=#procpid>/proc/PID</a></li>
-<li><a href=#exercises>Exercises</a></li>
-</ul>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<p>现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘上，存在于内存里。</p>
-<h3 id=procpid>/proc/PID</h3>
-<p>对于每个进程，根据其PID可在/proc找到对应的文件夹，其中文件status提供了进程许多信息，以init为例，这是在wsl上的情况：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记11.系统和进程信息</h1><div class=post-meta><span class=post-time>2020-08-09</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#procpid>/proc/PID</a></li><li><a href=#exercises>Exercises</a></li></ul></li></ul></nav></div></div><div class=post-content><p>现代Linux提供了/proc虚拟文件系统，开放了许多内核信息，允许进程方便的读取信息或者在某些情况下修改一些信息。/proc并不存在于磁盘上，存在于内存里。</p><h3 id=procpid>/proc/PID</h3><p>对于每个进程，根据其PID可在/proc找到对应的文件夹，其中文件status提供了进程许多信息，以init为例，这是在wsl上的情况：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -151,53 +38,44 @@
 </span><span class=lnt>35
 </span><span class=lnt>36
 </span><span class=lnt>37
-</span><span class=lnt>38
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>Name:   init
-State:  S <span class=o>(</span>sleeping<span class=o>)</span>
-Tgid:   <span class=m>1</span>                               Thread group ID <span class=o>(</span>traditional PID, getpid<span class=o>())</span>
-Pid:    <span class=m>1</span>                               Actually, thread ID <span class=o>(</span>gettid<span class=o>())</span>
-PPid:   <span class=m>0</span>                               Parent process ID
-TracerPid:      <span class=m>0</span>                       PID of tracing process <span class=o>(</span><span class=m>0</span> <span class=k>if</span> not traced<span class=o>)</span>
-Uid:    <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       Real, effective, saved set, and FS UIDs
-Gid:    <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       Real, effective, saved set, and FS GIDs
-FDSize: <span class=m>10</span>                              <span class=c1># of file descriptor slots currently allocated</span>
-Groups:                                 Supplementary group IDs
-VmPeak: <span class=m>0</span> kB                            Peak virtual memory size
-VmSize: <span class=m>8892</span> kB                         Current virtual memory size
-VmLck:  <span class=m>0</span> kB                            Locked memory
-VmHWM:  <span class=m>0</span> kB                            Peak resident <span class=nb>set</span> size
-VmRSS:      <span class=m>308</span> kB                          Current resident <span class=nb>set</span> size
-VmData: <span class=m>0</span> kB                            Data segment size
-VmStk:  <span class=m>0</span> kB                            Stack size
-VmExe:  <span class=m>412</span> kB                          Text <span class=o>(</span>executable code<span class=o>)</span> size
-VmLib:  <span class=m>0</span> kB                            Shared library code size
-VmPTE:  <span class=m>0</span> kB                            Size of page table <span class=o>(</span>since 2.6.10<span class=o>)</span>
-Threads:        <span class=m>2</span>                       <span class=c1># of threads in this thread’s thread group</span>
-SigQ:   0/0                             Current/max. queued signals <span class=o>(</span>since 2.6.12<span class=o>)</span>
-SigPnd: <span class=m>0000000000000000</span>                Signals pending <span class=k>for</span> thread
-ShdPnd: <span class=m>0000000000000000</span>                Signals pending <span class=k>for</span> process <span class=o>(</span>since 2.6<span class=o>)</span>
-SigBlk: <span class=m>0000000000000000</span>                Blocked signals
-SigIgn: <span class=m>0000000000000000</span>                Ignored signals
-SigCgt: <span class=m>0000000000000000</span>                Caught signals
-CapInh: <span class=m>0000000000000000</span>                Inheritable capabilities
-CapPrm: 0000001fffffffff                Permitted capabilities
-CapEff: 0000001fffffffff                Effective capabilities
-CapBnd: 0000001fffffffff                Capability bounding <span class=nb>set</span> <span class=o>(</span>since 2.6.26<span class=o>)</span>
-Cpus_allowed:   f                       CPUs allowed, mask <span class=nv>0xf</span> <span class=o>=</span> <span class=m>1111</span> <span class=o>(</span>since 2.6.24<span class=o>)</span>
-Cpus_allowed_list:      0-3             Same as above, list format <span class=o>(</span>since 2.6.26<span class=o>)</span>
-Mems_allowed:   <span class=m>1</span>                       Memory nodes allowed, mask <span class=o>(</span>since 2.6.24<span class=o>)</span>
-Mems_allowed_list:      <span class=m>0</span>               Same as above, list format <span class=o>(</span>since 2.6.26<span class=o>)</span>
-voluntary_ctxt_switches:        <span class=m>150</span>     Voluntary context switches <span class=o>(</span>since 2.6.23<span class=o>)</span>
-nonvoluntary_ctxt_switches:     <span class=m>545</span>     Involuntary context switches <span class=o>(</span>since 2.6.23<span class=o>)</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><p>/proc文件夹下的其他文件：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>Name:   init
+</span></span><span class=line><span class=cl>State:  S <span class=o>(</span>sleeping<span class=o>)</span>
+</span></span><span class=line><span class=cl>Tgid:   <span class=m>1</span>                               Thread group ID <span class=o>(</span>traditional PID, getpid<span class=o>())</span>
+</span></span><span class=line><span class=cl>Pid:    <span class=m>1</span>                               Actually, thread ID <span class=o>(</span>gettid<span class=o>())</span>
+</span></span><span class=line><span class=cl>PPid:   <span class=m>0</span>                               Parent process ID
+</span></span><span class=line><span class=cl>TracerPid:      <span class=m>0</span>                       PID of tracing process <span class=o>(</span><span class=m>0</span> <span class=k>if</span> not traced<span class=o>)</span>
+</span></span><span class=line><span class=cl>Uid:    <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       Real, effective, saved set, and FS UIDs
+</span></span><span class=line><span class=cl>Gid:    <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       <span class=m>0</span>       Real, effective, saved set, and FS GIDs
+</span></span><span class=line><span class=cl>FDSize: <span class=m>10</span>                              <span class=c1># of file descriptor slots currently allocated</span>
+</span></span><span class=line><span class=cl>Groups:                                 Supplementary group IDs
+</span></span><span class=line><span class=cl>VmPeak: <span class=m>0</span> kB                            Peak virtual memory size
+</span></span><span class=line><span class=cl>VmSize: <span class=m>8892</span> kB                         Current virtual memory size
+</span></span><span class=line><span class=cl>VmLck:  <span class=m>0</span> kB                            Locked memory
+</span></span><span class=line><span class=cl>VmHWM:  <span class=m>0</span> kB                            Peak resident <span class=nb>set</span> size
+</span></span><span class=line><span class=cl>VmRSS:      <span class=m>308</span> kB                          Current resident <span class=nb>set</span> size
+</span></span><span class=line><span class=cl>VmData: <span class=m>0</span> kB                            Data segment size
+</span></span><span class=line><span class=cl>VmStk:  <span class=m>0</span> kB                            Stack size
+</span></span><span class=line><span class=cl>VmExe:  <span class=m>412</span> kB                          Text <span class=o>(</span>executable code<span class=o>)</span> size
+</span></span><span class=line><span class=cl>VmLib:  <span class=m>0</span> kB                            Shared library code size
+</span></span><span class=line><span class=cl>VmPTE:  <span class=m>0</span> kB                            Size of page table <span class=o>(</span>since 2.6.10<span class=o>)</span>
+</span></span><span class=line><span class=cl>Threads:        <span class=m>2</span>                       <span class=c1># of threads in this thread’s thread group</span>
+</span></span><span class=line><span class=cl>SigQ:   0/0                             Current/max. queued signals <span class=o>(</span>since 2.6.12<span class=o>)</span>
+</span></span><span class=line><span class=cl>SigPnd: <span class=m>0000000000000000</span>                Signals pending <span class=k>for</span> thread
+</span></span><span class=line><span class=cl>ShdPnd: <span class=m>0000000000000000</span>                Signals pending <span class=k>for</span> process <span class=o>(</span>since 2.6<span class=o>)</span>
+</span></span><span class=line><span class=cl>SigBlk: <span class=m>0000000000000000</span>                Blocked signals
+</span></span><span class=line><span class=cl>SigIgn: <span class=m>0000000000000000</span>                Ignored signals
+</span></span><span class=line><span class=cl>SigCgt: <span class=m>0000000000000000</span>                Caught signals
+</span></span><span class=line><span class=cl>CapInh: <span class=m>0000000000000000</span>                Inheritable capabilities
+</span></span><span class=line><span class=cl>CapPrm: 0000001fffffffff                Permitted capabilities
+</span></span><span class=line><span class=cl>CapEff: 0000001fffffffff                Effective capabilities
+</span></span><span class=line><span class=cl>CapBnd: 0000001fffffffff                Capability bounding <span class=nb>set</span> <span class=o>(</span>since 2.6.26<span class=o>)</span>
+</span></span><span class=line><span class=cl>Cpus_allowed:   f                       CPUs allowed, mask <span class=nv>0xf</span> <span class=o>=</span> <span class=m>1111</span> <span class=o>(</span>since 2.6.24<span class=o>)</span>
+</span></span><span class=line><span class=cl>Cpus_allowed_list:      0-3             Same as above, list format <span class=o>(</span>since 2.6.26<span class=o>)</span>
+</span></span><span class=line><span class=cl>Mems_allowed:   <span class=m>1</span>                       Memory nodes allowed, mask <span class=o>(</span>since 2.6.24<span class=o>)</span>
+</span></span><span class=line><span class=cl>Mems_allowed_list:      <span class=m>0</span>               Same as above, list format <span class=o>(</span>since 2.6.26<span class=o>)</span>
+</span></span><span class=line><span class=cl>voluntary_ctxt_switches:        <span class=m>150</span>     Voluntary context switches <span class=o>(</span>since 2.6.23<span class=o>)</span>
+</span></span><span class=line><span class=cl>nonvoluntary_ctxt_switches:     <span class=m>545</span>     Involuntary context switches <span class=o>(</span>since 2.6.23<span class=o>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>/proc文件夹下的其他文件：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -229,53 +107,41 @@ nonvoluntary_ctxt_switches:     <span class=m>545</span>     Involuntary context
 </span><span class=lnt>30
 </span><span class=lnt>31
 </span><span class=lnt>32
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh>wsl@x:~$ ll /proc/1/
-total <span class=m>0</span>
-dr-xr-xr-x <span class=m>7</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 ./
-dr-xr-xr-x <span class=m>9</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 ../
-dr-x------ <span class=m>2</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 attr/
--r-------- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 auxv
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 cgroup
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 cmdline
--rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 comm
-lrwxrwxrwx <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 cwd -&gt; //         当前工作目录的符号链接
--r-------- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 environ           环境变量
-lrwxrwxrwx <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 exe -&gt; /init*     被执行文件的符号链接
-dr-x------ <span class=m>2</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 fd/               包含被此进程打开的文件的符号链接的文件夹
--rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 gid_map           
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 limits
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 maps              memory mappings
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 mountinfo         
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 mounts            
--r-------- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 mountstats
-dr-xr-xr-x <span class=m>3</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 net/              网络状态和socket信息
-dr-x--x--x <span class=m>2</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 ns/
--rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 oom_adj
--rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 oom_score_adj
-lrwxrwxrwx <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 root -&gt; //
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 schedstat
--rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 setgroups
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 smaps
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 stat
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 statm
--r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 status
-dr-xr-xr-x <span class=m>4</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 task/
--rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 uid_map
-</code></pre></td></tr></table>
-</div>
-</div><p>关于/proc目录下每个项目的详细作用可以参考这个<a href=https://man7.org/linux/man-pages/man5/proc.5.html>文档</a>。</p>
-<p><strong>/proc/PID/task</strong></p>
-<p>此进程的所有线程会在此目录下拥有一个子目录/proc/PID/task/TID,里面的内容和/proc/PID内的类似。</p>
-<p>其他的就用到时再详细了解了，/proc下的文件一般普通用户可读，但要改就需要root权限了。</p>
-<h3 id=exercises>Exercises</h3>
-<p>2.绘制树状结构，展示系统中所有进程的父子关系。
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>wsl@x:~$ ll /proc/1/
+</span></span><span class=line><span class=cl>total <span class=m>0</span>
+</span></span><span class=line><span class=cl>dr-xr-xr-x <span class=m>7</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 ./
+</span></span><span class=line><span class=cl>dr-xr-xr-x <span class=m>9</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 ../
+</span></span><span class=line><span class=cl>dr-x------ <span class=m>2</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 attr/
+</span></span><span class=line><span class=cl>-r-------- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 auxv
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 cgroup
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 cmdline
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 comm
+</span></span><span class=line><span class=cl>lrwxrwxrwx <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 cwd -&gt; //         当前工作目录的符号链接
+</span></span><span class=line><span class=cl>-r-------- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 environ           环境变量
+</span></span><span class=line><span class=cl>lrwxrwxrwx <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 exe -&gt; /init*     被执行文件的符号链接
+</span></span><span class=line><span class=cl>dr-x------ <span class=m>2</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 fd/               包含被此进程打开的文件的符号链接的文件夹
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 gid_map           
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 limits
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 maps              memory mappings
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 mountinfo         
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 mounts            
+</span></span><span class=line><span class=cl>-r-------- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 mountstats
+</span></span><span class=line><span class=cl>dr-xr-xr-x <span class=m>3</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 net/              网络状态和socket信息
+</span></span><span class=line><span class=cl>dr-x--x--x <span class=m>2</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 ns/
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 oom_adj
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 oom_score_adj
+</span></span><span class=line><span class=cl>lrwxrwxrwx <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 root -&gt; //
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 schedstat
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 setgroups
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 smaps
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 stat
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 statm
+</span></span><span class=line><span class=cl>-r--r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 status
+</span></span><span class=line><span class=cl>dr-xr-xr-x <span class=m>4</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 task/
+</span></span><span class=line><span class=cl>-rw-r--r-- <span class=m>1</span> root root <span class=m>0</span> Aug  <span class=m>3</span> 14:20 uid_map
+</span></span></code></pre></td></tr></table></div></div><p>关于/proc目录下每个项目的详细作用可以参考这个<a href=https://man7.org/linux/man-pages/man5/proc.5.html>文档</a>。</p><p><strong>/proc/PID/task</strong></p><p>此进程的所有线程会在此目录下拥有一个子目录/proc/PID/task/TID,里面的内容和/proc/PID内的类似。</p><p>其他的就用到时再详细了解了，/proc下的文件一般普通用户可读，但要改就需要root权限了。</p><h3 id=exercises>Exercises</h3><p>2.绘制树状结构，展示系统中所有进程的父子关系。
 此程序首先遍历/proc文件夹，以数字寻找进程文件夹，并读取其下面status文件中的cmdline和PPid信息。
-读取后首先保存于一个map中，之后遍历map创建一个树形结构，并打印出来。</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>  1
+读取后首先保存于一个map中，之后遍历map创建一个树形结构，并打印出来。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
 </span><span class=lnt>  2
 </span><span class=lnt>  3
 </span><span class=lnt>  4
@@ -407,148 +273,139 @@ dr-xr-xr-x <span class=m>4</span> root root <span class=m>0</span> Aug  <span cl
 </span><span class=lnt>130
 </span><span class=lnt>131
 </span><span class=lnt>132
-</span><span class=lnt>133
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;vector&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;dirent.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;limits.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;string.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;map&gt;</span><span class=cp>
-</span><span class=cp></span>
-<span class=cp>#define MAX_LINE 1000
-</span><span class=cp></span>
-<span class=k>struct</span> <span class=nc>tree_node</span>
-<span class=p>{</span>
-    <span class=n>pid_t</span> <span class=n>id</span><span class=p>;</span>
-    <span class=n>pid_t</span> <span class=n>ppid</span><span class=p>;</span>
-    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>cmd</span><span class=p>;</span>
-    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>tree_node</span><span class=o>*&gt;</span> <span class=n>children</span><span class=p>;</span>
-<span class=p>};</span>
-
-
-<span class=kt>void</span> <span class=nf>printTree</span><span class=p>(</span><span class=n>tree_node</span><span class=o>*</span><span class=p>,</span> <span class=kt>int</span><span class=p>);</span>
-
-
-<span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
-
-    <span class=n>DIR</span> <span class=o>*</span><span class=n>dirp</span><span class=p>;</span>
-    <span class=k>struct</span> <span class=nc>dirent</span> <span class=o>*</span><span class=n>dp</span><span class=p>;</span>
-    <span class=kt>char</span> <span class=n>path</span><span class=p>[</span><span class=n>PATH_MAX</span><span class=p>];</span>
-    <span class=kt>char</span> <span class=n>line</span><span class=p>[</span><span class=n>MAX_LINE</span><span class=p>],</span> <span class=n>cmd_str</span><span class=p>[</span><span class=n>MAX_LINE</span><span class=p>];</span>
-    <span class=n>pid_t</span> <span class=n>ppid</span><span class=p>;</span>
-    <span class=n>FILE</span> <span class=o>*</span><span class=n>fp</span><span class=p>;</span>
-    <span class=kt>char</span> <span class=o>*</span><span class=n>p</span><span class=p>;</span>
-    <span class=kt>bool</span> <span class=n>gotname</span><span class=p>,</span> <span class=n>gotpid</span><span class=p>,</span> <span class=n>gotppid</span><span class=p>;</span>
-
-    <span class=n>dirp</span> <span class=o>=</span> <span class=n>opendir</span><span class=p>(</span><span class=s>&#34;/proc&#34;</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>dirp</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
-        <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
-
-    <span class=cm>/* Scan entries under /proc directory */</span>
-
-
-    <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>pid_t</span><span class=p>,</span> <span class=n>tree_node</span><span class=o>*&gt;</span> <span class=n>pmap</span><span class=p>;</span>    <span class=c1>// id &gt; process, 树结构查找麻烦，建立一个map辅助查找
-</span><span class=c1></span>
-    <span class=n>gotname</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
-    <span class=n>gotppid</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
-
-    <span class=k>for</span> <span class=p>(;;)</span> <span class=p>{</span>
-        <span class=n>errno</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>              <span class=cm>/* To distinguish error from end-of-directory */</span>
-        <span class=n>dp</span> <span class=o>=</span> <span class=n>readdir</span><span class=p>(</span><span class=n>dirp</span><span class=p>);</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>dp</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span> <span class=p>{</span>
-            <span class=k>if</span> <span class=p>(</span><span class=n>errno</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span>
-                <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
-            <span class=k>else</span>
-                <span class=k>break</span><span class=p>;</span>
-        <span class=p>}</span>
-
-        <span class=cm>/* Since we are looking for /proc/PID directories, skip entries
-</span><span class=cm>           that are not directories, or don&#39;t begin with a digit. */</span>
-
-        <span class=k>if</span> <span class=p>(</span><span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_type</span> <span class=o>!=</span> <span class=n>DT_DIR</span> <span class=o>||</span> <span class=o>!</span><span class=n>isdigit</span><span class=p>((</span><span class=kt>unsigned</span> <span class=kt>char</span><span class=p>)</span> <span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_name</span><span class=p>[</span><span class=mi>0</span><span class=p>]))</span>
-            <span class=k>continue</span><span class=p>;</span>
-
-        <span class=n>snprintf</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>PATH_MAX</span><span class=p>,</span> <span class=s>&#34;/proc/%s/status&#34;</span><span class=p>,</span> <span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_name</span><span class=p>);</span>
-
-        <span class=n>fp</span> <span class=o>=</span> <span class=n>fopen</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=s>&#34;r&#34;</span><span class=p>);</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>fp</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
-            <span class=k>continue</span><span class=p>;</span>           <span class=cm>/* Ignore errors: fopen() might fail if
-</span><span class=cm>                                   process has just terminated */</span>
-
-        <span class=k>while</span> <span class=p>(</span><span class=o>!</span><span class=n>gotname</span> <span class=o>||</span> <span class=o>!</span><span class=n>gotppid</span><span class=p>)</span> <span class=p>{</span>
-            <span class=k>if</span> <span class=p>(</span><span class=n>fgets</span><span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=n>MAX_LINE</span><span class=p>,</span> <span class=n>fp</span><span class=p>)</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
-                <span class=k>break</span><span class=p>;</span>
-
-            <span class=cm>/* The &#34;Name:&#34; line contains the name of the command that
-</span><span class=cm>               this process is running */</span>
-
-            <span class=k>if</span> <span class=p>(</span><span class=n>strncmp</span><span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=s>&#34;Name:&#34;</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-                <span class=k>for</span> <span class=p>(</span><span class=n>p</span> <span class=o>=</span> <span class=n>line</span> <span class=o>+</span> <span class=mi>5</span><span class=p>;</span> <span class=o>*</span><span class=n>p</span> <span class=o>!=</span> <span class=sc>&#39;\0&#39;</span> <span class=o>&amp;&amp;</span> <span class=n>isspace</span><span class=p>((</span><span class=kt>unsigned</span> <span class=kt>char</span><span class=p>)</span> <span class=o>*</span><span class=n>p</span><span class=p>);</span> <span class=p>)</span>
-                    <span class=n>p</span><span class=o>++</span><span class=p>;</span>
-                <span class=c1>// 去除最后的换行符
-</span><span class=c1></span>                <span class=kt>char</span> <span class=o>*</span><span class=n>pt</span> <span class=o>=</span> <span class=n>p</span><span class=p>;</span>
-                <span class=k>while</span><span class=p>(</span><span class=o>*</span><span class=n>pt</span> <span class=o>!=</span> <span class=sc>&#39;\n&#39;</span> <span class=o>&amp;&amp;</span> <span class=o>*</span><span class=n>pt</span> <span class=o>!=</span> <span class=sc>&#39;\0&#39;</span><span class=p>)</span>
-                    <span class=n>pt</span><span class=o>++</span><span class=p>;</span>
-                <span class=o>*</span><span class=n>pt</span> <span class=o>=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span>
-
-                <span class=n>strncpy</span><span class=p>(</span><span class=n>cmd_str</span><span class=p>,</span> <span class=n>p</span><span class=p>,</span> <span class=n>MAX_LINE</span> <span class=o>-</span> <span class=mi>1</span><span class=p>);</span>
-                <span class=n>cmd_str</span><span class=p>[</span><span class=n>MAX_LINE</span> <span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span>        <span class=cm>/* Ensure null-terminated */</span>
-
-            <span class=p>}</span>
-
-            <span class=k>if</span> <span class=p>(</span><span class=n>strncmp</span><span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=s>&#34;PPid:&#34;</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-                <span class=n>ppid</span> <span class=o>=</span> <span class=n>strtol</span><span class=p>(</span><span class=n>line</span> <span class=o>+</span> <span class=mi>6</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=mi>10</span><span class=p>);</span>      <span class=cm>/* Ensure null-terminated */</span>
-            <span class=p>}</span>
-
-        <span class=p>}</span>
-
-        <span class=n>tree_node</span> <span class=o>*</span><span class=n>pinfo</span> <span class=o>=</span> <span class=k>new</span> <span class=n>tree_node</span><span class=p>;</span>
-        <span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>id</span> <span class=o>=</span> <span class=n>strtol</span><span class=p>(</span><span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_name</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=mi>10</span><span class=p>);</span>
-        <span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>cmd</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>(</span><span class=n>cmd_str</span><span class=p>);</span>
-        <span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>ppid</span> <span class=o>=</span> <span class=n>ppid</span><span class=p>;</span>
-        <span class=n>pmap</span><span class=p>[</span><span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>id</span><span class=p>]</span> <span class=o>=</span> <span class=n>pinfo</span><span class=p>;</span>
-
-        <span class=n>fclose</span><span class=p>(</span><span class=n>fp</span><span class=p>);</span>
-    <span class=p>}</span>
-
-    <span class=c1>// 构建进程树
-</span><span class=c1></span>    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>item</span> <span class=p>:</span> <span class=n>pmap</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>pmap</span><span class=p>.</span><span class=n>count</span><span class=p>(</span><span class=n>item</span><span class=p>.</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>ppid</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
-            <span class=n>pmap</span><span class=p>[</span><span class=n>item</span><span class=p>.</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>ppid</span><span class=p>]</span><span class=o>-&gt;</span><span class=n>children</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>item</span><span class=p>.</span><span class=n>second</span><span class=p>);</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-    <span class=c1>// 打印
-</span><span class=c1></span>    <span class=n>printTree</span><span class=p>(</span><span class=n>pmap</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=mi>0</span><span class=p>);</span>          
-<span class=p>}</span>
-
-
-<span class=c1>// 递归的打印出进程的所有子进程
-</span><span class=c1></span>
-<span class=kt>void</span> <span class=nf>printTree</span><span class=p>(</span><span class=n>tree_node</span><span class=o>*</span> <span class=n>node</span><span class=p>,</span> <span class=kt>int</span> <span class=n>level</span><span class=p>)</span> <span class=p>{</span>
-
-    <span class=k>for</span><span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>level</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
-    <span class=p>{</span>
-        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;|&#34;</span><span class=p>);</span>
-        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;     &#34;</span><span class=p>);</span>
-    <span class=p>}</span>
-
-    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;|--- &#34;</span><span class=p>);</span>
-    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;[%d]%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>node</span><span class=o>-&gt;</span><span class=n>id</span><span class=p>,</span> <span class=n>node</span><span class=o>-&gt;</span><span class=n>cmd</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
-    
-    <span class=k>for</span><span class=p>(</span><span class=k>auto</span> <span class=nl>i</span> <span class=p>:</span> <span class=n>node</span><span class=o>-&gt;</span><span class=n>children</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>printTree</span><span class=p>(</span><span class=n>i</span><span class=p>,</span> <span class=n>level</span> <span class=o>+</span> <span class=mi>1</span><span class=p>);</span>
-    <span class=p>}</span>
-<span class=p>}</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><p>运行结果：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;vector&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;dirent.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;limits.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;string.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;map&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=cp>#define MAX_LINE 1000
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=nc>tree_node</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>pid_t</span> <span class=n>id</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>pid_t</span> <span class=n>ppid</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>cmd</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>tree_node</span><span class=o>*&gt;</span> <span class=n>children</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printTree</span><span class=p>(</span><span class=n>tree_node</span><span class=o>*</span><span class=p>,</span> <span class=kt>int</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>DIR</span> <span class=o>*</span><span class=n>dirp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=nc>dirent</span> <span class=o>*</span><span class=n>dp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>char</span> <span class=n>path</span><span class=p>[</span><span class=n>PATH_MAX</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>    <span class=kt>char</span> <span class=n>line</span><span class=p>[</span><span class=n>MAX_LINE</span><span class=p>],</span> <span class=n>cmd_str</span><span class=p>[</span><span class=n>MAX_LINE</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>    <span class=n>pid_t</span> <span class=n>ppid</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>FILE</span> <span class=o>*</span><span class=n>fp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>char</span> <span class=o>*</span><span class=n>p</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>bool</span> <span class=n>gotname</span><span class=p>,</span> <span class=n>gotpid</span><span class=p>,</span> <span class=n>gotppid</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>dirp</span> <span class=o>=</span> <span class=n>opendir</span><span class=p>(</span><span class=s>&#34;/proc&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>dirp</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/* Scan entries under /proc directory */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>pid_t</span><span class=p>,</span> <span class=n>tree_node</span><span class=o>*&gt;</span> <span class=n>pmap</span><span class=p>;</span>    <span class=c1>// id &gt; process, 树结构查找麻烦，建立一个map辅助查找
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=n>gotname</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>gotppid</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(;;)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>errno</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>              <span class=cm>/* To distinguish error from end-of-directory */</span>
+</span></span><span class=line><span class=cl>        <span class=n>dp</span> <span class=o>=</span> <span class=n>readdir</span><span class=p>(</span><span class=n>dirp</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>dp</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>errno</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>else</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=cm>/* Since we are looking for /proc/PID directories, skip entries
+</span></span></span><span class=line><span class=cl><span class=cm>           that are not directories, or don&#39;t begin with a digit. */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_type</span> <span class=o>!=</span> <span class=n>DT_DIR</span> <span class=o>||</span> <span class=o>!</span><span class=n>isdigit</span><span class=p>((</span><span class=kt>unsigned</span> <span class=kt>char</span><span class=p>)</span> <span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_name</span><span class=p>[</span><span class=mi>0</span><span class=p>]))</span>
+</span></span><span class=line><span class=cl>            <span class=k>continue</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>snprintf</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>PATH_MAX</span><span class=p>,</span> <span class=s>&#34;/proc/%s/status&#34;</span><span class=p>,</span> <span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>fp</span> <span class=o>=</span> <span class=n>fopen</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=s>&#34;r&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>fp</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=k>continue</span><span class=p>;</span>           <span class=cm>/* Ignore errors: fopen() might fail if
+</span></span></span><span class=line><span class=cl><span class=cm>                                   process has just terminated */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>while</span> <span class=p>(</span><span class=o>!</span><span class=n>gotname</span> <span class=o>||</span> <span class=o>!</span><span class=n>gotppid</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>fgets</span><span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=n>MAX_LINE</span><span class=p>,</span> <span class=n>fp</span><span class=p>)</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=cm>/* The &#34;Name:&#34; line contains the name of the command that
+</span></span></span><span class=line><span class=cl><span class=cm>               this process is running */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>strncmp</span><span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=s>&#34;Name:&#34;</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>for</span> <span class=p>(</span><span class=n>p</span> <span class=o>=</span> <span class=n>line</span> <span class=o>+</span> <span class=mi>5</span><span class=p>;</span> <span class=o>*</span><span class=n>p</span> <span class=o>!=</span> <span class=sc>&#39;\0&#39;</span> <span class=o>&amp;&amp;</span> <span class=n>isspace</span><span class=p>((</span><span class=kt>unsigned</span> <span class=kt>char</span><span class=p>)</span> <span class=o>*</span><span class=n>p</span><span class=p>);</span> <span class=p>)</span>
+</span></span><span class=line><span class=cl>                    <span class=n>p</span><span class=o>++</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// 去除最后的换行符
+</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=kt>char</span> <span class=o>*</span><span class=n>pt</span> <span class=o>=</span> <span class=n>p</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=k>while</span><span class=p>(</span><span class=o>*</span><span class=n>pt</span> <span class=o>!=</span> <span class=sc>&#39;\n&#39;</span> <span class=o>&amp;&amp;</span> <span class=o>*</span><span class=n>pt</span> <span class=o>!=</span> <span class=sc>&#39;\0&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                    <span class=n>pt</span><span class=o>++</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                <span class=o>*</span><span class=n>pt</span> <span class=o>=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=n>strncpy</span><span class=p>(</span><span class=n>cmd_str</span><span class=p>,</span> <span class=n>p</span><span class=p>,</span> <span class=n>MAX_LINE</span> <span class=o>-</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>                <span class=n>cmd_str</span><span class=p>[</span><span class=n>MAX_LINE</span> <span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span>        <span class=cm>/* Ensure null-terminated */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>strncmp</span><span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=s>&#34;PPid:&#34;</span><span class=p>,</span> <span class=mi>5</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>ppid</span> <span class=o>=</span> <span class=n>strtol</span><span class=p>(</span><span class=n>line</span> <span class=o>+</span> <span class=mi>6</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=mi>10</span><span class=p>);</span>      <span class=cm>/* Ensure null-terminated */</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>tree_node</span> <span class=o>*</span><span class=n>pinfo</span> <span class=o>=</span> <span class=k>new</span> <span class=n>tree_node</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>id</span> <span class=o>=</span> <span class=n>strtol</span><span class=p>(</span><span class=n>dp</span><span class=o>-&gt;</span><span class=n>d_name</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=mi>10</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>cmd</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>(</span><span class=n>cmd_str</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>ppid</span> <span class=o>=</span> <span class=n>ppid</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=n>pmap</span><span class=p>[</span><span class=n>pinfo</span><span class=o>-&gt;</span><span class=n>id</span><span class=p>]</span> <span class=o>=</span> <span class=n>pinfo</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>fclose</span><span class=p>(</span><span class=n>fp</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 构建进程树
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>item</span> <span class=p>:</span> <span class=n>pmap</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>pmap</span><span class=p>.</span><span class=n>count</span><span class=p>(</span><span class=n>item</span><span class=p>.</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>ppid</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>pmap</span><span class=p>[</span><span class=n>item</span><span class=p>.</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>ppid</span><span class=p>]</span><span class=o>-&gt;</span><span class=n>children</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>item</span><span class=p>.</span><span class=n>second</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 打印
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>printTree</span><span class=p>(</span><span class=n>pmap</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=mi>0</span><span class=p>);</span>          
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 递归的打印出进程的所有子进程
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>printTree</span><span class=p>(</span><span class=n>tree_node</span><span class=o>*</span> <span class=n>node</span><span class=p>,</span> <span class=kt>int</span> <span class=n>level</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span><span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>level</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;|&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;     &#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;|--- &#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;[%d]%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>node</span><span class=o>-&gt;</span><span class=n>id</span><span class=p>,</span> <span class=n>node</span><span class=o>-&gt;</span><span class=n>cmd</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=k>for</span><span class=p>(</span><span class=k>auto</span> <span class=nl>i</span> <span class=p>:</span> <span class=n>node</span><span class=o>-&gt;</span><span class=n>children</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>printTree</span><span class=p>(</span><span class=n>i</span><span class=p>,</span> <span class=n>level</span> <span class=o>+</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>运行结果：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -581,127 +438,52 @@ dr-xr-xr-x <span class=m>4</span> root root <span class=m>0</span> Aug  <span cl
 </span><span class=lnt>31
 </span><span class=lnt>32
 </span><span class=lnt>33
-</span><span class=lnt>34
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=p>|</span>--- <span class=o>[</span>1<span class=o>]</span>systemd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>367<span class=o>]</span>systemd-journal
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>423<span class=o>]</span>systemd-udevd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>895<span class=o>]</span>systemd-resolve
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>896<span class=o>]</span>systemd-timesyn
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>985<span class=o>]</span>accounts-daemon
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>986<span class=o>]</span>acpid
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>989<span class=o>]</span>avahi-daemon
-<span class=p>|</span>     <span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1036<span class=o>]</span>avahi-daemon
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>992<span class=o>]</span>bluetoothd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>994<span class=o>]</span>cron
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>996<span class=o>]</span>cupsd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>997<span class=o>]</span>dbus-daemon
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>998<span class=o>]</span>NetworkManager
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1005<span class=o>]</span>irqbalance
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1008<span class=o>]</span>networkd-dispat
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1014<span class=o>]</span>polkitd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1018<span class=o>]</span>rsyslogd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1023<span class=o>]</span>nvidia-persiste
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1024<span class=o>]</span>snapd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1027<span class=o>]</span>switcheroo-cont
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1031<span class=o>]</span>systemd-logind
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1032<span class=o>]</span>systemd-machine
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1033<span class=o>]</span>thermald
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1034<span class=o>]</span>udisksd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1035<span class=o>]</span>wpa_supplicant
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1072<span class=o>]</span>cups-browsed
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1079<span class=o>]</span>ModemManager
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1130<span class=o>]</span>libvirtd
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1131<span class=o>]</span>unattended-upgr
-<span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1363<span class=o>]</span>dnsmasq
-
-...
-
-</code></pre></td></tr></table>
-</div>
-</div>
-</div>
-<div class=post-copyright>
-<p class=copyright-item>
-<span class=item-title>Author</span>
-<span class=item-content>xistor</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>LastMod</span>
-<span class=item-content>
-2020-11-18
-<a href=https://github.com/xistor/My-blog-source/commit/e3adaded0fd56dabe41291e4cee44c1ac9b17157 title=update>(e3adade)</a>
-</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
-</p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/linux/>Linux</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/linux/the-linux-programming-interface-s12/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=p>|</span>--- <span class=o>[</span>1<span class=o>]</span>systemd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>367<span class=o>]</span>systemd-journal
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>423<span class=o>]</span>systemd-udevd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>895<span class=o>]</span>systemd-resolve
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>896<span class=o>]</span>systemd-timesyn
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>985<span class=o>]</span>accounts-daemon
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>986<span class=o>]</span>acpid
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>989<span class=o>]</span>avahi-daemon
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1036<span class=o>]</span>avahi-daemon
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>992<span class=o>]</span>bluetoothd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>994<span class=o>]</span>cron
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>996<span class=o>]</span>cupsd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>997<span class=o>]</span>dbus-daemon
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>998<span class=o>]</span>NetworkManager
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1005<span class=o>]</span>irqbalance
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1008<span class=o>]</span>networkd-dispat
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1014<span class=o>]</span>polkitd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1018<span class=o>]</span>rsyslogd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1023<span class=o>]</span>nvidia-persiste
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1024<span class=o>]</span>snapd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1027<span class=o>]</span>switcheroo-cont
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1031<span class=o>]</span>systemd-logind
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1032<span class=o>]</span>systemd-machine
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1033<span class=o>]</span>thermald
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1034<span class=o>]</span>udisksd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1035<span class=o>]</span>wpa_supplicant
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1072<span class=o>]</span>cups-browsed
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1079<span class=o>]</span>ModemManager
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1130<span class=o>]</span>libvirtd
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1131<span class=o>]</span>unattended-upgr
+</span></span><span class=line><span class=cl><span class=p>|</span>     <span class=p>|</span>--- <span class=o>[</span>1363<span class=o>]</span>dnsmasq
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>...
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2020-11-18
+<a href=https://github.com/xistor/My-blog-source/commit/e3adaded0fd56dabe41291e4cee44c1ac9b17157 title=update>(e3adade)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s12/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记12.文件I/O缓冲</span>
 <span class="prev-text nav-mobile">Prev</span>
-</a>
-<a class=next href=/post/linux/the-linux-programming-interface-s10/>
-<span class="next-text nav-default">Linux/Unix系统编程手册-笔记10.系统限制和选项</span>
+</a><a class=next href=/post/linux/the-linux-programming-interface-s10/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记10.系统限制和选项</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=disqus_thread></div>
-<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
-<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
-<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
-</span>
-<span class=division>|</span>
-<span class=theme-info>
-Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<div class=busuanzi-footer>
-<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-<span class=division>|</span>
-<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-</div>
-<span class=copyright-year>
-&copy;
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==="localhost")return;var t,e=document.createElement("script");e.type="text/javascript",e.async=!0,t="xistor",e.src="//"+t+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)})()</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span><span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span><span class=division>|</span>
+<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
 2018 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
-<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-M23R6PBNFE','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</body>
-</html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]]}}</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script><script>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-M23R6PBNFE","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>

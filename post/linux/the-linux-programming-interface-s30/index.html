@@ -1,199 +1,32 @@
-<!doctype html><html lang=en>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Linux/Unix系统编程手册-笔记30. System V 消息队列 - xistor's notes</title>
-<meta name=renderer content="webkit">
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta http-equiv=cache-control content="no-transform">
-<meta http-equiv=cache-control content="no-siteapp">
-<meta name=theme-color content="#f8f5ec">
-<meta name=msapplication-navbutton-color content="#f8f5ec">
-<meta name=apple-mobile-web-app-capable content="yes">
-<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
-<meta name=author content="xistor"><meta name=description content="API msgsnd 1 2 3 4 #include &amp;lt;sys/types.h&amp;gt; /* For portability */#include &amp;lt;sys/msg.h&amp;gt;int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype域来">
-<meta name=generator content="Hugo 0.92.2 with theme even">
-<link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s30/>
-<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
-<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
-<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
-<link rel=manifest href=/manifest.json>
-<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
-<script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script>
-<link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
-<meta property="og:title" content="Linux/Unix系统编程手册-笔记30. System V 消息队列">
-<meta property="og:description" content="API msgsnd 1 2 3 4 #include <sys/types.h> /* For portability */#include <sys/msg.h>int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype域来">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s30/"><meta property="article:section" content="post">
-<meta property="article:published_time" content="2020-12-14T18:30:00+08:00">
-<meta property="article:modified_time" content="2023-07-01T13:16:34+08:00">
-<meta itemprop=name content="Linux/Unix系统编程手册-笔记30. System V 消息队列">
-<meta itemprop=description content="API msgsnd 1 2 3 4 #include <sys/types.h> /* For portability */#include <sys/msg.h>int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype域来"><meta itemprop=datePublished content="2020-12-14T18:30:00+08:00">
-<meta itemprop=dateModified content="2023-07-01T13:16:34+08:00">
-<meta itemprop=wordCount content="1888">
-<meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Linux/Unix系统编程手册-笔记30. System V 消息队列">
-<meta name=twitter:description content="API msgsnd 1 2 3 4 #include <sys/types.h> /* For portability */#include <sys/msg.h>int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype域来"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
-<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
-</head>
-<body>
-<div id=mobile-navbar class=mobile-navbar>
-<div class=mobile-header-logo>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<div class=mobile-navbar-icon>
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>Linux/Unix系统编程手册-笔记30. System V 消息队列 - xistor's notes</title>
+<meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="API msgsnd 1 2 3 4 #include &amp;lt;sys/types.h&amp;gt; /* For portability */ #include &amp;lt;sys/msg.h&amp;gt; int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype"><meta name=generator content="Hugo 0.124.1 with theme even"><link rel=canonical href=https://xistor.github.io/post/linux/the-linux-programming-interface-s30/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Linux/Unix系统编程手册-笔记30. System V 消息队列"><meta property="og:description" content="API msgsnd 1 2 3 4 #include <sys/types.h> /* For portability */ #include <sys/msg.h> int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype"><meta property="og:type" content="article"><meta property="og:url" content="https://xistor.github.io/post/linux/the-linux-programming-interface-s30/"><meta property="article:section" content="post"><meta property="article:published_time" content="2020-12-14T18:30:00+08:00"><meta property="article:modified_time" content="2023-07-01T13:16:34+08:00"><meta itemprop=name content="Linux/Unix系统编程手册-笔记30. System V 消息队列"><meta itemprop=description content="API msgsnd 1 2 3 4 #include <sys/types.h> /* For portability */ #include <sys/msg.h> int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype"><meta itemprop=datePublished content="2020-12-14T18:30:00+08:00"><meta itemprop=dateModified content="2023-07-01T13:16:34+08:00"><meta itemprop=wordCount content="1897"><meta itemprop=keywords content="Linux,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Linux/Unix系统编程手册-笔记30. System V 消息队列"><meta name=twitter:description content="API msgsnd 1 2 3 4 #include <sys/types.h> /* For portability */ #include <sys/msg.h> int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg); // Returns 0 on success, or –1 on error msgp是一个自定义的消息数据结构，这个结构体里一定要定义一个mtype"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span>
 <span></span>
-<span></span>
-<span></span>
-</div>
-</div>
-<nav id=mobile-menu class="mobile-menu slideout-menu">
-<ul class=mobile-menu-list>
-<a href=/>
-<li class=mobile-menu-item>Home</li>
-</a><a href=/post/>
-<li class=mobile-menu-item>Archives</li>
-</a><a href=/tags/>
-<li class=mobile-menu-item>Tags</li>
-</a><a href=/categories/>
-<li class=mobile-menu-item>Categories</li>
-</a>
-</ul>
-</nav>
-<div class=container id=mobile-panel>
-<header id=header class=header>
-<div class=logo-wrapper>
-<a href=/ class=logo>Xistor's Notes</a>
-</div>
-<nav class=site-navbar>
-<ul id=menu class=menu>
-<li class=menu-item>
-<a class=menu-item-link href=/>Home</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/post/>Archives</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/tags/>Tags</a>
-</li><li class=menu-item>
-<a class=menu-item-link href=/categories/>Categories</a>
-</li>
-</ul>
-</nav>
-</header>
-<main id=main class=main>
-<div class=content-wrapper>
-<div id=content class=content>
-<article class=post>
-<header class=post-header>
-<h1 class=post-title>Linux/Unix系统编程手册-笔记30. System V 消息队列</h1>
-<div class=post-meta>
-<span class=post-time> 2020-12-14 </span>
-<div class=post-category>
-<a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/> Linux系统编程手册阅读 </a>
-</div>
-</div>
-</header>
-<div class=post-toc id=post-toc>
-<h2 class=post-toc-title>Contents</h2>
-<div class="post-toc-content always-active">
-<nav id=TableOfContents>
-<ul>
-<li><a href=#api>API</a>
-<ul>
-<li><a href=#msgsnd>msgsnd</a></li>
-<li><a href=#msgrcv>msgrcv</a></li>
-</ul>
-</li>
-<li><a href=#使用system-v消息队列作为cs结构应用通信方式>使用System V消息队列作为CS结构应用通信方式：</a></li>
-<li><a href=#exercises>Exercises</a></li>
-</ul>
-</nav>
-</div>
-</div>
-<div class=post-content>
-<h2 id=api>API</h2>
-<h3 id=msgsnd>msgsnd</h3>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Linux/Unix系统编程手册-笔记30. System V 消息队列</h1><div class=post-meta><span class=post-time>2020-12-14</span><div class=post-category><a href=/categories/linux%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%89%8B%E5%86%8C%E9%98%85%E8%AF%BB/>Linux系统编程手册阅读</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#api>API</a><ul><li><a href=#msgsnd>msgsnd</a></li><li><a href=#msgrcv>msgrcv</a></li></ul></li><li><a href=#使用system-v消息队列作为cs结构应用通信方式>使用System V消息队列作为CS结构应用通信方式：</a></li><li><a href=#exercises>Exercises</a></li></ul></nav></div></div><div class=post-content><h2 id=api>API</h2><h3 id=msgsnd>msgsnd</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;sys/msg.h&gt;</span><span class=cp>
-</span><span class=cp></span><span class=kt>int</span> <span class=nf>msgsnd</span><span class=p>(</span><span class=kt>int</span> <span class=n>msqid</span><span class=p>,</span> <span class=k>const</span> <span class=kt>void</span> <span class=o>*</span><span class=n>msgp</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>msgsz</span><span class=p>,</span> <span class=kt>int</span> <span class=n>msgflg</span><span class=p>);</span>
-<span class=c1>// Returns 0 on success, or –1 on error
-</span></code></pre></td></tr></table>
-</div>
-</div><p><code>msgp</code>是一个自定义的消息数据结构，这个结构体里一定要定义一个<code>mtype</code>域来表示消息类型：</p>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/msg.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=kt>int</span> <span class=nf>msgsnd</span><span class=p>(</span><span class=kt>int</span> <span class=n>msqid</span><span class=p>,</span> <span class=k>const</span> <span class=kt>void</span> <span class=o>*</span><span class=n>msgp</span><span class=p>,</span> <span class=kt>size_t</span> <span class=n>msgsz</span><span class=p>,</span> <span class=kt>int</span> <span class=n>msgflg</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// Returns 0 on success, or –1 on error
+</span></span></span></code></pre></td></tr></table></div></div><p><code>msgp</code>是一个自定义的消息数据结构，这个结构体里一定要定义一个<code>mtype</code>域来表示消息类型：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>struct</span> <span class=n>mymsg</span> <span class=p>{</span>
-    <span class=kt>long</span> <span class=n>mtype</span><span class=p>;</span> <span class=cm>/* Message type */</span>
-    <span class=kt>char</span> <span class=n>mtext</span><span class=p>[];</span> <span class=cm>/* Message body */</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>除了<code>long</code>型的<code>mtype</code>的，结构体内的内容和长度都是自定义的，不一定非得是个字符数组。</p>
-<p>参数<code>msgsz</code>指定了<code>mtext</code>域的大小（bytes）。</p>
-<h3 id=msgrcv>msgrcv</h3>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>struct</span> <span class=n>mymsg</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kt>long</span> <span class=n>mtype</span><span class=p>;</span> <span class=cm>/* Message type */</span>
+</span></span><span class=line><span class=cl>    <span class=kt>char</span> <span class=n>mtext</span><span class=p>[];</span> <span class=cm>/* Message body */</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>除了<code>long</code>型的<code>mtype</code>的，结构体内的内容和长度都是自定义的，不一定非得是个字符数组。</p><p>参数<code>msgsz</code>指定了<code>mtext</code>域的大小（bytes）。</p><h3 id=msgrcv>msgrcv</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;sys/msg.h&gt;</span><span class=cp>
-</span><span class=cp></span><span class=n>ssize_t</span> <span class=nf>msgrcv</span><span class=p>(</span><span class=kt>int</span> <span class=n>msqid</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>msgp</span><span class=p>,</span> <span class=n>size_t</span> <span class=n>maxmsgsz</span><span class=p>,</span> <span class=kt>long</span> <span class=n>msgtyp</span><span class=p>,</span> <span class=kt>int</span> <span class=n>msgflg</span><span class=p>);</span>
-<span class=c1>// Returns number of bytes copied into mtext field, or –1 on error
-</span></code></pre></td></tr></table>
-</div>
-</div><p>参数<code>maxmsgsz</code>指定了<code>mtext</code>域最大可用空间大小，这点和<code>msgsnd()</code>的参数<code>msgsz</code>有点区别。默认情况下，如果消息体的大小超过了<code>maxmsgsz</code>,将产生<code>E2BIG</code>错误。</p>
-<p><code>msgtyp</code>参数可以控制接收的消息类型：</p>
-<ul>
-<li>如果<code>msgtyp</code>等于0，就按队列顺序读取消息。</li>
-<li>如果<code>msgtyp</code>大于0，队列中第一个类型为<code>msgtyp</code>的消息将被读取。</li>
-<li>如果<code>msgtyp</code>小于0，消息队列可以看作一个优先级队列，消息类型小于或等于<code>msgtyp</code>的绝对值，且其值最小的第一条消息将被返回给调用进程。</li>
-</ul>
-<p><code>msgflg</code>参数：</p>
-<ul>
-<li>IPC_NOWAIT: 不阻塞，若无对应消息，返回ENOMSG</li>
-<li>MSG_EXCEPT: 只在<code>msgtyp</code>大于0的时候起作用，将按顺序读取类型不等于<code>msgtyp</code>的消息。</li>
-<li>MSG_NOERROR： 默认情况下，消息结构体内的<code>mtext</code>域的数据大小超过参数<code>maxmsgsz</code>,将失败，如果指定了此flag,将会截断数据。</li>
-</ul>
-<h2 id=使用system-v消息队列作为cs结构应用通信方式>使用System V消息队列作为CS结构应用通信方式：</h2>
-<ol>
-<li>客户端和服务端都使用同一个消息队列，发给不同客户端的消息使用消息类型（messag type）来区分，一般选用客户端的进程ID作为消息类型，客户端选择和自己进程id相同的消息收取，一般使用<code>1</code>作为发给服务端的消息类型。</li>
-</ol>
-<figure class=center><img src=/img/the-linux-programming-interface-s30/one_message_queue.png width=600><figcaption>
-<h4>使用一个消息队列</h4>
-</figcaption>
-</figure>
-<p>结构如上图，这种方式存在两个问题，一个是消息比较多的时候，容易造成消息队列阻塞，造成死锁。
-第二个是，一个恶意的客户端如果往消息队列填入大量垃圾消息，很容易造成服务端不响应。</p>
-<p>2.每个客户端使用一个消息队列，一般来说，服务端会先创建一个消息队列，供客户端将自己创建的消息队列标识符发送给服务端。可能存在的问题就是系统中消息队列的数量是有限制的。</p>
-<figure class=center><img src=/img/the-linux-programming-interface-s30/per_mq.png width=600><figcaption>
-<h4>每个客户端使用一个消息队列</h4>
-</figcaption>
-</figure>
-<h2 id=exercises>Exercises</h2>
-<ol start=2>
-<li>使用system V 消息队列实现管道章节的sequence-number程序：</li>
-</ol>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt; /* For portability */</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/msg.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=kt>ssize_t</span> <span class=nf>msgrcv</span><span class=p>(</span><span class=kt>int</span> <span class=n>msqid</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>msgp</span><span class=p>,</span> <span class=kt>size_t</span> <span class=n>maxmsgsz</span><span class=p>,</span> <span class=kt>long</span> <span class=n>msgtyp</span><span class=p>,</span> <span class=kt>int</span> <span class=n>msgflg</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// Returns number of bytes copied into mtext field, or –1 on error
+</span></span></span></code></pre></td></tr></table></div></div><p>参数<code>maxmsgsz</code>指定了<code>mtext</code>域最大可用空间大小，这点和<code>msgsnd()</code>的参数<code>msgsz</code>有点区别。默认情况下，如果消息体的大小超过了<code>maxmsgsz</code>,将产生<code>E2BIG</code>错误。</p><p><code>msgtyp</code>参数可以控制接收的消息类型：</p><ul><li>如果<code>msgtyp</code>等于0，就按队列顺序读取消息。</li><li>如果<code>msgtyp</code>大于0，队列中第一个类型为<code>msgtyp</code>的消息将被读取。</li><li>如果<code>msgtyp</code>小于0，消息队列可以看作一个优先级队列，消息类型小于或等于<code>msgtyp</code>的绝对值，且其值最小的第一条消息将被返回给调用进程。</li></ul><p><code>msgflg</code>参数：</p><ul><li>IPC_NOWAIT: 不阻塞，若无对应消息，返回ENOMSG</li><li>MSG_EXCEPT: 只在<code>msgtyp</code>大于0的时候起作用，将按顺序读取类型不等于<code>msgtyp</code>的消息。</li><li>MSG_NOERROR： 默认情况下，消息结构体内的<code>mtext</code>域的数据大小超过参数<code>maxmsgsz</code>,将失败，如果指定了此flag,将会截断数据。</li></ul><h2 id=使用system-v消息队列作为cs结构应用通信方式>使用System V消息队列作为CS结构应用通信方式：</h2><ol><li>客户端和服务端都使用同一个消息队列，发给不同客户端的消息使用消息类型（messag type）来区分，一般选用客户端的进程ID作为消息类型，客户端选择和自己进程id相同的消息收取，一般使用<code>1</code>作为发给服务端的消息类型。</li></ol><figure class=center><img src=/img/the-linux-programming-interface-s30/one_message_queue.png width=600><figcaption><h4>使用一个消息队列</h4></figcaption></figure><p>结构如上图，这种方式存在两个问题，一个是消息比较多的时候，容易造成消息队列阻塞，造成死锁。
+第二个是，一个恶意的客户端如果往消息队列填入大量垃圾消息，很容易造成服务端不响应。</p><p>2.每个客户端使用一个消息队列，一般来说，服务端会先创建一个消息队列，供客户端将自己创建的消息队列标识符发送给服务端。可能存在的问题就是系统中消息队列的数量是有限制的。</p><figure class=center><img src=/img/the-linux-programming-interface-s30/per_mq.png width=600><figcaption><h4>每个客户端使用一个消息队列</h4></figcaption></figure><h2 id=exercises>Exercises</h2><ol start=2><li>使用system V 消息队列实现管道章节的sequence-number程序：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -222,44 +55,36 @@
 </span><span class=lnt>27
 </span><span class=lnt>28
 </span><span class=lnt>29
-</span><span class=lnt>30
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// mq_seqnum_server.h
-</span><span class=c1></span>
-<span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;sys/msg.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;stddef.h&gt;                     /* For definition of offsetof() */</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;limits.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;fcntl.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;signal.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&lt;sys/wait.h&gt;</span><span class=cp>
-</span><span class=cp>#include</span> <span class=cpf>&#34;tlpi_hdr.h&#34;</span><span class=cp>
-</span><span class=cp></span>
-<span class=cp>#define MQ_KEY 0x1aaaaaa1           </span><span class=cm>/* Key for server&#39;s message queue */</span><span class=cp>
-</span><span class=cp></span>
-<span class=k>struct</span> <span class=n>requestMsg</span> <span class=p>{</span>                <span class=cm>/* Request (client --&gt; server) */</span>
-    <span class=kt>long</span> <span class=n>mtype</span><span class=p>;</span> 
-    <span class=n>pid_t</span> <span class=n>pid</span><span class=p>;</span>                  <span class=cm>/* PID of client */</span>
-    <span class=kt>int</span> <span class=n>seqLen</span><span class=p>;</span>                 <span class=cm>/* Length of desired sequence */</span>
-<span class=p>};</span>
-
-<span class=k>struct</span> <span class=n>responseMsg</span> <span class=p>{</span>               <span class=cm>/* Response (server --&gt; client) */</span>
-    <span class=kt>long</span> <span class=n>mtype</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>seqNum</span><span class=p>;</span>                 <span class=cm>/* Start of sequence */</span>
-<span class=p>};</span>
-
-<span class=cp>#define REQ_MSG_SIZE (offsetof(struct requestMsg, seqLen) - \
-</span><span class=cp>                      offsetof(struct requestMsg, pid) + sizeof(int))
-</span><span class=cp></span>
-<span class=cp>#define RESP_MSG_SIZE sizeof(int)
-</span><span class=cp></span>
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=c1>// mq_seqnum_server.h
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/msg.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stddef.h&gt;                     /* For definition of offsetof() */</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;limits.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;fcntl.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;signal.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sys/wait.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;tlpi_hdr.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=cp>#define MQ_KEY 0x1aaaaaa1           </span><span class=cm>/* Key for server&#39;s message queue */</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=n>requestMsg</span> <span class=p>{</span>                <span class=cm>/* Request (client --&gt; server) */</span>
+</span></span><span class=line><span class=cl>    <span class=kt>long</span> <span class=n>mtype</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>    <span class=kt>pid_t</span> <span class=n>pid</span><span class=p>;</span>                  <span class=cm>/* PID of client */</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>seqLen</span><span class=p>;</span>                 <span class=cm>/* Length of desired sequence */</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=n>responseMsg</span> <span class=p>{</span>               <span class=cm>/* Response (server --&gt; client) */</span>
+</span></span><span class=line><span class=cl>    <span class=kt>long</span> <span class=n>mtype</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>seqNum</span><span class=p>;</span>                 <span class=cm>/* Start of sequence */</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#define REQ_MSG_SIZE (offsetof(struct requestMsg, seqLen) - \
+</span></span></span><span class=line><span class=cl><span class=cp>                      offsetof(struct requestMsg, pid) + sizeof(int))
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=cp>#define RESP_MSG_SIZE sizeof(int)
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -307,61 +132,55 @@
 </span><span class=lnt>46
 </span><span class=lnt>47
 </span><span class=lnt>48
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// mq_seqnum_server.c
-</span><span class=c1></span>
-<span class=cp>#include</span> <span class=cpf>&#34;mq_seqnum_server.h&#34;</span><span class=cp>
-</span><span class=cp></span>
-<span class=kt>int</span>
-<span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span>
-<span class=p>{</span>
-    <span class=k>struct</span> <span class=n>requestMsg</span> <span class=n>req</span><span class=p>;</span>
-    <span class=k>struct</span> <span class=n>responseMsg</span> <span class=n>rsp</span><span class=p>;</span>
-
-    <span class=n>ssize_t</span> <span class=n>msgLen</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>serverId</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>seqNum</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
-
-    <span class=cm>/* Create server message queue */</span>
-
-    <span class=n>serverId</span> <span class=o>=</span> <span class=n>msgget</span><span class=p>(</span><span class=n>MQ_KEY</span><span class=p>,</span> <span class=n>IPC_CREAT</span> <span class=o>|</span> <span class=n>IPC_EXCL</span> <span class=o>|</span>
-                            <span class=n>S_IRUSR</span> <span class=o>|</span> <span class=n>S_IWUSR</span> <span class=o>|</span> <span class=n>S_IWGRP</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>serverId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;srv msgget&#34;</span><span class=p>);</span>
-
-    <span class=k>for</span> <span class=p>(;;)</span> <span class=p>{</span>
-        <span class=n>msgLen</span> <span class=o>=</span> <span class=n>msgrcv</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>req</span><span class=p>,</span> <span class=n>REQ_MSG_SIZE</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
-            <span class=k>if</span> <span class=p>(</span><span class=n>errno</span> <span class=o>==</span> <span class=n>EINTR</span><span class=p>)</span>         <span class=cm>/* Interrupted by SIGCHLD handler? */</span>
-                <span class=k>continue</span><span class=p>;</span>               <span class=cm>/* ... then restart msgrcv() */</span>
-            <span class=n>errMsg</span><span class=p>(</span><span class=s>&#34;srv msgrcv&#34;</span><span class=p>);</span>           <span class=cm>/* Some other error */</span>
-            <span class=k>break</span><span class=p>;</span>                      <span class=cm>/* ... so terminate loop */</span>
-        <span class=p>}</span>
-
-        <span class=n>rsp</span><span class=p>.</span><span class=n>seqNum</span> <span class=o>=</span> <span class=n>seqNum</span><span class=p>;</span>
-        <span class=n>rsp</span><span class=p>.</span><span class=n>mtype</span> <span class=o>=</span> <span class=n>req</span><span class=p>.</span><span class=n>pid</span><span class=p>;</span>
-        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;rcv msg from %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>req</span><span class=p>.</span><span class=n>pid</span><span class=p>);</span>
-    
-        <span class=k>if</span> <span class=p>(</span><span class=n>msgsnd</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>rsp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
-            <span class=n>errMsg</span><span class=p>(</span><span class=s>&#34;srv msgsnd&#34;</span><span class=p>);</span>
-            <span class=k>break</span><span class=p>;</span>            
-        <span class=p>}</span>
-
-        <span class=n>seqNum</span> <span class=o>+=</span> <span class=n>req</span><span class=p>.</span><span class=n>seqLen</span><span class=p>;</span>
-    <span class=p>}</span>
-
-    <span class=cm>/* If msgrcv() or fork() fails, remove server MQ and exit */</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>msgctl</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=n>IPC_RMID</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;srv msgctl&#34;</span><span class=p>);</span>
-    <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
-<span class=p>}</span>
-</code></pre></td></tr></table>
-</div>
-</div><div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=c1>// mq_seqnum_server.c
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;mq_seqnum_server.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=kt>int</span>
+</span></span><span class=line><span class=cl><span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>requestMsg</span> <span class=n>req</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>responseMsg</span> <span class=n>rsp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kt>ssize_t</span> <span class=n>msgLen</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>serverId</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>seqNum</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/* Create server message queue */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>serverId</span> <span class=o>=</span> <span class=nf>msgget</span><span class=p>(</span><span class=n>MQ_KEY</span><span class=p>,</span> <span class=n>IPC_CREAT</span> <span class=o>|</span> <span class=n>IPC_EXCL</span> <span class=o>|</span>
+</span></span><span class=line><span class=cl>                            <span class=n>S_IRUSR</span> <span class=o>|</span> <span class=n>S_IWUSR</span> <span class=o>|</span> <span class=n>S_IWGRP</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>serverId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;srv msgget&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(;;)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>msgLen</span> <span class=o>=</span> <span class=nf>msgrcv</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>req</span><span class=p>,</span> <span class=n>REQ_MSG_SIZE</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>errno</span> <span class=o>==</span> <span class=n>EINTR</span><span class=p>)</span>         <span class=cm>/* Interrupted by SIGCHLD handler? */</span>
+</span></span><span class=line><span class=cl>                <span class=k>continue</span><span class=p>;</span>               <span class=cm>/* ... then restart msgrcv() */</span>
+</span></span><span class=line><span class=cl>            <span class=nf>errMsg</span><span class=p>(</span><span class=s>&#34;srv msgrcv&#34;</span><span class=p>);</span>           <span class=cm>/* Some other error */</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span><span class=p>;</span>                      <span class=cm>/* ... so terminate loop */</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>rsp</span><span class=p>.</span><span class=n>seqNum</span> <span class=o>=</span> <span class=n>seqNum</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=n>rsp</span><span class=p>.</span><span class=n>mtype</span> <span class=o>=</span> <span class=n>req</span><span class=p>.</span><span class=n>pid</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;rcv msg from %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>req</span><span class=p>.</span><span class=n>pid</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nf>msgsnd</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>rsp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nf>errMsg</span><span class=p>(</span><span class=s>&#34;srv msgsnd&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span><span class=p>;</span>            
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>seqNum</span> <span class=o>+=</span> <span class=n>req</span><span class=p>.</span><span class=n>seqLen</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/* If msgrcv() or fork() fails, remove server MQ and exit */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>msgctl</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=n>IPC_RMID</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;srv msgctl&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nf>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -396,53 +215,42 @@
 </span><span class=lnt>33
 </span><span class=lnt>34
 </span><span class=lnt>35
-</span><span class=lnt>36
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=c1>// mq_seqnum_client.c
-</span><span class=c1></span><span class=cp>#include</span> <span class=cpf>&#34;mq_seqnum_server.h&#34;</span><span class=cp>
-</span><span class=cp></span>
-
-<span class=kt>int</span>
-<span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span>
-<span class=p>{</span>
-    <span class=k>struct</span> <span class=n>requestMsg</span> <span class=n>req</span><span class=p>;</span>
-    <span class=k>struct</span> <span class=n>responseMsg</span> <span class=n>resp</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>mqId</span><span class=p>;</span>
-    <span class=n>ssize_t</span> <span class=n>msgLen</span><span class=p>;</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>argc</span> <span class=o>!=</span> <span class=mi>2</span> <span class=o>||</span> <span class=n>strcmp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=s>&#34;--help&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span>
-        <span class=n>usageErr</span><span class=p>(</span><span class=s>&#34;%s num</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-
-    <span class=n>mqId</span> <span class=o>=</span> <span class=n>msgget</span><span class=p>(</span><span class=n>MQ_KEY</span><span class=p>,</span> <span class=n>S_IWUSR</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>mqId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgget - server message queue&#34;</span><span class=p>);</span>
-    <span class=n>req</span><span class=p>.</span><span class=n>mtype</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span>                      <span class=cm>/* send to server */</span>
-    <span class=n>req</span><span class=p>.</span><span class=n>pid</span> <span class=o>=</span> <span class=n>getpid</span><span class=p>();</span>
-    <span class=n>req</span><span class=p>.</span><span class=n>seqLen</span> <span class=o>=</span> <span class=n>atoi</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>]);</span>
-
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>msgsnd</span><span class=p>(</span><span class=n>mqId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>req</span><span class=p>,</span> <span class=n>REQ_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgsnd&#34;</span><span class=p>);</span>
-    <span class=cm>/* Get first response, which may be failure notification */</span>
-
-    <span class=n>msgLen</span> <span class=o>=</span> <span class=n>msgrcv</span><span class=p>(</span><span class=n>mqId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>resp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=n>getpid</span><span class=p>(),</span> <span class=mi>0</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgrcv&#34;</span><span class=p>);</span>
-
-    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;Receive seqNum %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>resp</span><span class=p>.</span><span class=n>seqNum</span><span class=p>);</span>
-
-    <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
-<span class=p>}</span>
-
-</code></pre></td></tr></table>
-</div>
-</div><ol start=5>
-<li>给svmsg_file_client.c中的客户端在send和recv消息的时候添加timeout,避免被永久阻塞。</li>
-</ol>
-<div class=highlight><div class=chroma>
-<table class=lntable><tr><td class=lntd>
-<pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=c1>// mq_seqnum_client.c
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=cp>#include</span> <span class=cpf>&#34;mq_seqnum_server.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span>
+</span></span><span class=line><span class=cl><span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>requestMsg</span> <span class=n>req</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>responseMsg</span> <span class=n>resp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>mqId</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>ssize_t</span> <span class=n>msgLen</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>argc</span> <span class=o>!=</span> <span class=mi>2</span> <span class=o>||</span> <span class=nf>strcmp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=s>&#34;--help&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>usageErr</span><span class=p>(</span><span class=s>&#34;%s num</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>mqId</span> <span class=o>=</span> <span class=nf>msgget</span><span class=p>(</span><span class=n>MQ_KEY</span><span class=p>,</span> <span class=n>S_IWUSR</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>mqId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgget - server message queue&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>req</span><span class=p>.</span><span class=n>mtype</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span>                      <span class=cm>/* send to server */</span>
+</span></span><span class=line><span class=cl>    <span class=n>req</span><span class=p>.</span><span class=n>pid</span> <span class=o>=</span> <span class=nf>getpid</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=n>req</span><span class=p>.</span><span class=n>seqLen</span> <span class=o>=</span> <span class=nf>atoi</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>msgsnd</span><span class=p>(</span><span class=n>mqId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>req</span><span class=p>,</span> <span class=n>REQ_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgsnd&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=cm>/* Get first response, which may be failure notification */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>msgLen</span> <span class=o>=</span> <span class=nf>msgrcv</span><span class=p>(</span><span class=n>mqId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>resp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=nf>getpid</span><span class=p>(),</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgrcv&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;Receive seqNum %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>resp</span><span class=p>.</span><span class=n>seqNum</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nf>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><ol start=5><li>给svmsg_file_client.c中的客户端在send和recv消息的时候添加timeout,避免被永久阻塞。</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
 </span><span class=lnt>  2
 </span><span class=lnt>  3
 </span><span class=lnt>  4
@@ -559,211 +367,136 @@
 </span><span class=lnt>115
 </span><span class=lnt>116
 </span><span class=lnt>117
-</span><span class=lnt>118
-</span></code></pre></td>
-<td class=lntd>
-<pre tabindex=0 class=chroma><code class=language-c data-lang=c>
-<span class=cp>#include</span> <span class=cpf>&#34;svmsg_file.h&#34;</span><span class=cp>
-</span><span class=cp></span>
-<span class=cp>#define TIMEOUT 10
-</span><span class=cp></span><span class=k>static</span> <span class=kt>int</span> <span class=n>clientId</span><span class=p>;</span>
-
-<span class=k>static</span> <span class=kt>void</span> <span class=cm>/* SIGALRM handler: interrupts blocked system call */</span>
-<span class=n>handler</span><span class=p>(</span><span class=kt>int</span> <span class=n>sig</span><span class=p>)</span>
-<span class=p>{</span>
-    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;msg Send timeout</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span> <span class=cm>/* UNSAFE (see Section 21.1.2) */</span>
-<span class=p>}</span>
-
-<span class=k>static</span> <span class=kt>void</span>
-<span class=n>removeQueue</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span>
-<span class=p>{</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>msgctl</span><span class=p>(</span><span class=n>clientId</span><span class=p>,</span> <span class=n>IPC_RMID</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgctl&#34;</span><span class=p>);</span>
-<span class=p>}</span>
-
-
-
-<span class=kt>void</span> <span class=n>set_timeout</span><span class=p>(</span><span class=kt>int</span> <span class=n>num_secs</span><span class=p>)</span> <span class=p>{</span>
-    <span class=k>struct</span> <span class=n>sigaction</span> <span class=n>sa</span><span class=p>;</span>
-    <span class=n>sa</span><span class=p>.</span><span class=n>sa_flags</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
-    <span class=n>sigemptyset</span><span class=p>(</span><span class=o>&amp;</span><span class=n>sa</span><span class=p>.</span><span class=n>sa_mask</span><span class=p>);</span>   
-    <span class=n>sa</span><span class=p>.</span><span class=n>sa_handler</span> <span class=o>=</span> <span class=n>handler</span><span class=p>;</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>sigaction</span><span class=p>(</span><span class=n>SIGALRM</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>sa</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;sigaction&#34;</span><span class=p>);</span>
-    <span class=n>alarm</span><span class=p>(</span><span class=n>num_secs</span><span class=p>);</span>
-<span class=p>}</span>
-
-<span class=kt>void</span> <span class=n>cancel_timeout</span><span class=p>()</span> <span class=p>{</span>
-    <span class=kt>int</span> <span class=n>savedErrno</span><span class=p>;</span>
-    <span class=n>savedErrno</span> <span class=o>=</span> <span class=n>errno</span><span class=p>;</span>
-    <span class=n>alarm</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span> <span class=cm>/* Ensure timer is turned off */</span>
-    <span class=n>errno</span> <span class=o>=</span> <span class=n>savedErrno</span><span class=p>;</span>
-<span class=p>}</span>
-
-
-<span class=kt>int</span>
-<span class=n>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span>
-<span class=p>{</span>
-    
-    <span class=k>struct</span> <span class=n>requestMsg</span> <span class=n>req</span><span class=p>;</span>
-    <span class=k>struct</span> <span class=n>responseMsg</span> <span class=n>resp</span><span class=p>;</span>
-    <span class=kt>int</span> <span class=n>serverId</span><span class=p>,</span> <span class=n>numMsgs</span><span class=p>;</span>
-    <span class=n>ssize_t</span> <span class=n>msgLen</span><span class=p>,</span> <span class=n>totBytes</span><span class=p>;</span>
-
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>argc</span> <span class=o>!=</span> <span class=mi>2</span> <span class=o>||</span> <span class=n>strcmp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=s>&#34;--help&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span>
-        <span class=n>usageErr</span><span class=p>(</span><span class=s>&#34;%s pathname</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>strlen</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>&gt;</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>)</span>
-        <span class=n>cmdLineErr</span><span class=p>(</span><span class=s>&#34;pathname too long (max: %ld bytes)</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
-                <span class=p>(</span><span class=kt>long</span><span class=p>)</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>);</span>
-
-    <span class=cm>/* Get server&#39;s queue identifier; create queue for response */</span>
-
-    <span class=n>serverId</span> <span class=o>=</span> <span class=n>msgget</span><span class=p>(</span><span class=n>SERVER_KEY</span><span class=p>,</span> <span class=n>S_IWUSR</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>serverId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgget - server message queue&#34;</span><span class=p>);</span>
-
-    <span class=n>clientId</span> <span class=o>=</span> <span class=n>msgget</span><span class=p>(</span><span class=n>IPC_PRIVATE</span><span class=p>,</span> <span class=n>S_IRUSR</span> <span class=o>|</span> <span class=n>S_IWUSR</span> <span class=o>|</span> <span class=n>S_IWGRP</span><span class=p>);</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>clientId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgget - client message queue&#34;</span><span class=p>);</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>atexit</span><span class=p>(</span><span class=n>removeQueue</span><span class=p>)</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;atexit&#34;</span><span class=p>);</span>
-
-    <span class=cm>/* Send message asking for file named in argv[1] */</span>
-
-    <span class=n>req</span><span class=p>.</span><span class=n>mtype</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span>                      <span class=cm>/* Any type will do */</span>
-    <span class=n>req</span><span class=p>.</span><span class=n>clientId</span> <span class=o>=</span> <span class=n>clientId</span><span class=p>;</span>
-    <span class=n>strncpy</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>);</span>
-    <span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>[</span><span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span>
-                                        <span class=cm>/* Ensure string is terminated */</span>
-    
-    <span class=n>set_timeout</span><span class=p>(</span><span class=n>TIMEOUT</span><span class=p>);</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>msgsnd</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>req</span><span class=p>,</span> <span class=n>REQ_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgsnd&#34;</span><span class=p>);</span>    
-
-    <span class=n>cancel_timeout</span><span class=p>();</span>
-
-    <span class=cm>/* Get first response, which may be failure notification */</span>
-
-    <span class=n>set_timeout</span><span class=p>(</span><span class=n>TIMEOUT</span><span class=p>);</span>
-
-    <span class=n>msgLen</span> <span class=o>=</span> <span class=n>msgrcv</span><span class=p>(</span><span class=n>clientId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>resp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
-
-    <span class=n>cancel_timeout</span><span class=p>();</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-        <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgrcv&#34;</span><span class=p>);</span>
-
-    <span class=k>if</span> <span class=p>(</span><span class=n>resp</span><span class=p>.</span><span class=n>mtype</span> <span class=o>==</span> <span class=n>RESP_MT_FAILURE</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>resp</span><span class=p>.</span><span class=n>data</span><span class=p>);</span>      <span class=cm>/* Display msg from server */</span>
-        <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
-    <span class=p>}</span>
-
-    <span class=cm>/* File was opened successfully by server; process messages
-</span><span class=cm>       (including the one already received) containing file data */</span>
-
-    <span class=n>totBytes</span> <span class=o>=</span> <span class=n>msgLen</span><span class=p>;</span>                  <span class=cm>/* Count first message */</span>
-    <span class=k>for</span> <span class=p>(</span><span class=n>numMsgs</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span> <span class=n>resp</span><span class=p>.</span><span class=n>mtype</span> <span class=o>==</span> <span class=n>RESP_MT_DATA</span><span class=p>;</span> <span class=n>numMsgs</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
-        <span class=n>msgLen</span> <span class=o>=</span> <span class=n>msgrcv</span><span class=p>(</span><span class=n>clientId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>resp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
-        <span class=c1>// printf(resp.data);
-</span><span class=c1></span>        <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
-            <span class=n>errExit</span><span class=p>(</span><span class=s>&#34;msgrcv&#34;</span><span class=p>);</span>
-
-        <span class=n>totBytes</span> <span class=o>+=</span> <span class=n>msgLen</span><span class=p>;</span>
-    <span class=p>}</span>
-
-    <span class=n>printf</span><span class=p>(</span><span class=s>&#34;Received %ld bytes (%d messages)</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=p>(</span><span class=kt>long</span><span class=p>)</span> <span class=n>totBytes</span><span class=p>,</span> <span class=n>numMsgs</span><span class=p>);</span>
-
-    <span class=n>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
-<span class=p>}</span>
-
-</code></pre></td></tr></table>
-</div>
-</div>
-</div>
-<div class=post-copyright>
-<p class=copyright-item>
-<span class=item-title>Author</span>
-<span class=item-content>xistor</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>LastMod</span>
-<span class=item-content>
-2023-07-01
-<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a>
-</span>
-</p>
-<p class=copyright-item>
-<span class=item-title>License</span>
-<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span>
-</p>
-</div>
-<footer class=post-footer>
-<div class=post-tags>
-<a href=/tags/linux/>Linux</a>
-</div>
-<nav class=post-nav>
-<a class=prev href=/post/linux/the-linux-programming-interface-s31/>
-<i class="iconfont icon-left"></i>
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;svmsg_file.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=cp>#define TIMEOUT 10
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=k>static</span> <span class=kt>int</span> <span class=n>clientId</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>static</span> <span class=kt>void</span> <span class=cm>/* SIGALRM handler: interrupts blocked system call */</span>
+</span></span><span class=line><span class=cl><span class=nf>handler</span><span class=p>(</span><span class=kt>int</span> <span class=n>sig</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;msg Send timeout</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span> <span class=cm>/* UNSAFE (see Section 21.1.2) */</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>static</span> <span class=kt>void</span>
+</span></span><span class=line><span class=cl><span class=nf>removeQueue</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>msgctl</span><span class=p>(</span><span class=n>clientId</span><span class=p>,</span> <span class=n>IPC_RMID</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgctl&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>set_timeout</span><span class=p>(</span><span class=kt>int</span> <span class=n>num_secs</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>sigaction</span> <span class=n>sa</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>sa</span><span class=p>.</span><span class=n>sa_flags</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nf>sigemptyset</span><span class=p>(</span><span class=o>&amp;</span><span class=n>sa</span><span class=p>.</span><span class=n>sa_mask</span><span class=p>);</span>   
+</span></span><span class=line><span class=cl>    <span class=n>sa</span><span class=p>.</span><span class=n>sa_handler</span> <span class=o>=</span> <span class=n>handler</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>sigaction</span><span class=p>(</span><span class=n>SIGALRM</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>sa</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;sigaction&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nf>alarm</span><span class=p>(</span><span class=n>num_secs</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>cancel_timeout</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>savedErrno</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>savedErrno</span> <span class=o>=</span> <span class=n>errno</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nf>alarm</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span> <span class=cm>/* Ensure timer is turned off */</span>
+</span></span><span class=line><span class=cl>    <span class=n>errno</span> <span class=o>=</span> <span class=n>savedErrno</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span>
+</span></span><span class=line><span class=cl><span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>argv</span><span class=p>[])</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>requestMsg</span> <span class=n>req</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>responseMsg</span> <span class=n>resp</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>int</span> <span class=n>serverId</span><span class=p>,</span> <span class=n>numMsgs</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>ssize_t</span> <span class=n>msgLen</span><span class=p>,</span> <span class=n>totBytes</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>argc</span> <span class=o>!=</span> <span class=mi>2</span> <span class=o>||</span> <span class=nf>strcmp</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=s>&#34;--help&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>usageErr</span><span class=p>(</span><span class=s>&#34;%s pathname</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>strlen</span><span class=p>(</span><span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>&gt;</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>cmdLineErr</span><span class=p>(</span><span class=s>&#34;pathname too long (max: %ld bytes)</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=p>(</span><span class=kt>long</span><span class=p>)</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/* Get server&#39;s queue identifier; create queue for response */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>serverId</span> <span class=o>=</span> <span class=nf>msgget</span><span class=p>(</span><span class=n>SERVER_KEY</span><span class=p>,</span> <span class=n>S_IWUSR</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>serverId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgget - server message queue&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>clientId</span> <span class=o>=</span> <span class=nf>msgget</span><span class=p>(</span><span class=n>IPC_PRIVATE</span><span class=p>,</span> <span class=n>S_IRUSR</span> <span class=o>|</span> <span class=n>S_IWUSR</span> <span class=o>|</span> <span class=n>S_IWGRP</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>clientId</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgget - client message queue&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>atexit</span><span class=p>(</span><span class=n>removeQueue</span><span class=p>)</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;atexit&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/* Send message asking for file named in argv[1] */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>req</span><span class=p>.</span><span class=n>mtype</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span>                      <span class=cm>/* Any type will do */</span>
+</span></span><span class=line><span class=cl>    <span class=n>req</span><span class=p>.</span><span class=n>clientId</span> <span class=o>=</span> <span class=n>clientId</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nf>strncpy</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>,</span> <span class=n>argv</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>[</span><span class=k>sizeof</span><span class=p>(</span><span class=n>req</span><span class=p>.</span><span class=n>pathname</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>                                        <span class=cm>/* Ensure string is terminated */</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=nf>set_timeout</span><span class=p>(</span><span class=n>TIMEOUT</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>msgsnd</span><span class=p>(</span><span class=n>serverId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>req</span><span class=p>,</span> <span class=n>REQ_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgsnd&#34;</span><span class=p>);</span>    
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nf>cancel_timeout</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/* Get first response, which may be failure notification */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nf>set_timeout</span><span class=p>(</span><span class=n>TIMEOUT</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>msgLen</span> <span class=o>=</span> <span class=nf>msgrcv</span><span class=p>(</span><span class=n>clientId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>resp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nf>cancel_timeout</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgrcv&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>resp</span><span class=p>.</span><span class=n>mtype</span> <span class=o>==</span> <span class=n>RESP_MT_FAILURE</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>resp</span><span class=p>.</span><span class=n>data</span><span class=p>);</span>      <span class=cm>/* Display msg from server */</span>
+</span></span><span class=line><span class=cl>        <span class=nf>exit</span><span class=p>(</span><span class=n>EXIT_FAILURE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=cm>/* File was opened successfully by server; process messages
+</span></span></span><span class=line><span class=cl><span class=cm>       (including the one already received) containing file data */</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>totBytes</span> <span class=o>=</span> <span class=n>msgLen</span><span class=p>;</span>                  <span class=cm>/* Count first message */</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=n>numMsgs</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span> <span class=n>resp</span><span class=p>.</span><span class=n>mtype</span> <span class=o>==</span> <span class=n>RESP_MT_DATA</span><span class=p>;</span> <span class=n>numMsgs</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>msgLen</span> <span class=o>=</span> <span class=nf>msgrcv</span><span class=p>(</span><span class=n>clientId</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>resp</span><span class=p>,</span> <span class=n>RESP_MSG_SIZE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// printf(resp.data);
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=k>if</span> <span class=p>(</span><span class=n>msgLen</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=nf>errExit</span><span class=p>(</span><span class=s>&#34;msgrcv&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>totBytes</span> <span class=o>+=</span> <span class=n>msgLen</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;Received %ld bytes (%d messages)</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=p>(</span><span class=kt>long</span><span class=p>)</span> <span class=n>totBytes</span><span class=p>,</span> <span class=n>numMsgs</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nf>exit</span><span class=p>(</span><span class=n>EXIT_SUCCESS</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2023-07-01
+<a href=https://github.com/xistor/My-blog-source/commit/6efe40a6d4464175334353fcb55ddada241bdcb8 title="resize img">(6efe40a)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/linux/>Linux</a></div><nav class=post-nav><a class=prev href=/post/linux/the-linux-programming-interface-s31/><i class="iconfont icon-left"></i>
 <span class="prev-text nav-default">Linux/Unix系统编程手册-笔记31. System V 信号量</span>
 <span class="prev-text nav-mobile">Prev</span>
-</a>
-<a class=next href=/post/linux/the-linux-programming-interface-s29/>
-<span class="next-text nav-default">Linux/Unix系统编程手册-笔记29. System V IPC</span>
+</a><a class=next href=/post/linux/the-linux-programming-interface-s29/><span class="next-text nav-default">Linux/Unix系统编程手册-笔记29. System V IPC</span>
 <span class="next-text nav-mobile">Next</span>
-<i class="iconfont icon-right"></i>
-</a>
-</nav>
-</footer>
-</article>
-</div>
-<div id=disqus_thread></div>
-<script type=text/javascript>(function(){var a,b;if(window.location.hostname==='localhost')return;a=document.createElement('script'),a.type='text/javascript',a.async=!0,b='xistor',a.src='//'+b+'.disqus.com/embed.js',(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-</div>
-</main>
-<footer id=footer class=footer>
-<div class=social-links>
-<a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a>
-<a href=https://github.com/xistor class="iconfont icon-github" title=github></a>
-<a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
-</div>
-<div class=copyright>
-<span class=power-by>
-Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
-</span>
-<span class=division>|</span>
-<span class=theme-info>
-Theme -
-<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
-</span>
-<div class=busuanzi-footer>
-<span id=busuanzi_container_site_pv> site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-<span class=division>|</span>
-<span id=busuanzi_container_site_uv> site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span> </span>
-</div>
-<span class=copyright-year>
-&copy;
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==="localhost")return;var t,e=document.createElement("script");e.type="text/javascript",e.async=!0,t="xistor",e.src="//"+t+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)})()</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span><span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span><span class=division>|</span>
+<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
 2018 -
-2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span>
-</span>
-</div>
-</footer>
-<div class=back-to-top id=back-to-top>
-<i class="iconfont icon-up"></i>
-</div>
-</div>
-<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
-<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script> <script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script>
-<link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous>
-<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
-<script type=text/javascript>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script>
-<script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','G-M23R6PBNFE','auto'),ga('set','anonymizeIp',!0),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-</body>
-</html>
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]]}}</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script><script>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","G-M23R6PBNFE","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"))</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
