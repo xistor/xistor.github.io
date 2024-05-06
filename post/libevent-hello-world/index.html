@@ -1,0 +1,176 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge,chrome=1"><title>libevent 学习（一)-Hello world - xistor's notes</title>
+<meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="xistor"><meta name=description content="记录下libevent的学习过程，主要是想理解下其设计思想。源码在Github上, 下载后编译安装即可。 1 2 3 4 5 $ git clone git@github.com:libevent/libevent.git $ cd libevent &amp;amp;&amp;amp; mkdir build &amp;amp;&amp;amp; cd build $"><meta name=generator content="Hugo 0.125.6 with theme even"><link rel=canonical href=https://xistor.github.io/post/libevent-hello-world/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><script async src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js></script><link href=/sass/main.min.eb8cd9e340948c88a994e4063d81dde5ff918aac81c3224aed971e4656534bfb.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:url" content="https://xistor.github.io/post/libevent-hello-world/"><meta property="og:site_name" content="xistor's notes"><meta property="og:title" content="libevent 学习（一)-Hello world"><meta property="og:description" content="记录下libevent的学习过程，主要是想理解下其设计思想。源码在Github上, 下载后编译安装即可。 1 2 3 4 5 $ git clone git@github.com:libevent/libevent.git $ cd libevent && mkdir build && cd build $"><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="post"><meta property="article:published_time" content="2024-03-16T16:43:16+08:00"><meta property="article:modified_time" content="2024-05-06T23:44:58+08:00"><meta property="article:tag" content="Network"><meta itemprop=name content="libevent 学习（一)-Hello world"><meta itemprop=description content="记录下libevent的学习过程，主要是想理解下其设计思想。源码在Github上, 下载后编译安装即可。 1 2 3 4 5 $ git clone git@github.com:libevent/libevent.git $ cd libevent && mkdir build && cd build $"><meta itemprop=datePublished content="2024-03-16T16:43:16+08:00"><meta itemprop=dateModified content="2024-05-06T23:44:58+08:00"><meta itemprop=wordCount content="1162"><meta itemprop=keywords content="Network"><meta name=twitter:card content="summary"><meta name=twitter:title content="libevent 学习（一)-Hello world"><meta name=twitter:description content="记录下libevent的学习过程，主要是想理解下其设计思想。源码在Github上, 下载后编译安装即可。 1 2 3 4 5 $ git clone git@github.com:libevent/libevent.git $ cd libevent && mkdir build && cd build $"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>Xistor's Notes</a></div><div class=mobile-navbar-icon><span></span>
+<span></span>
+<span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>Xistor's Notes</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>libevent 学习（一)-Hello world</h1><div class=post-meta><span class=post-time>2024-03-16</span><div class=post-category><a href=/categories/network/>network</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>Contents</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><a href=#简单的例子>简单的例子</a></li><li><a href=#event_base>event_base</a></li><li><a href=#参考>参考</a></li></ul></nav></div></div><div class=post-content><p>记录下libevent的学习过程，主要是想理解下其设计思想。源码在<a href=https://github.com/libevent/libevent>Github</a>上, 下载后编译安装即可。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>$ git clone git@github.com:libevent/libevent.git
+</span></span><span class=line><span class=cl>$ <span class=nb>cd</span> libevent <span class=o>&amp;&amp;</span> mkdir build <span class=o>&amp;&amp;</span> <span class=nb>cd</span> build
+</span></span><span class=line><span class=cl>$ cmake ..
+</span></span><span class=line><span class=cl>$ make 
+</span></span><span class=line><span class=cl>$ sudo make install
+</span></span></code></pre></td></tr></table></div></div><h2 id=简单的例子>简单的例子</h2><p>理解原理还为时过早，先从如何使用入手, 创建一个简单timer的例子，每1秒打印<code>Hello world！</code>，打印3次后退出：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;event2/event.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;time.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=k>static</span> <span class=kt>int</span> <span class=n>n_calls</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>hello_cd</span><span class=p>(</span><span class=kt>int</span> <span class=n>fd</span><span class=p>,</span> <span class=kt>short</span> <span class=n>event</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span>    <span class=c1>//回调函数
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;Hello World! %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>n_calls</span><span class=o>++</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>event</span> <span class=o>*</span><span class=n>me</span> <span class=o>=</span> <span class=p>(</span><span class=k>struct</span> <span class=n>event</span><span class=o>*</span><span class=p>)</span><span class=n>arg</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>n_calls</span> <span class=o>&gt;</span> <span class=mi>3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>       <span class=nf>event_del</span><span class=p>(</span><span class=n>me</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>event_base</span> <span class=o>*</span><span class=n>base</span> <span class=o>=</span> <span class=nf>event_base_new</span><span class=p>();</span>  <span class=c1>//初始化libevent库
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>struct</span> <span class=n>timeval</span> <span class=n>one_sec</span> <span class=o>=</span> <span class=p>{</span> <span class=mi>1</span><span class=p>,</span> <span class=mi>0</span> <span class=p>};</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>event</span> <span class=o>*</span><span class=n>ev</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ev</span> <span class=o>=</span> <span class=nf>event_new</span><span class=p>(</span><span class=n>base</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=n>EV_PERSIST</span><span class=p>,</span> <span class=n>hello_cd</span><span class=p>,</span> <span class=nf>event_self_cbarg</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>    <span class=nf>event_add</span><span class=p>(</span><span class=n>ev</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>one_sec</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nf>event_base_dispatch</span><span class=p>(</span><span class=n>base</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>编译：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>$ gcc hello_world.c -levent
+</span></span></code></pre></td></tr></table></div></div><p>主要流程：</p><ul><li><p>首先需要调用event_base_new创建event_base，event_base里可以包括多个event，通过poll来监控哪一个被激活。</p></li><li><p>event_new() 创建了一个新的event，其函数原型如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>event</span> <span class=o>*</span><span class=nf>event_new</span><span class=p>(</span><span class=k>struct</span> <span class=n>event_base</span> <span class=o>*</span><span class=n>base</span><span class=p>,</span> <span class=kt>evutil_socket_t</span> <span class=n>fd</span><span class=p>,</span> <span class=kt>short</span> <span class=n>events</span><span class=p>,</span> <span class=n>event_callback_fn</span> <span class=n>callback</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=n>callback_arg</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>fd在上面代码中是<code>-1</code>，代表event只能timeout激活或者手动调用event_active()激活，在这里就是timeout<br>events参数是<code>EV_PERSIST</code>, 代表除非调用<code>event_del()</code>删除event, 否则它会一直在<br>callback 参数是 <code>hello_cd()</code>,主要打印输出<br>callback_arg 参数传入的是<code>event_self_cbarg()</code>, 其作用是将event本身作为event_new()的参数，这是如何实现的？
+在源码中<code>event_self_cbarg()</code>定义为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=kt>void</span> <span class=o>*</span>
+</span></span><span class=line><span class=cl><span class=nf>event_self_cbarg</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=o>&amp;</span><span class=n>event_self_cbarg_ptr_</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这个<code>event_self_cbarg_ptr_</code>指针是一个全局静态变量。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=kt>void</span> <span class=o>*</span><span class=n>event_self_cbarg_ptr_</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+</span></span></code></pre></td></tr></table></div></div><p>event_new()函数中为新的event分配了空间，没有看到<code>arg</code>指针的操作。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>struct</span> <span class=n>event</span> <span class=o>*</span>
+</span></span><span class=line><span class=cl><span class=nf>event_new</span><span class=p>(</span><span class=k>struct</span> <span class=n>event_base</span> <span class=o>*</span><span class=n>base</span><span class=p>,</span> <span class=kt>evutil_socket_t</span> <span class=n>fd</span><span class=p>,</span> <span class=kt>short</span> <span class=n>events</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>cb</span><span class=p>)(</span><span class=kt>evutil_socket_t</span><span class=p>,</span> <span class=kt>short</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=p>),</span> <span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>event</span> <span class=o>*</span><span class=n>ev</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=n>ev</span> <span class=o>=</span> <span class=nf>mm_malloc</span><span class=p>(</span><span class=k>sizeof</span><span class=p>(</span><span class=k>struct</span> <span class=n>event</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>ev</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nf>event_assign</span><span class=p>(</span><span class=n>ev</span><span class=p>,</span> <span class=n>base</span><span class=p>,</span> <span class=n>fd</span><span class=p>,</span> <span class=n>events</span><span class=p>,</span> <span class=n>cb</span><span class=p>,</span> <span class=n>arg</span><span class=p>)</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nf>mm_free</span><span class=p>(</span><span class=n>ev</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>(</span><span class=n>ev</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>进入event_assign()中发现会判断<code>arg</code>指针是否是<code>event_self_cbasrg_ptr_</code>，如果是就将<code>arg</code>赋值为ev。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=nf>event_assign</span><span class=p>(</span><span class=k>struct</span> <span class=n>event</span> <span class=o>*</span><span class=n>ev</span><span class=p>,</span> <span class=k>struct</span> <span class=n>event_base</span> <span class=o>*</span><span class=n>base</span><span class=p>,</span> <span class=kt>evutil_socket_t</span> <span class=n>fd</span><span class=p>,</span> <span class=kt>short</span> <span class=n>events</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=o>*</span><span class=n>callback</span><span class=p>)(</span><span class=kt>evutil_socket_t</span><span class=p>,</span> <span class=kt>short</span><span class=p>,</span> <span class=kt>void</span> <span class=o>*</span><span class=p>),</span> <span class=kt>void</span> <span class=o>*</span><span class=n>arg</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>base</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>base</span> <span class=o>=</span> <span class=n>current_base</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>arg</span> <span class=o>==</span> <span class=o>&amp;</span><span class=n>event_self_cbarg_ptr_</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>arg</span> <span class=o>=</span> <span class=n>ev</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>...</span>
+</span></span></code></pre></td></tr></table></div></div></li></ul><h2 id=event_base>event_base</h2><p>event_base 结构体：保存了libevent的loop过程中的状态以及所需的各种信息, 定义在event-internal.h中。
+每个成员变量都有注释。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=n>event_base</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=k>struct</span> <span class=n>eventop</span> <span class=o>*</span><span class=n>evsel</span><span class=p>;</span>    <span class=c1>// 描述和后端的结构体(poll, epoll等)
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>...</span>
+</span></span><span class=line><span class=cl>	<span class=cm>/** List of changes to tell backend about at next dispatch.  Only used
+</span></span></span><span class=line><span class=cl><span class=cm>	 * by the O(1) backends. */</span>
+</span></span><span class=line><span class=cl>	<span class=k>struct</span> <span class=n>event_changelist</span> <span class=n>changelist</span><span class=p>;</span> <span class=c1>// 暂存add/delete等操作，减少系统调用
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=cm>/** Function pointers used to describe the backend that this event_base
+</span></span></span><span class=line><span class=cl><span class=cm>	 * uses for signals */</span>
+</span></span><span class=line><span class=cl>	<span class=k>const</span> <span class=k>struct</span> <span class=n>eventop</span> <span class=o>*</span><span class=n>evsigsel</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=cm>/** Data to implement the common signal handler code. */</span>
+</span></span><span class=line><span class=cl>	<span class=k>struct</span> <span class=n>evsig_info</span> <span class=n>sig</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span></code></pre></td></tr></table></div></div><p>较为重要的是<code>evsel</code>, 它是一个<code>eventop</code>结构体，描述backend的行为，这个结构体类似C++中的基类。无论是poll或epoll只要实现接口，实现对应的函数就可以作为一个backend。</p><h2 id=参考>参考</h2><p><a href=https://libevent.org/>https://libevent.org/</a></p></div><div class=post-copyright><p class=copyright-item><span class=item-title>Author</span>
+<span class=item-content>xistor</span></p><p class=copyright-item><span class=item-title>LastMod</span>
+<span class=item-content>2024-05-06
+<a href=https://github.com/xistor/My-blog-source/commit/12081f8f22f0429a510cf0486d0db6e649e7eee3 title="libevent 1">(12081f8)</a></span></p><p class=copyright-item><span class=item-title>License</span>
+<span class=item-content><a rel="license noopener" href=https://creativecommons.org/licenses/by-nc/2.0/ target=_blank>CC BY-NC 2.0</a></span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/network/>network</a></div><nav class=post-nav><a class=next href=/post/nginx_and_frp/><span class="next-text nav-default">Nginx和Frp共用80/443端口</span>
+<span class="next-text nav-mobile">Next</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div><div id=disqus_thread></div><script type=text/javascript>(function(){if(window.location.hostname==="localhost")return;var t,e=document.createElement("script");e.type="text/javascript",e.async=!0,t="xistor",e.src="//"+t+".disqus.com/embed.js",(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(e)})()</script><noscript>Please enable JavaScript to view the <a href=http://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript></div></main><footer id=footer class=footer><div class=social-links><a href=mailto:xueluqiang@gmail.com class="iconfont icon-email" title=email></a><a href=https://github.com/xistor class="iconfont icon-github" title=github></a><a href=https://xistor.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>Powered by <a class=hexo-link href=https://gohugo.io>Hugo</a>
+</span><span class=division>|</span>
+<span class=theme-info>Theme -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span><div class=busuanzi-footer><span id=busuanzi_container_site_pv>site pv: <span id=busuanzi_value_site_pv><img src=/img/spinner.svg alt=spinner.svg></span> </span><span class=division>|</span>
+<span id=busuanzi_container_site_uv>site uv: <span id=busuanzi_value_site_uv><img src=/img/spinner.svg alt=spinner.svg></span></span></div><span class=copyright-year>&copy;
+2018 -
+2024<span class=heart><i class="iconfont icon-heart"></i></span><span>xistor</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/raphael@2.2.7/raphael.min.js integrity="sha256-67By+NpOtm9ka1R6xpUefeGOY8kWWHHRAKlvaTJ7ONI=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/flowchart.js@1.8.0/release/flowchart.min.js integrity="sha256-zNGWjubXoY6rb5MnmpBNefO0RgoVYfle9p0tvOQM+6k=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.js integrity="sha256-4O4pS1SH31ZqrSO2A/2QJTVjTPqVe+jnYgOWUVr7EEc=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/snapsvg@0.5.1/dist/snap.svg-min.js integrity="sha256-oI+elz+sIm+jpn8F/qEspKoKveTc5uKeFHNNVexe6d8=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/underscore@1.8.3/underscore-min.js integrity="sha256-obZACiHd7gkOk9iIL/pimWMTJ4W/pBsKu+oZnSeBIek=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.js integrity=sha384-8748Vn52gHJYJI0XEuPB2QlPVNUkJlJn9tHqKec6J3q2r9l8fvRxrgn/E5ZHV0sP crossorigin=anonymous></script><link rel=stylesheet href=https://cdn.jsdelivr.net/gh/bramp/js-sequence-diagrams@2.0.1/dist/sequence-diagram-min.css integrity=sha384-6QbLKJMz5dS3adWSeINZe74uSydBGFbnzaAYmp+tKyq60S7H2p6V7g1TysM5lAaF crossorigin=anonymous><script type=text/javascript src=/js/main.min.4ae89da218555efa0e7093a20b92017d2e1202b66fff9fc2edf4cb8d44b44c6e.js></script><script type=text/javascript>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]]}}</script><script async src=https://cdn.jsdelivr.net/npm/mathjax@3.0.5/es5/tex-mml-chtml.js integrity="sha256-HGLuEfFcsUJGhvB8cQ8nr0gai9EucOOaIxFw7qxmd+w=" crossorigin=anonymous></script><script async src="https://www.googletagmanager.com/gtag/js?id=G-M23R6PBNFE"></script><script>var dnt,doNotTrack=!1;if(!1&&(dnt=navigator.doNotTrack||window.doNotTrack||navigator.msDoNotTrack,doNotTrack=dnt=="1"||dnt=="yes"),!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-M23R6PBNFE")}</script></body></html>
